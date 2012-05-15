@@ -1,3 +1,4 @@
+
 #include "Camera.hpp"
 Camera::Camera ( const Eigen::Vector3f center, const float distanceToCenter, const float fieldOfViewAngle )
 {
@@ -104,5 +105,6 @@ Camera::copy ( const Camera& that )
         this->_distanceToCenter = that._distanceToCenter;
         this->_fieldOfViewAngle	= that._fieldOfViewAngle;
         this->_rotation = that._rotation;
+		//aaa
         return;
 }
