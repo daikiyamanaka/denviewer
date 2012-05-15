@@ -30,4 +30,4 @@ public:
 private:
         void copy ( const Camera& that );
 };
-#endif // __CAMERA_HPP__
+#endif // __CAMERA_HPP__//aaa
