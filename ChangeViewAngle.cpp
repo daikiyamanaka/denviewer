@@ -1,8 +1,6 @@
 #include "ChangeViewAngle.h"
 #include<QtGui>
 
-#include <string>
-
 ChangeViewAngle::ChangeViewAngle(float _angle, QWidget *parent):QWidget(parent)
 {
     QHBoxLayout *hBoxLayout1 = new QHBoxLayout;
