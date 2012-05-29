@@ -12,6 +12,8 @@ QT_END_NAMESPACE
 #include "Model.hpp"
 #include "View.hpp"
 #include "ChangeColorWidget.hpp"
+
+
 #include "ChangeViewAngle.h"
 
 class MainWindow : public QMainWindow
