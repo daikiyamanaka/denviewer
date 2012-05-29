@@ -2,8 +2,13 @@
 #include<QtGui>
 
 #include <string>
+<<<<<<< HEAD
 
 #include <iostream>
+=======
+#includde <sstream>
+
+>>>>>>> 378db590a31947cc5348a4310a593196137089dc
 ChangeViewAngle::ChangeViewAngle(float _angle, QWidget *parent):QWidget(parent)
 {
     QHBoxLayout *hBoxLayout1 = new QHBoxLayout;
