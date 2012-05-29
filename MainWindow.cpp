@@ -1,4 +1,4 @@
-//Yamauchi
+//YamauchiYuta
 //JINNOUCHI
 
 #include "MainWindow.hpp"
