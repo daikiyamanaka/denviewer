@@ -1,5 +1,5 @@
 //Yamauchi
-//JINNOUCHI
+//JINNOUCHI Ryo
 
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
