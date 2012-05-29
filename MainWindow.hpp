@@ -12,13 +12,7 @@ QT_END_NAMESPACE
 #include "Model.hpp"
 #include "View.hpp"
 #include "ChangeColorWidget.hpp"
-<<<<<<< HEAD
-
-
 #include "ChangeViewAngle.h"
-=======
-#include "ChangeWireWidthWidget.h"
->>>>>>> 589e43c4ad68172d76e590161ab643a5cb2e793f
 
 class MainWindow : public QMainWindow
 {
@@ -28,7 +22,7 @@ private:
         View& _view;
         GLWidget* _glwidget;
         ChangeColorWidget* _colorWidget;
-        ChangeWireWidthWidget* _wireWidthWidget;//<-add
+        ChangeViewAngle* _viewWidget;
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
@@ -47,8 +41,8 @@ private slots:
         void view_fit ( void );
         void view_init ( void );
         void mouse_dragged ( float x, float y );
-	void update_surface_color(void);
-    void update_wire_width(void);//<-add
+        void update_surface_color(void);
+        void update_perspective_angle(void);
 private:
         void create_actions ( void );
         void create_menus ( void );
