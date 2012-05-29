@@ -3,7 +3,6 @@
 #include "Model.hpp"
 #include "MouseListener.hpp"
 #include <Eigen/Geometry>
-#include <Eigen/Dense>
 #include <fstream>
 class VirtualTrackball : public MouseListener
 {
@@ -15,8 +14,7 @@ private:
         float _eps;
         std::ofstream fout;
         Eigen::Vector3f _oldp;
-        int _oldx;
-        int _oldy;
+
 
 
 
@@ -27,10 +25,6 @@ public:
         virtual bool mousePressed ( const MouseEvent* event );
         virtual bool mouseMoved ( const MouseEvent* event );
         virtual bool mouseReleased ( const MouseEvent* event );
-        virtual bool middleButtonPressed ( const MouseEvent* event);
-        virtual bool middleButtonMoved ( const MouseEvent* event);
-        virtual bool middleButtonReleased ( const MouseEvent* event);
-
 private:
         Eigen::Vector3f project_on_sphere ( const int x, const int y ) const;
 };

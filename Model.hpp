@@ -21,7 +21,7 @@ public:
         const Mesh& getMesh ( void );
         const Light& getLight ( void );
         const Camera& getCamera ( void );
-        Preference& getPreference ( void );
+        const Preference& getPreference ( void );
 
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
@@ -33,8 +33,12 @@ public:
         void viewInit ( void );
 
         void addRotation ( const Eigen::Quaternionf& q );
-        void moveCenter ( const Eigen::Vector3f& move  );
         //
+	void getSurfaceColor ( int &r, int &g, int &b );
+	void setSurfaceColor ( const int r, const int g, const int b );
+
+    void setViewAngle(float _angle);
+    float getViewAngle(void);
 
 };
 #endif // __MODEL_HPP__

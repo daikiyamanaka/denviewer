@@ -20,7 +20,7 @@ View::~View ( void )
 void
 View::init ( void )
 {
-//        ::glEnable( GL_CULL_FACE );
+        ::glEnable( GL_CULL_FACE );
         ::glEnable ( GL_DEPTH_TEST );
         ::glEnable ( GL_LIGHT0 );
         ::glShadeModel ( GL_FLAT );
@@ -34,14 +34,25 @@ View::render ( void )
         ::glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         ::glLoadIdentity();
 
+        const double zNear = 0.001;
+        const double zFar  = 100000.0;
+        const double fov = this->_model.getCamera().getFieldOfViewAngle();
+
         // model view.
         const Camera& camera = this->_model.getCamera();
         Eigen::Vector3f eye = camera.getEye();
         Eigen::Vector3f center = camera.getCenter();
         Eigen::Vector3f up = camera.getUpVector();
+        ::glMatrixMode ( GL_PROJECTION );
+        ::glLoadIdentity();
+        int viewport[4];
+        ::glGetIntegerv ( GL_VIEWPORT, viewport );
+        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
         ::gluLookAt ( eye.x(), eye.y(), eye.z(),
                       center.x(), center.y(), center.z(),
                       up.x(), up.y(), up.z() );
+
+
 
         //light
         Light light = this->_model.getLight();
@@ -49,7 +60,6 @@ View::render ( void )
 
 
         //draw mesh
-        /*
 
         RenderingMode mode = this->_model.getPreference().getRenderingMode() ;
         if ( mode == WIRE ) {
@@ -81,70 +91,17 @@ View::render ( void )
                 ::glMaterialfv ( GL_BACK, GL_SPECULAR, mat2_specular );
                 ::glMaterialfv ( GL_BACK, GL_SHININESS,mat2_shininess );
 
-        } else if ( mode == POINTCLOUD ) {
-            ::glDisable ( GL_LIGHTING );
-            ::glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
-            const Color3f fg = this->_model.getPreference().getPointcloudColor();
-            ::glColor3f ( fg.x() , fg.y() , fg.z() );
-            ::glPointSize( 1 );
         }
         this->render_mesh();
-
-        */
-
-        if ( this->_model.getPreference().getWireRenderingMode() ) {
-                ::glDisable ( GL_LIGHTING );
-                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
-                const Color3f fg = this->_model.getPreference().getWireColor();
-                ::glColor3f ( fg.x(), fg.y(), fg.z() );
-                this->render_mesh();
-        }
-        if ( this->_model.getPreference().getSurfaceRenderingMode() ) {
-                ::glEnable ( GL_LIGHTING );
-                const Color3f fg = this->_model.getPreference().getSurfaceColor();
-
-                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
-                GLfloat mat_ambient[4] = {fg.x(), fg.y(), fg.z(), 1.0};
-                GLfloat mat_diffuse[4] = {0.8,0.8, 0.8, 1.0};
-                GLfloat mat_specular[4] = {0.2, 0.2, 0.2, 1.0};
-                GLfloat mat_shininess[1] = {100.0f};
-
-                ::glMaterialfv ( GL_FRONT, GL_AMBIENT,  mat_ambient );
-                ::glMaterialfv ( GL_FRONT, GL_DIFFUSE,  mat_diffuse );
-                ::glMaterialfv ( GL_FRONT, GL_SPECULAR, mat_specular );
-                ::glMaterialfv ( GL_FRONT, GL_SHININESS,mat_shininess );
-
-                GLfloat mat2_ambient[4] = {1-fg.x(), 1-fg.y(), 1-fg.z(), 1.0};
-                GLfloat mat2_diffuse[4] = {0.8,0.8, 0.8, 1.0};
-                GLfloat mat2_specular[4] = {0.2, 0.2, 0.2, 1.0};
-                GLfloat mat2_shininess[1] = {100.0f};
-                ::glMaterialfv ( GL_BACK, GL_AMBIENT,  mat2_ambient );
-                ::glMaterialfv ( GL_BACK, GL_DIFFUSE,  mat2_diffuse );
-                ::glMaterialfv ( GL_BACK, GL_SPECULAR, mat2_specular );
-                ::glMaterialfv ( GL_BACK, GL_SHININESS,mat2_shininess );
-
-                this->render_mesh();
-
-        }
-        if ( this->_model.getPreference().getPointCloudRenderingMode() ) {
-            ::glDisable ( GL_LIGHTING );
-            ::glPolygonMode( GL_FRONT_AND_BACK, GL_POINT );
-            const Color3f fg = this->_model.getPreference().getPointcloudColor();
-            ::glColor3f ( fg.x() , fg.y() , fg.z() );
-            ::glPointSize( 1 );
-            this->render_mesh();
-        }
-        //this->render_mesh();
-
         return;
 }
 void
 View::resize ( const int width, const int height )
 {
-        int side  = qMin ( width, height );
-        ::glViewport ( ( width - side ) / 2 , ( height - side ) / 2 , side, side );
+        ::glViewport ( 0, 0, width, height );
         ::glMatrixMode ( GL_PROJECTION );
         ::glLoadIdentity();
+
         const double zNear = 0.001;
         const double zFar  = 100000.0;
         const double fov = this->_model.getCamera().getFieldOfViewAngle();
@@ -162,16 +119,17 @@ void
 View::render_mesh ( void )
 {
         const Mesh& mesh = this->_model.getMesh();
+        ::glBegin ( GL_TRIANGLES );
         for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
-                ::glBegin ( GL_POLYGON );
+
                 const Eigen::Vector3f nrm = mesh.getNormal ( i );
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
                 for ( int j = 0 ; j < 3 ; j+=1 ) {
                         const Eigen::Vector3f p = mesh.getPosition ( i,j );
                         ::glVertex3f ( p.x(), p.y(), p.z() );
                 }
-                ::glEnd();
         }
+        ::glEnd();
         return;
 }
 

@@ -12,10 +12,6 @@ public:
         virtual bool mousePressed ( const MouseEvent* event );
         virtual bool mouseMoved ( const MouseEvent* event );
         virtual bool mouseReleased ( const MouseEvent* event );
-        virtual bool middleButtonPressed( const MouseEvent *event );
-        virtual bool middleButtonMoved( const MouseEvent *event );
-        virtual bool middleButtonReleased( const MouseEvent *event );
-
 };
 #endif// __MOUSE_LISTERNER_HPP__
 

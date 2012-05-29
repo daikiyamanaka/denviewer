@@ -32,7 +32,8 @@ Model::getCamera ( void )
         return this->_camera;
 }
 
-Preference &Model::getPreference( void )
+const Preference&
+Model::getPreference ( void )
 {
         return this->_preference;
 }
@@ -100,7 +101,6 @@ Model::viewInit ( void )
         Eigen::Vector3f bmin, bmax;
         this->_mesh.getBoundingBox ( bmin, bmax );
 
-        ///////////////////////////////
         const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
         const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
         const Eigen::Quaternionf q ( 1,0,0,0 );
@@ -117,12 +117,28 @@ Model::addRotation ( const Eigen::Quaternionf& q )
         return;
 }
 
-
 void
-Model::moveCenter( const Eigen::Vector3f &move )
+Model::getSurfaceColor ( int &r, int &g, int &b )
 {
-    this->_camera.moveCenter( move );
-    this->_light.setPosition( this->_camera.getEye() );
-    return;
+	const Color3f c = this->getPreference().getSurfaceColor();
+	r = static_cast<int> ( 255 * c.x() );
+	g = static_cast<int> ( 255 * c.y() );
+	b = static_cast<int> ( 255 * c.z() );
+
+}
+void
+Model::setSurfaceColor ( const int r, const int g, const int b )
+{
+	Color3f c;
+	c.x() = r * 1.0 / 255;
+	c.y() = g * 1.0 / 255;
+	c.z() = b * 1.0 / 255;
+	this->_preference.setSurfaceColor ( c );
 }
 
+void Model::setViewAngle(float _angle){
+    this->_camera.setFieldOfViewAngle(_angle);
+}
+float Model::getViewAngle(void){
+    return this->_camera.getFieldOfViewAngle();
+}

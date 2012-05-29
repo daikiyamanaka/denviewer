@@ -6,14 +6,9 @@
 
 int main ( int argc, char** argv )
 {
-        QApplication app ( argc, argv );
         Model model;
-        if( app.argc() == 2 ){
-            std::string str(app.argv()[1]);
-            model.openMesh( str );
-        }
-
         View view ( model );
+        QApplication app ( argc, argv );
 
 #if defined(Q_WS_MAC)
         // for Mac

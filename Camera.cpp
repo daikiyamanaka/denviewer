@@ -1,4 +1,3 @@
-
 #include "Camera.hpp"
 Camera::Camera ( const Eigen::Vector3f center, const float distanceToCenter, const float fieldOfViewAngle )
 {
@@ -28,7 +27,7 @@ Camera::~Camera ( void )
 }
 
 void
-Camera::fitPosition ( const Eigen::Vector3f center, const float radius, const Eigen::Quaternionf& q )
+Camera::fitPosition ( const Eigen::Vector3f& center, const float radius, const Eigen::Quaternionf& q )
 {
         this->setCenter ( center );
         const float scale = 0.8f;
@@ -91,20 +90,11 @@ Camera::setRotation ( const Eigen::Quaternionf& rotation )
 }
 
 void
-Camera::moveCenter( const Eigen::Vector3f &move )
-{
-    this->_center = this->_center + move;
-    return;
-}
-
-
-void
 Camera::copy ( const Camera& that )
 {
         this->_center = that._center;
         this->_distanceToCenter = that._distanceToCenter;
         this->_fieldOfViewAngle	= that._fieldOfViewAngle;
         this->_rotation = that._rotation;
-		//aaa
         return;
 }

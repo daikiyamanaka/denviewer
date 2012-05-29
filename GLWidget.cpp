@@ -8,7 +8,6 @@ GLWidget::GLWidget ( Model& model,  View& view, QWidget *parent )
         : QGLWidget ( QGLFormat ( QGL::SampleBuffers ), parent ), _model ( model ), _view ( view )
 {
         this->_ball = new VirtualTrackball ( model );
-        this->status = TRACKBALL;
         return;
 }
 
@@ -47,6 +46,7 @@ void
 GLWidget::resizeGL ( int width, int height )
 {
         this->_view.resize ( width, height );
+
         return;
 }
 
@@ -65,9 +65,8 @@ GLWidget::mouseMoveEvent ( QMouseEvent* event )
         if ( this->_ball->mouseMoved ( &e ) ) {
                 updateGL();
                 emit mouseDragged ( event->x(), event->y() );
-                //emit cameraParamtersChanged( this->_model.getCamera() );
         }
-}
+};
 
 void
 GLWidget::mouseReleaseEvent ( QMouseEvent* event )
@@ -76,36 +75,6 @@ GLWidget::mouseReleaseEvent ( QMouseEvent* event )
         this->_ball->mouseReleased ( &e );
         return;
 }
-
-void
-GLWidget::middleButtonPressEvent( QMouseEvent* event )
-{
-    MouseEvent e = this->convert_qmouse_event( event );
-    this->_ball->middleButtonPressed( &e );
-    return;
-}
-
-void
-GLWidget::middleButtonMoveEvent(QMouseEvent* event)
-{
-    MouseEvent e = this->convert_qmouse_event( event );
-    this->_ball->middleButtonMoved( &e );
-    if ( this->_ball->middleButtonMoved( &e ) ){
-            updateGL();
-            emit mouseDragged ( event->x(), event->y() );
-            //emit cameraParamtersChanged( this->_model.getCamera() );
-    }
-    return;
-}
-
-void
-GLWidget::middleButtonReleaseEvent(QMouseEvent* event)
-{
-    MouseEvent e = this->convert_qmouse_event( event );
-    this->_ball->middleButtonReleased( &e );
-    return;
-}
-
 
 MouseEvent
 GLWidget::convert_qmouse_event ( QMouseEvent* event )
@@ -117,16 +86,4 @@ GLWidget::convert_qmouse_event ( QMouseEvent* event )
         const int x = event->pos().x();
         const int y = event->pos().y();
         return MouseEvent ( this->width(), this->height(), x, y, button );
-}
-
-void
-GLWidget::setChangingViewMode(const ChangingViewMode status)
-{
-        this->status = status;
-}
-
-ChangingViewMode
-GLWidget::getChangingViewMode(void) const
-{
-        return this->status;
 }
