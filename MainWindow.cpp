@@ -1,4 +1,6 @@
 //Yamauchi
+//JINNOUCHI
+
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
