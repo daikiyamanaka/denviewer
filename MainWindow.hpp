@@ -12,6 +12,7 @@ QT_END_NAMESPACE
 #include "Model.hpp"
 #include "View.hpp"
 #include "ChangeColorWidget.hpp"
+#include "ChangeWireWidthWidget.h"
 #include "ChangeViewAngle.h"
 
 class MainWindow : public QMainWindow
@@ -22,6 +23,7 @@ private:
         View& _view;
         GLWidget* _glwidget;
         ChangeColorWidget* _colorWidget;
+        ChangeWireWidthWidget* _wireWidthWidget;
         ChangeViewAngle* _viewWidget;
 public:
         MainWindow ( Model& model, View& view ) ;
@@ -35,13 +37,14 @@ private slots:
         void save ( void );
         void openCamera ( void );
         void saveCamera ( void );
-	void saveSnapshot( void );
+        void saveSnapshot( void );
         void polygon_wireframe ( void );
         void polygon_surface ( void );
         void view_fit ( void );
         void view_init ( void );
         void mouse_dragged ( float x, float y );
         void update_surface_color(void);
+        void update_wire_width(void);
         void update_perspective_angle(void);
 private:
         void create_actions ( void );

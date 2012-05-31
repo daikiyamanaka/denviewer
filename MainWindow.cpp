@@ -37,6 +37,10 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 	QColor col(r,g,b);
 	this->_colorWidget = new ChangeColorWidget(col);
 	connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_surface_color()));
+
+    int wirewidth = this->_model.getWireWidth();
+    this->_wireWidthWidget = new ChangeWireWidthWidget(wirewidth);
+    connect( this->_wireWidthWidget, SIGNAL(updated()), this, SLOT(update_wire_width()));
 	
     float angle = this->_model.getViewAngle();
     this->_viewWidget = new ChangeViewAngle(angle);
@@ -48,6 +52,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         boxLayout3->addWidget ( button1 );
         boxLayout3->addWidget ( button2 );
         boxLayout3->addWidget ( this->_colorWidget);
+        boxLayout3->addWidget ( this->_wireWidthWidget);
         boxLayout3->addWidget(this->_viewWidget);
         boxLayout3->addStretch ( 1 );
 	
@@ -294,6 +299,14 @@ MainWindow::update_surface_color(void) {
 	QColor color = this->_colorWidget->getSurfaceColor();
 	this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
 	emit updated();
+}
+
+void
+MainWindow::update_wire_width( void )
+{
+    int width = this->_wireWidthWidget->getWireWidth();
+    this->_model.setWireWidth(width);
+    emit updated();
 }
 
 void MainWindow::update_perspective_angle(void){

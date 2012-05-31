@@ -67,6 +67,8 @@ View::render ( void )
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
                 const Color3f fg = this->_model.getPreference().getWireColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
+                int width = this->_model.getWireWidth();
+                ::glLineWidth(width);
         } else if ( mode == SURFACE ) {
                 ::glEnable ( GL_LIGHTING );
                 const Color3f fg = this->_model.getPreference().getSurfaceColor();

@@ -15,6 +15,8 @@ private:
         Color3f _wire;
         Color3f _surface;
 
+        int _wire_width;
+
         RenderingMode _status;
 
 public:
@@ -24,11 +26,13 @@ public:
         void setBackgroundColor ( const Color3f c );
         void setWireColor ( const Color3f c );
         void setSurfaceColor ( const Color3f c );
+        void setWireWidth( const int width );
         void setRenderingMode ( const RenderingMode status );
 
         Color3f getBackgroundColor ( void ) const;
         Color3f getWireColor ( void ) const;
         Color3f getSurfaceColor ( void ) const;
+        int getWireWidth( void ) const;
         RenderingMode getRenderingMode ( void ) const;
 };
 #endif // __PREFERENCE_HPP__

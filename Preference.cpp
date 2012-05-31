@@ -5,6 +5,7 @@ Preference::Preference ( void )
         this->setBackgroundColor ( Color3f ( 1,1,1 ) );
         this->setWireColor ( Color3f ( 0,0,0 ) );
         this->setSurfaceColor ( Color3f ( 0.7f, 0, 0 ) );
+        this->setWireWidth(1);
         this->setRenderingMode ( SURFACE );
         return;
 }
@@ -35,6 +36,13 @@ Preference::setSurfaceColor ( const Color3f c )
 }
 
 void
+Preference::setWireWidth( const int width )
+{
+    this->_wire_width = width;
+    return;
+}
+
+void
 Preference::setRenderingMode ( const RenderingMode status )
 {
         this->_status = status;
@@ -53,6 +61,12 @@ Color3f
 Preference::getSurfaceColor ( void ) const
 {
         return _surface;
+}
+
+int
+Preference::getWireWidth( void ) const//<-add
+{
+    return _wire_width;
 }
 
 RenderingMode

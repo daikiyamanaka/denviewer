@@ -136,6 +136,18 @@ Model::setSurfaceColor ( const int r, const int g, const int b )
 	this->_preference.setSurfaceColor ( c );
 }
 
+int
+Model::getWireWidth( void )
+{
+    return this->getPreference().getWireWidth();
+}
+
+void
+Model::setWireWidth(const int width)
+{
+    this->_preference.setWireWidth(width);
+}
+
 void Model::setViewAngle(float _angle){
     this->_camera.setFieldOfViewAngle(_angle);
 }

@@ -34,11 +34,14 @@ public:
 
         void addRotation ( const Eigen::Quaternionf& q );
         //
-	void getSurfaceColor ( int &r, int &g, int &b );
-	void setSurfaceColor ( const int r, const int g, const int b );
+        void getSurfaceColor ( int &r, int &g, int &b );
+        void setSurfaceColor ( const int r, const int g, const int b );
 
-    void setViewAngle(float _angle);
-    float getViewAngle(void);
+        int getWireWidth(void);
+        void setWireWidth( const int width );
+
+        void setViewAngle(float _angle);
+        float getViewAngle(void);
 
 };
 #endif // __MODEL_HPP__
