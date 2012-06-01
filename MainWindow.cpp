@@ -11,6 +11,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         this->setCentralWidget ( widget );
         this->_glwidget = new GLWidget ( this->_model,  this->_view, widget );
         connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
+        connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
         QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
         QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
         radioButton2->setChecked ( true );
@@ -365,4 +366,21 @@ MainWindow::initialize_camera_position()
     this->_model.getEulerAngle(alpha,beta,gamma);
     this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
     return;
+}
+
+void
+MainWindow::file_dropped(QString str){
+    QString  message  = str +  QString( tr ( " reading...." ) );
+    statusBar()->showMessage ( message );
+        if ( !this->_model.openMesh (str.toStdString() ) ) {
+                QString message ( tr ( "Open failed." ) );
+                statusBar()->showMessage ( message );
+        } else {
+        QString  message  = str +  QString( tr ( " reading  done." ) );
+                statusBar()->showMessage ( message );
+        emit updated();
+        emit cameraInitialized();
+    }
+
+        return;
 }

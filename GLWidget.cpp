@@ -1,3 +1,4 @@
+#include <QtGui>
 #include "GLWidget.hpp"
 #include "MouseEvent.hpp"
 #ifndef GL_MULTISAMPLE
@@ -7,6 +8,7 @@
 GLWidget::GLWidget ( Model& model,  View& view, QWidget *parent )
         : QGLWidget ( QGLFormat ( QGL::SampleBuffers ), parent ), _model ( model ), _view ( view )
 {
+        this->setAcceptDrops( TRUE ) ;
         this->_ball = new VirtualTrackball ( model );
         return;
 }
@@ -86,4 +88,26 @@ GLWidget::convert_qmouse_event ( QMouseEvent* event )
         const int x = event->pos().x();
         const int y = event->pos().y();
         return MouseEvent ( this->width(), this->height(), x, y, button );
+}
+
+void
+GLWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
+    return;
+}
+
+void
+GLWidget::dragLeaveEvent(QDragEnterEvent *event) {
+    event->acceptProposedAction();
+    return;
+}
+void
+GLWidget::dropEvent(QDropEvent *event)
+{
+    QList<QUrl> fileList=event->mimeData()->urls();
+    QString filePath = QDir::toNativeSeparators(fileList[0].toLocalFile());
+    emit fileDropped(filePath);
+    event->acceptProposedAction();
+    return;
 }

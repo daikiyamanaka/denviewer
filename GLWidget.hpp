@@ -22,6 +22,7 @@ public:
 public slots:
 signals:
         void mouseDragged ( float x, float y );
+        void fileDropped ( QString file);
 protected:
         void initializeGL ( void  );
         void paintGL ( void ) ;
@@ -29,6 +30,9 @@ protected:
         void mousePressEvent ( QMouseEvent* event );
         void mouseMoveEvent ( QMouseEvent* event );
         void mouseReleaseEvent ( QMouseEvent* event );
+        void dragEnterEvent(QDragEnterEvent *event);
+        void dragLeaveEvent(QDragEnterEvent *event);
+        void dropEvent(QDropEvent *event);
 private:
         MouseEvent convert_qmouse_event ( QMouseEvent* event );
 

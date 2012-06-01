@@ -54,6 +54,7 @@ private slots:
 		void update_euler_angle(int alpha , int beta , int gamma);
 		void initialize_camera_position();
 		//end
+        void file_dropped(QString str);
 private:
         void create_actions ( void );
         void create_menus ( void );
