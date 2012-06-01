@@ -43,5 +43,11 @@ public:
         void setViewAngle(float _angle);
         float getViewAngle(void);
 
+		//Yamauchi
+		void getEulerAngle( int &alpha , int &beta , int &gamma);
+		void setEulerAngle( const int alpha , const int beta , const int gamma );
+		void getCameraPosition( double &xpos , double &ypos , double &zpos);
+		void setCameraPosition( const double xpos , const double ypos , const double zpos);
+
 };
 #endif // __MODEL_HPP__

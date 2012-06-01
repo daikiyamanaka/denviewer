@@ -47,6 +47,18 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
+	int alpha , beta , gamma;
+    double xpos , ypos , zpos;
+    this->_model.getEulerAngle(alpha , beta , gamma);
+    this->_model.getCameraPosition(xpos,ypos,zpos);
+    this->_cameraParameterWidget = new GetCameraParameterWidget( alpha , beta , gamma , xpos , ypos, zpos );
+    connect(this->_cameraParameterWidget, SIGNAL(CameraPositionUpdated(double,double,double)) ,
+            this , SLOT(update_camera_position(double,double,double)));
+    connect(this , SIGNAL(cameraInitialized()) , this , SLOT(initialize_camera_position()));
+    connect(this->_cameraParameterWidget,SIGNAL(EulerAngleUpdated(int,int,int)),
+            this , SLOT(update_euler_angle(int,int,int)));
+
+
         QVBoxLayout *boxLayout3 = new QVBoxLayout;
         boxLayout3->addWidget ( groupBox1 );
         boxLayout3->addWidget ( button1 );
@@ -54,6 +66,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         boxLayout3->addWidget ( this->_colorWidget);
         boxLayout3->addWidget ( this->_wireWidthWidget);
         boxLayout3->addWidget(this->_viewWidget);
+		boxLayout3->addWidget( this->_cameraParameterWidget);
         boxLayout3->addStretch ( 1 );
 	
         QWidget* widget1 = new QWidget;
@@ -178,6 +191,7 @@ MainWindow::new_file ( void )
         QString message = tr ( "Initialized." );
         statusBar()->showMessage ( message );
         emit updated();
+		emit cameraInitialized();
         return;
 }
 
@@ -188,7 +202,7 @@ MainWindow::open ( void )
         if ( !this->_model.openMesh ( filename.toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
-        } else emit updated();
+        } else emit updated(); emit cameraInitialized();
         return;
 }
 
@@ -210,7 +224,7 @@ MainWindow::openCamera ( void )
         if ( !this->_model.openCamera ( filename.toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
-        } else emit updated();
+        } else emit updated(); emit cameraInitialized();
         return;
 }
 
@@ -252,6 +266,7 @@ MainWindow::view_fit ( void )
         QString  message ( tr ( "View fit" ) );
         statusBar()->showMessage ( message );
         emit updated();
+		emit cameraInitialized();
         return;
 }
 
@@ -261,7 +276,13 @@ MainWindow::view_init ( void )
         this->_model.viewInit();
         QString  message ( tr ( "View init" ) );
         statusBar()->showMessage ( message );
+
+		this->_cameraParameterWidget->setCameraPosition(this->_model.getCamera().getCenter().x(),
+                                                           this->_model.getCamera().getCenter().y(),
+                                                           this->_model.getCamera().getCenter().z());
+
         emit updated();
+		emit cameraInitialized();
         return;
 }
 
@@ -277,6 +298,11 @@ MainWindow::mouse_dragged ( float x, float y )
         stry.setNum ( y );
         message += stry;
         message += tr ( ") " );
+
+		int alpha , beta , gamma;
+        this->_model.getEulerAngle(alpha , beta , gamma);
+        this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
+
         statusBar()->showMessage ( message );
         return;
 
@@ -313,4 +339,30 @@ void MainWindow::update_perspective_angle(void){
     this->_model.setViewAngle(this->_viewWidget->getViewAngle());
     //printf("%d", this->_viewWidget->getViewAngle());
     emit updated();
+}
+
+void
+MainWindow::update_camera_position(double xpos, double ypos, double zpos)
+{
+    this->_model.setCameraPosition(xpos,ypos,zpos);
+    emit updated();
+}
+
+void
+MainWindow::update_euler_angle(int alpha, int beta, int gamma)
+{
+    this->_model.setEulerAngle(alpha,beta,gamma);
+    emit updated();
+}
+
+void
+MainWindow::initialize_camera_position()
+{
+    this->_cameraParameterWidget->setCameraPosition(this->_model.getCamera().getCenter().x(),
+                                                       this->_model.getCamera().getCenter().y(),
+                                                       this->_model.getCamera().getCenter().z());
+    int alpha , beta , gamma;
+    this->_model.getEulerAngle(alpha,beta,gamma);
+    this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
+    return;
 }

@@ -31,8 +31,12 @@ VirtualTrackball::mouseMoved ( const MouseEvent* event )
         const Eigen::Vector3f p1 = this->project_on_sphere ( event->x(), event->y() );
         this->_oldp = p1;
         if ( ( p0 - p1 ).norm() < this->_eps ) return false; // do nothing
-        const float cost = p0.dot ( p1 );
-        const float sint = std::sqrt ( 1 - cost * cost );
+		//‰½‚©ŠÔˆá‚Á‚Ä‚»‚¤‚È‚Ì‚Å’ù³‚µ‚Ä‚Ý‚é
+        float radian = std::acos( p0.dot ( p1 ) )*0.5;
+        const float cost = std::cos(radian);
+        const float sint = std::sin(radian);
+        //const float cost = p0.dot ( p1 );
+        //const float sint = std::sqrt ( 1 - cost * cost );
         const Eigen::Vector3f axis = p0.cross ( p1 ).normalized();
         const Eigen::Quaternionf q ( -cost, sint * axis.x(), sint * axis.y(), sint * axis.z() );
         this->_model.addRotation ( q );

@@ -154,3 +154,65 @@ void Model::setViewAngle(float _angle){
 float Model::getViewAngle(void){
     return this->_camera.getFieldOfViewAngle();
 }
+
+void
+Model::getEulerAngle( int &alpha , int &beta , int &gamma  )
+{
+    Eigen::Matrix3f m;
+    m = this->_camera.getRotation().matrix();
+    double a , b , c;
+    //Z>X>Y‚Ì‡‚Å‰ñ“]
+    if( 1.0f - std::abs( m(2,1) ) > 1.0e-10 ){
+        a = std::asin( m(2,1) );
+        c = std::atan2( -m(0,1) , m(1,1) );
+        b = std::atan2( -m(2,0) , m(2,2) );
+    }else if( m(2,1) > 0.0 ){
+        a = 3.1415926535 * 0.5;
+        b  = 0.0;
+        c = std::atan2( m(1,0),m(0,0) );
+    }else{
+        a = -3.1415926535 * 0.5;
+        b  = 0.0;
+        c = std::atan2( m(1,0),m(0,0) );
+    }
+    alpha = static_cast<int>( a*180.0/3.1415926535 );
+    beta =  static_cast<int>( b*180.0/3.1415926535 );
+    gamma = static_cast<int>( c*180.0/3.1415926535 );
+
+    return;
+}
+
+void
+Model::setEulerAngle(const int alpha, const int beta, const int gamma)
+{
+    double a = alpha*3.1415926535/360.0;
+    double b = beta*3.1415926535/360.0;
+    double c = gamma*3.1415926535/360.0;
+
+    Eigen::Quaternionf qz ( std::cos(c), 0.0f , 0.0f , std::sin(c) );
+    Eigen::Quaternionf qx ( std::cos(a), std::sin(a) , 0.0f , 0.0f );
+    Eigen::Quaternionf qy ( std::cos(b), 0.0f , std::sin(b) , 0.0f );
+    Eigen::Quaternionf q;
+    q = qz*qx*qy;//Z>X>Y‚Ì‡‚Å‰ñ“]
+    this->_camera.setRotation(q);
+    this->_light.setPosition ( this->_camera.getEye() );
+    return;
+}
+
+void
+Model::getCameraPosition( double &xpos , double &ypos , double &zpos)
+{
+    xpos = this->_camera.getCenter().x();
+    ypos = this->_camera.getCenter().y();
+    ypos = this->_camera.getCenter().z();
+
+    return;
+}
+
+void
+Model::setCameraPosition(const double xpos, const double ypos, const double zpos)
+{
+    Eigen::Vector3f pos(xpos,ypos,zpos);
+    this->_camera.setCenter(pos);
+    return;
+}

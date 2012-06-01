@@ -14,6 +14,7 @@ QT_END_NAMESPACE
 #include "ChangeColorWidget.hpp"
 #include "ChangeWireWidthWidget.h"
 #include "ChangeViewAngle.h"
+#include "GetCameraParameterWidget.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -25,12 +26,14 @@ private:
         ChangeColorWidget* _colorWidget;
         ChangeWireWidthWidget* _wireWidthWidget;
         ChangeViewAngle* _viewWidget;
+		GetCameraParameterWidget* _cameraParameterWidget;
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
         void contextMenuEvent ( QContextMenuEvent* event );
 signals:
         void updated( void );
+		void cameraInitialized(void);//Yamauchi Add
 private slots:
         void new_file ( void );
         void open ( void );
@@ -46,6 +49,11 @@ private slots:
         void update_surface_color(void);
         void update_wire_width(void);
         void update_perspective_angle(void);
+		//Yamauchi
+		void update_camera_position(double xpos , double ypos , double zpos);
+		void update_euler_angle(int alpha , int beta , int gamma);
+		void initialize_camera_position();
+		//end
 private:
         void create_actions ( void );
         void create_menus ( void );
