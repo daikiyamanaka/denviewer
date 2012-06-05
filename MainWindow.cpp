@@ -206,9 +206,10 @@ MainWindow::open ( void )
         } else {
             emit updated();
             emit cameraInitialized();
-            int ver, fa;
-            this->_model.getVertexandFace(ver, fa);
-            this->_VandFWidget->getVandFNumber(ver, fa);
+            //int ver, fa;
+            //this->_model.getVertexandFace(ver, fa);
+            //this->_VandFWidget->getVandFNumber(ver, fa);
+            this->get_ver_face();
         }
         return;
 }
@@ -386,6 +387,7 @@ MainWindow::file_dropped(QString str){
                 statusBar()->showMessage ( message );
         emit updated();
         emit cameraInitialized();
+        this->get_ver_face();
     }
 
         return;
