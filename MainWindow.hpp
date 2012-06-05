@@ -43,6 +43,7 @@ private slots:
         void saveSnapshot( void );
         void polygon_wireframe ( void );
         void polygon_surface ( void );
+        void polygon_point ( void );
         void view_fit ( void );
         void view_init ( void );
         void mouse_dragged ( float x, float y );
@@ -70,6 +71,19 @@ private:
         QAction* _openCameraAct;
         QAction* _saveCameraAct;
         QAction* _snapshotAct;
+
+        QMenu* _viewMenu;
+        QMenu* _renderingSubMenu;
+        QMenu* _lightSubMenu;
+        QMenu* _cameraSubMenu;
+        QMenu* _toolMenu;
+        QAction* _renderPointAct;
+        QAction* _renderWireAct;
+        QAction* _renderMeshAct;
+        QRadioButton* _pointRadioButton;
+        QRadioButton* _wireRadioButton;
+        QRadioButton* _surfaceRadioButton;
+
 
 };
 #endif // __MAIN_WINDOW_HPP__

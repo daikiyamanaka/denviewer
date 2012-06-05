@@ -12,15 +12,26 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         this->_glwidget = new GLWidget ( this->_model,  this->_view, widget );
         connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
         connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
+        /*
         QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
         QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
         radioButton2->setChecked ( true );
         connect ( radioButton1, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
         connect ( radioButton2, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
+        */
+
+        this->_pointRadioButton = new QRadioButton( tr("Points") );
+        this->_wireRadioButton = new QRadioButton ( tr ( "Wireframe" ) );
+        this->_surfaceRadioButton = new QRadioButton ( tr ( "Surface" ) );
+        this->_surfaceRadioButton->setChecked( true );
+        connect (this->_pointRadioButton, SIGNAL(pressed()), this , SLOT(polygon_point()) );
+        connect ( this->_wireRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
+        connect ( this->_surfaceRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
 
         QVBoxLayout *boxLayout1 = new QVBoxLayout;
-        boxLayout1->addWidget ( radioButton1 );
-        boxLayout1->addWidget ( radioButton2 );
+        boxLayout1->addWidget ( this->_pointRadioButton );
+        boxLayout1->addWidget ( this->_wireRadioButton );
+        boxLayout1->addWidget ( this->_surfaceRadioButton );
         boxLayout1->addStretch ( 1 );
 
         QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
@@ -45,7 +56,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 	
     float angle = this->_model.getViewAngle();
     this->_viewWidget = new ChangeViewAngle(angle);
-
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
 	int alpha , beta , gamma;
@@ -59,21 +69,56 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(this->_cameraParameterWidget,SIGNAL(EulerAngleUpdated(int,int,int)),
             this , SLOT(update_euler_angle(int,int,int)));
 
+    QCheckBox *lightCheckBox1 = new QCheckBox(tr ( "Light1" ));
+    QCheckBox *lightCheckBox2 = new QCheckBox(tr ( "Light2" ));
+    QCheckBox *lightCheckBox3 = new QCheckBox(tr ( "Light3" ));
+    lightCheckBox1->setChecked(true);
+
+    QVBoxLayout *boxLayout2 = new QVBoxLayout;
+    boxLayout2->addWidget ( lightCheckBox1 );
+    boxLayout2->addWidget ( lightCheckBox2 );
+    boxLayout2->addWidget ( lightCheckBox3 );
+
+    boxLayout2->addStretch ( 1 );
+
+    QGroupBox *groupBox2 = new QGroupBox ( tr ( "Light" ) );
+    groupBox2->setLayout ( boxLayout2 );
+
 
         QVBoxLayout *boxLayout3 = new QVBoxLayout;
         boxLayout3->addWidget ( groupBox1 );
         boxLayout3->addWidget ( button1 );
         boxLayout3->addWidget ( button2 );
         boxLayout3->addWidget ( this->_colorWidget);
-        boxLayout3->addWidget ( this->_wireWidthWidget);
-        boxLayout3->addWidget(this->_viewWidget);
-		boxLayout3->addWidget( this->_cameraParameterWidget);
+        //boxLayout3->addWidget ( this->_wireWidthWidget);
+        //boxLayout3->addWidget(this->_viewWidget);
+        //boxLayout3->addWidget( this->_cameraParameterWidget);
         boxLayout3->addStretch ( 1 );
+
+    QVBoxLayout *boxLayout4 = new QVBoxLayout;
+    boxLayout4->addWidget(groupBox2);
+    boxLayout4->addWidget(this->_cameraParameterWidget);
+    boxLayout4->addWidget(this->_viewWidget);
+    boxLayout4->addStretch( 1 );
+
+    QVBoxLayout *boxLayout5 = new QVBoxLayout;
+    boxLayout5->addWidget(this->_wireWidthWidget);
+    boxLayout5->addStretch( 1 );
 	
         QWidget* widget1 = new QWidget;
         widget1->setLayout(boxLayout3);
+
+    QWidget* widget2 = new QWidget;
+    widget2->setLayout(boxLayout4);
+    QWidget* widget3 = new QWidget;
+    widget3->setLayout(boxLayout5);
+
         QTabWidget* tabWidget1 = new QTabWidget;
         tabWidget1->addTab ( widget1, tr ( "Views" ) );
+
+    tabWidget1->addTab(widget2 ,tr("Camera") );
+    tabWidget1->addTab(widget3 ,tr("MeshInfo") );
+
         tabWidget1->setMinimumWidth ( 250 );
 
         QHBoxLayout *layout = new QHBoxLayout;
@@ -156,6 +201,23 @@ MainWindow::create_actions ( void )
         this->_exitAct->setStatusTip ( "Exit this application." );
         connect ( this->_exitAct, SIGNAL ( triggered() ), this, SLOT ( close() ) );
 
+        this->_renderPointAct = new QAction( tr("&Point") , this );
+        this->_renderPointAct->setStatusTip("Rendering Points");
+        connect(this->_renderPointAct , SIGNAL(triggered()), this , SLOT(polygon_point()));
+        connect(this->_renderPointAct , SIGNAL(triggered()), this->_pointRadioButton , SLOT(toggle()));
+
+        this->_renderWireAct = new QAction( tr("&Wire") , this );
+        this->_renderWireAct->setStatusTip("Rendering Wireflame");
+        connect(this->_renderWireAct , SIGNAL(triggered()), this , SLOT(polygon_wireframe()));
+        connect(this->_renderWireAct , SIGNAL(triggered()), this->_wireRadioButton , SLOT(toggle()));
+
+        this->_renderMeshAct = new QAction( tr("&Mesh") , this );
+        this->_renderMeshAct->setStatusTip("Rendering Surface");
+        connect(this->_renderMeshAct , SIGNAL(triggered()), this , SLOT(polygon_surface()));
+        connect(this->_renderMeshAct , SIGNAL(triggered()), this->_surfaceRadioButton , SLOT(toggle()));
+
+
+
         return;
 }
 void
@@ -170,6 +232,15 @@ MainWindow::create_menus ( void )
         this->_fileMenu->addAction ( this->_snapshotAct );
         this->_fileMenu->addSeparator();
         this->_fileMenu->addAction ( this->_exitAct );
+
+    this->_viewMenu = menuBar()->addMenu( tr("&View")  );
+    this->_renderingSubMenu = this->_viewMenu->addMenu(tr("&Rendering Mode"));
+    this->_renderingSubMenu->addAction(this->_renderPointAct);
+    this->_renderingSubMenu->addAction(this->_renderWireAct);
+    this->_renderingSubMenu->addAction(this->_renderMeshAct);
+    this->_lightSubMenu = this->_viewMenu->addMenu(tr("light"));
+    this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
+    this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
         return;
 }
 
@@ -258,6 +329,16 @@ MainWindow::polygon_surface ( void )
         statusBar()->showMessage ( message );
         emit updated();
         return;
+}
+
+void
+MainWindow::polygon_point( void )
+{
+    this->_model.setRenderingMode(POINTCLOUD);
+    QString  message ( tr ( "Point mode" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
 }
 
 void

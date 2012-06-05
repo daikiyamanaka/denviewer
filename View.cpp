@@ -69,6 +69,14 @@ View::render ( void )
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
                 int width = this->_model.getWireWidth();
                 ::glLineWidth(width);
+        } else if( mode == POINTCLOUD ){
+            ::glDisable ( GL_LIGHTING );
+            ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
+            const Color3f fg = this->_model.getPreference().getPointColor();
+            ::glColor3f ( fg.x(), fg.y(), fg.z() );
+            int radius = this->_model.getPreference().getPointRadius();///edit after
+            ::glLineWidth(radius);
+
         } else if ( mode == SURFACE ) {
                 ::glEnable ( GL_LIGHTING );
                 const Color3f fg = this->_model.getPreference().getSurfaceColor();
