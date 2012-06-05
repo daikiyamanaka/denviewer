@@ -69,15 +69,15 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(this->_cameraParameterWidget,SIGNAL(EulerAngleUpdated(int,int,int)),
             this , SLOT(update_euler_angle(int,int,int)));
 
-    QCheckBox *lightCheckBox1 = new QCheckBox(tr ( "Light1" ));
-    QCheckBox *lightCheckBox2 = new QCheckBox(tr ( "Light2" ));
-    QCheckBox *lightCheckBox3 = new QCheckBox(tr ( "Light3" ));
-    lightCheckBox1->setChecked(true);
+    this->_lightCheckBox1 = new QCheckBox(tr ( "Light1" ));
+    this->_lightCheckBox2 = new QCheckBox(tr ( "Light2" ));
+    this->_lightCheckBox3 = new QCheckBox(tr ( "Light3" ));
+    this->_lightCheckBox1->setChecked(true);
 
     QVBoxLayout *boxLayout2 = new QVBoxLayout;
-    boxLayout2->addWidget ( lightCheckBox1 );
-    boxLayout2->addWidget ( lightCheckBox2 );
-    boxLayout2->addWidget ( lightCheckBox3 );
+    boxLayout2->addWidget ( this->_lightCheckBox1 );
+    boxLayout2->addWidget ( this->_lightCheckBox2 );
+    boxLayout2->addWidget ( this->_lightCheckBox3 );
 
     boxLayout2->addStretch ( 1 );
 
@@ -203,18 +203,41 @@ MainWindow::create_actions ( void )
 
         this->_renderPointAct = new QAction( tr("&Point") , this );
         this->_renderPointAct->setStatusTip("Rendering Points");
+        this->_renderPointAct->setCheckable(true);
         connect(this->_renderPointAct , SIGNAL(triggered()), this , SLOT(polygon_point()));
-        connect(this->_renderPointAct , SIGNAL(triggered()), this->_pointRadioButton , SLOT(toggle()));
+        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointRadioButton , SLOT(setChecked(bool)));
+        connect(this->_pointRadioButton , SIGNAL(toggled(bool)), this->_renderPointAct , SLOT(setChecked(bool)));
 
         this->_renderWireAct = new QAction( tr("&Wire") , this );
         this->_renderWireAct->setStatusTip("Rendering Wireflame");
+        this->_renderWireAct->setCheckable(true);
         connect(this->_renderWireAct , SIGNAL(triggered()), this , SLOT(polygon_wireframe()));
-        connect(this->_renderWireAct , SIGNAL(triggered()), this->_wireRadioButton , SLOT(toggle()));
+        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireRadioButton , SLOT(setChecked(bool)));
+        connect( this->_wireRadioButton , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
 
-        this->_renderMeshAct = new QAction( tr("&Mesh") , this );
+        this->_renderMeshAct = new QAction( tr("&Surface") , this );
         this->_renderMeshAct->setStatusTip("Rendering Surface");
+        this->_renderMeshAct->setCheckable(true);
+        this->_renderMeshAct->setChecked(true);
         connect(this->_renderMeshAct , SIGNAL(triggered()), this , SLOT(polygon_surface()));
-        connect(this->_renderMeshAct , SIGNAL(triggered()), this->_surfaceRadioButton , SLOT(toggle()));
+        connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceRadioButton , SLOT(setChecked(bool)));
+        connect(this->_surfaceRadioButton, SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
+
+        this->_lightAct1 = new QAction( tr("Light1"), this);
+        this->_lightAct1->setCheckable(true);
+        this->_lightAct1->setChecked(true);
+        connect(this->_lightAct1 , SIGNAL(triggered(bool)), this->_lightCheckBox1 , SLOT(setChecked(bool)));
+        connect(this->_lightCheckBox1 , SIGNAL(toggled(bool)) , this->_lightAct1 , SLOT(setChecked(bool)));
+
+        this->_lightAct2 = new QAction( tr("Light2"), this);
+        this->_lightAct2->setCheckable(true);
+        connect(this->_lightAct2 , SIGNAL(triggered(bool)), this->_lightCheckBox2 , SLOT(setChecked(bool)));
+        connect(this->_lightCheckBox2 , SIGNAL(toggled(bool)) , this->_lightAct2 , SLOT(setChecked(bool)));
+
+        this->_lightAct3 = new QAction( tr("Light3"), this);
+        this->_lightAct3->setCheckable(true);
+        connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
+        connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
 
 
 
@@ -239,6 +262,9 @@ MainWindow::create_menus ( void )
     this->_renderingSubMenu->addAction(this->_renderWireAct);
     this->_renderingSubMenu->addAction(this->_renderMeshAct);
     this->_lightSubMenu = this->_viewMenu->addMenu(tr("light"));
+    this->_lightSubMenu->addAction(this->_lightAct1);
+    this->_lightSubMenu->addAction(this->_lightAct2);
+    this->_lightSubMenu->addAction(this->_lightAct3);
     this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
         return;

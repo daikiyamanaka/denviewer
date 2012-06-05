@@ -84,6 +84,14 @@ private:
         QRadioButton* _wireRadioButton;
         QRadioButton* _surfaceRadioButton;
 
+        QAction* _lightAct1;
+        QAction* _lightAct2;
+        QAction* _lightAct3;
+        QCheckBox* _lightCheckBox1;
+        QCheckBox* _lightCheckBox2;
+        QCheckBox* _lightCheckBox3;
+
+
 
 };
 #endif // __MAIN_WINDOW_HPP__
