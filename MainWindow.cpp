@@ -1,5 +1,3 @@
-//imamura
-
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
@@ -84,15 +82,13 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QGroupBox *groupBox2 = new QGroupBox ( tr ( "Light" ) );
     groupBox2->setLayout ( boxLayout2 );
 
+    this->_VandFWidget = new ShowVandFWidget();//imamura
 
         QVBoxLayout *boxLayout3 = new QVBoxLayout;
         boxLayout3->addWidget ( groupBox1 );
         boxLayout3->addWidget ( button1 );
         boxLayout3->addWidget ( button2 );
         boxLayout3->addWidget ( this->_colorWidget);
-        //boxLayout3->addWidget ( this->_wireWidthWidget);
-        //boxLayout3->addWidget(this->_viewWidget);
-        //boxLayout3->addWidget( this->_cameraParameterWidget);
         boxLayout3->addStretch ( 1 );
 
     QVBoxLayout *boxLayout4 = new QVBoxLayout;
@@ -102,6 +98,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     boxLayout4->addStretch( 1 );
 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
+	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
     boxLayout5->addStretch( 1 );
 	
@@ -300,7 +297,11 @@ MainWindow::open ( void )
         if ( !this->_model.openMesh ( filename.toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
-        } else emit updated(); emit cameraInitialized();
+        } else {
+            emit updated();
+            emit cameraInitialized();
+            this->get_ver_face();
+        }
         return;
 }
 
@@ -487,7 +488,16 @@ MainWindow::file_dropped(QString str){
                 statusBar()->showMessage ( message );
         emit updated();
         emit cameraInitialized();
+        this->get_ver_face();
     }
 
         return;
+}
+//imamura
+void
+MainWindow::get_ver_face(void){
+    int ver, face;
+    this->_model.getVertexandFace(ver, face);
+    this->_VandFWidget->getVandFNumber(ver, face);
+    emit updated();
 }

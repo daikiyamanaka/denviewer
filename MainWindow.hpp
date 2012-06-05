@@ -15,6 +15,7 @@ QT_END_NAMESPACE
 #include "ChangeWireWidthWidget.h"
 #include "ChangeViewAngle.h"
 #include "GetCameraParameterWidget.hpp"
+#include "ShowVandFWidget.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -27,6 +28,7 @@ private:
         ChangeWireWidthWidget* _wireWidthWidget;
         ChangeViewAngle* _viewWidget;
 		GetCameraParameterWidget* _cameraParameterWidget;
+        ShowVandFWidget* _VandFWidget;//imamura
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
@@ -56,6 +58,7 @@ private slots:
 		void initialize_camera_position();
 		//end
         void file_dropped(QString str);
+        void get_ver_face(void);//imamura
 private:
         void create_actions ( void );
         void create_menus ( void );
