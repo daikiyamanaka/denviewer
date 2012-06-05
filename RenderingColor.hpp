@@ -1,7 +1,7 @@
 #ifndef RENDERINGCOLOR_HPP
 #define RENDERINGCOLOR_HPP
 
-#include <Model.hpp>
+#include "Model.hpp"
 #include <QLabel>
 #include <QLineEdit>
 #include <QLayout>

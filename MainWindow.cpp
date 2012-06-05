@@ -1,5 +1,3 @@
-//imamura
-
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
@@ -59,6 +57,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(this->_cameraParameterWidget,SIGNAL(EulerAngleUpdated(int,int,int)),
             this , SLOT(update_euler_angle(int,int,int)));
 
+    this->_VandFWidget = new ShowVandFWidget();//imamura
 
         QVBoxLayout *boxLayout3 = new QVBoxLayout;
         boxLayout3->addWidget ( groupBox1 );
@@ -68,6 +67,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         boxLayout3->addWidget ( this->_wireWidthWidget);
         boxLayout3->addWidget(this->_viewWidget);
 		boxLayout3->addWidget( this->_cameraParameterWidget);
+        boxLayout3->addWidget ( this->_VandFWidget);//imamura
         boxLayout3->addStretch ( 1 );
 	
         QWidget* widget1 = new QWidget;
@@ -203,7 +203,13 @@ MainWindow::open ( void )
         if ( !this->_model.openMesh ( filename.toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
-        } else emit updated(); emit cameraInitialized();
+        } else {
+            emit updated();
+            emit cameraInitialized();
+            int ver, fa;
+            this->_model.getVertexandFace(ver, fa);
+            this->_VandFWidget->getVandFNumber(ver, fa);
+        }
         return;
 }
 
@@ -383,4 +389,12 @@ MainWindow::file_dropped(QString str){
     }
 
         return;
+}
+//imamura
+void
+MainWindow::get_ver_face(void){
+    int ver, face;
+    this->_model.getVertexandFace(ver, face);
+    this->_VandFWidget->getVandFNumber(ver, face);
+    emit updated();
 }

@@ -49,5 +49,7 @@ public:
 		void getCameraPosition( double &xpos , double &ypos , double &zpos);
 		void setCameraPosition( const double xpos , const double ypos , const double zpos);
 
+        //imamura
+        void getVertexandFace(int &ver, int &face);
 };
 #endif // __MODEL_HPP__

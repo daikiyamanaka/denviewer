@@ -216,3 +216,11 @@ Model::setCameraPosition(const double xpos, const double ypos, const double zpos
     this->_camera.setCenter(pos);
     return;
 }
+
+//imamura
+void
+Model::getVertexandFace(int &ver, int &face){
+
+    face = this->_mesh.getNumFaces();
+    ver = face*3;
+}
