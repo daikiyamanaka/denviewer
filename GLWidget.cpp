@@ -9,7 +9,7 @@ GLWidget::GLWidget ( Model& model,  View& view, QWidget *parent )
         : QGLWidget ( QGLFormat ( QGL::SampleBuffers ), parent ), _model ( model ), _view ( view )
 {
         this->setAcceptDrops( TRUE ) ;
-        this->_ball = new VirtualTrackball ( model );
+        //this->_ball = new VirtualTrackball ( model );
         return;
 }
 
@@ -56,7 +56,10 @@ void
 GLWidget::mousePressEvent ( QMouseEvent* event )
 {
         MouseEvent e = this->convert_qmouse_event ( event );
+        this->_ball = new VirtualTrackball(this->_model);
+        this->_move = new Translation(this->_model);
         this->_ball->mousePressed ( &e );
+        this->_move->mousePressed(&e);
         return;
 };
 
@@ -68,6 +71,10 @@ GLWidget::mouseMoveEvent ( QMouseEvent* event )
                 updateGL();
                 emit mouseDragged ( event->x(), event->y() );
         }
+        if ( this->_move->mouseMoved ( &e ) ) {
+                updateGL();
+                emit mouseDragged ( event->x(), event->y() );
+        }
 };
 
 void
@@ -75,6 +82,10 @@ GLWidget::mouseReleaseEvent ( QMouseEvent* event )
 {
         MouseEvent e = this->convert_qmouse_event ( event );
         this->_ball->mouseReleased ( &e );
+        this->_ball->~MouseListener();
+        this->_move->mouseReleased ( &e );
+        this->_move->~MouseListener();
+
         return;
 }
 

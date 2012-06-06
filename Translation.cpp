@@ -20,25 +20,24 @@ Translation::setSize(const int width, const int height )
 bool
 Translation::mousePressed ( const MouseEvent* event )
 {
-        if ( !event->isLeftButtonPressed() ) return false;
+        if ( !event->isMiddleButtonPressed()) return false;
         this->setSize ( event->width(), event->height() );
-        this->_oldp = this->project_on_sphere ( event->x(), event->y() );
+        this->_oldp = this->movement_on_screen( event->x(), event->y() );
         return true;
 }
 
 bool
 Translation::mouseMoved ( const MouseEvent* event )
 {
-        if ( !event->isLeftButtonPressed() ) return false;
+        if ( !event->isMiddleButtonPressed() ) return false;
         const Eigen::Vector3f p0 = this->_oldp;
-        const Eigen::Vector3f p1 = this->project_on_sphere ( event->x(), event->y() );
+        const Eigen::Vector3f p1 = this->movement_on_screen ( event->x(), event->y() );
         this->_oldp = p1;
         if ( ( p0 - p1 ).norm() < this->_eps ) return false; // do nothing
-        const float cost = p0.dot ( p1 );
-        const float sint = std::sqrt ( 1 - cost * cost );
-        const Eigen::Vector3f axis = p0.cross ( p1 ).normalized();
-        const Eigen::Quaternionf q ( -cost, sint * axis.x(), sint * axis.y(), sint * axis.z() );
-        this->_model.addRotation ( q );
+        Eigen::Vector3f center = this->_model.getCamera().getCenter();
+        center = center + (p1 - p0 );
+        this->_model.setCameraPosition( center.x() , center.y() , center.z()  );
+
         return true;
 }
 
@@ -50,17 +49,31 @@ Translation::mouseReleased ( const MouseEvent* event )
 }
 
 Eigen::Vector3f
-Translation::project_on_sphere ( const int x, const int y ) const
+Translation::project_on_sphere(const int x, const int y) const
 {
-        const int cx = this->_width / 2;
-        const int cy = this->_height / 2;
-        const int base = std::min ( cx,cy );
-        const float fx = ( x - cx ) * 1.0 / base / _radius;
-        const float fy = ( y - cy ) * 1.0 / base / _radius;
+    const int cx = this->_width / 2;
+    const int cy = this->_height / 2;
+    const int base = std::min ( cx,cy );
+    const float fx = ( x - cx ) * 1.0 / base / _radius;
+    const float fy = ( y - cy ) * 1.0 / base / _radius;
 
-        Eigen::Vector3f result ( fx, fy, 0 );
-        const float d = fx * fx + fy * fy;
-        if ( d < 1.0f ) result.z() = std::sqrt ( 1.0f - d );
-        result.normalize();
+    Eigen::Vector3f result ( fx, fy, 0 );
+    const float d = fx * fx + fy * fy;
+    if ( d < 1.0f ) result.z() = std::sqrt ( 1.0f - d );
+    result.normalize();
+    return result;
+}
+
+Eigen::Vector3f
+Translation::movement_on_screen ( const int x, const int y ) const
+{
+        const float cx = static_cast<double>( this->_width / 2 );
+        const float cy = static_cast<double>( this->_height / 2 );
+        const float sy = this->_model.getCamera().getDistanceToCenter() * std::tan( 0.5 * this->_model.getCamera().getFieldOfViewAngle()*3.14159265/180.0 );
+        const float hr = sy/cy;
+        const float fx = ( static_cast<float>(x) - cx ) * hr;
+        const float fy = ( static_cast<float>(y) - cy ) * hr;
+
+        Eigen::Vector3f result = Eigen::Matrix3f(this->_model.getCamera().getRotation()) * Eigen::Vector3f(fx,fy,0);
         return result;
 }

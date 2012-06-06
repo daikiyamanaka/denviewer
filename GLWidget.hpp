@@ -5,6 +5,7 @@
 #include "View.hpp"
 #include "GLWidget.hpp"
 #include "VirtualTrackball.hpp"
+#include "Translation.hpp"
 
 class GLWidget : public QGLWidget
 {
@@ -13,6 +14,7 @@ private:
         Model& _model;
         View& _view;
         MouseListener *_ball;
+        MouseListener *_move;
         //VirtualTrackball* _ball;
 public:
         GLWidget ( Model& model, View& view, QWidget *parent = 0 );

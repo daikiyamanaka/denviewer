@@ -62,6 +62,13 @@ Camera::getRotation ( void ) const
 {
         return this->_rotation;
 }
+
+float
+Camera::getDistanceToCenter( void ) const
+{
+    return this->_distanceToCenter;
+}
+
 void
 Camera::setFieldOfViewAngle ( const float fov )
 {
