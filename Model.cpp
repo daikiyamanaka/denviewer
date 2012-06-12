@@ -204,7 +204,7 @@ Model::getCameraPosition( double &xpos , double &ypos , double &zpos)
 {
     xpos = this->_camera.getCenter().x();
     ypos = this->_camera.getCenter().y();
-    ypos = this->_camera.getCenter().z();
+    zpos = this->_camera.getCenter().z();
 
     return;
 }

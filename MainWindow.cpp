@@ -412,6 +412,10 @@ MainWindow::mouse_dragged ( float x, float y )
         this->_model.getEulerAngle(alpha , beta , gamma);
         this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
 
+        double xpos , ypos , zpos;
+        this->_model.getCameraPosition(xpos,ypos,zpos);
+        this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
+
         statusBar()->showMessage ( message );
         return;
 
