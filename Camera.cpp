@@ -97,6 +97,13 @@ Camera::setRotation ( const Eigen::Quaternionf& rotation )
 }
 
 void
+Camera::setDistanceToCenter(const float d)
+{
+    this->_distanceToCenter = d;
+    return;
+}
+
+void
 Camera::copy ( const Camera& that )
 {
         this->_center = that._center;

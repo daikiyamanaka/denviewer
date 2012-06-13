@@ -217,6 +217,20 @@ Model::setCameraPosition(const double xpos, const double ypos, const double zpos
     return;
 }
 
+void
+Model::getDistanceToCenter(float &d)
+{
+    d = this->_camera.getDistanceToCenter();
+    return;
+}
+
+void
+Model::setDistanceToCenter(const float d)
+{
+    this->_camera.setDistanceToCenter(d);
+    return;
+}
+
 //imamura
 void
 Model::getVertexandFace(int &ver, int &face){

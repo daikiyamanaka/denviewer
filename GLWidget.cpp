@@ -9,7 +9,8 @@ GLWidget::GLWidget ( Model& model,  View& view, QWidget *parent )
         : QGLWidget ( QGLFormat ( QGL::SampleBuffers ), parent ), _model ( model ), _view ( view )
 {
         this->setAcceptDrops( TRUE ) ;
-        //this->_ball = new VirtualTrackball ( model );
+        this->_ball = new VirtualTrackball ( model );
+    this->_move = new Translation(model);
         return;
 }
 
@@ -127,6 +128,13 @@ void
 GLWidget::wheelEvent(QWheelEvent *event)
 {
     WheelSpinEvent e = this->convert_qwheel_event(event);
+    float d;
+    this->_model.getDistanceToCenter(d);
+    if( e.step() > 0 ) d*=0.9;
+    else d/=0.9;
+    this->_model.setDistanceToCenter(d);
+    updateGL();
+
     emit this->wheelSpined( event->x() , event->y() , event->delta() );
 
 }

@@ -26,6 +26,7 @@ public:
         void setFieldOfViewAngle ( const float fov );
         void setCenter ( const Eigen::Vector3f& move );
         void setRotation ( const Eigen::Quaternionf& rot );
+        void setDistanceToCenter( const float d );
         void multiplyRotation ( const Eigen::Quaternionf& rotation );
 private:
         void copy ( const Camera& that );
