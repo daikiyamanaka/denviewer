@@ -56,6 +56,7 @@ private slots:
 		void update_camera_position(double xpos , double ypos , double zpos);
 		void update_euler_angle(int alpha , int beta , int gamma);
 		void initialize_camera_position();
+        void wheel_spined( float x , float y , float step );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura

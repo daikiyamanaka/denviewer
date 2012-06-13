@@ -6,6 +6,7 @@
 #include "GLWidget.hpp"
 #include "VirtualTrackball.hpp"
 #include "Translation.hpp"
+#include "WheelSpinEvent.hpp"
 
 class GLWidget : public QGLWidget
 {
@@ -25,6 +26,7 @@ public slots:
 signals:
         void mouseDragged ( float x, float y );
         void fileDropped ( QString file);
+        void wheelSpined ( float x , float y , float step );
 protected:
         void initializeGL ( void  );
         void paintGL ( void ) ;
@@ -35,8 +37,10 @@ protected:
         void dragEnterEvent(QDragEnterEvent *event);
         void dragLeaveEvent(QDragEnterEvent *event);
         void dropEvent(QDropEvent *event);
+        void wheelEvent(QWheelEvent *event);
 private:
         MouseEvent convert_qmouse_event ( QMouseEvent* event );
+        WheelSpinEvent convert_qwheel_event ( QWheelEvent* event );
 
 };
 #endif //__GL_WIDGET_HPP__

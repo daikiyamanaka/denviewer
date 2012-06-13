@@ -10,6 +10,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         this->_glwidget = new GLWidget ( this->_model,  this->_view, widget );
         connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
         connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
+        connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
         /*
         QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
         QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
@@ -418,6 +419,28 @@ MainWindow::mouse_dragged ( float x, float y )
 
         statusBar()->showMessage ( message );
         return;
+
+}
+
+void
+MainWindow::wheel_spined(float x, float y, float step)
+{
+    QString  message ( tr ( "MouseDragging (" ) );
+    QString strx;
+    strx.setNum ( x );
+    message += strx;
+    message += tr ( ", " );
+    QString stry;
+    stry.setNum ( y );
+    message += stry;
+    message += tr ( ", " );
+    QString strs;
+    strs.setNum ( step );
+    message += strs;
+    message += tr ( ") " );
+
+    statusBar()->showMessage(message);
+    return;
 
 }
 

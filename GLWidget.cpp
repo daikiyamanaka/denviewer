@@ -122,3 +122,18 @@ GLWidget::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
     return;
 }
+
+void
+GLWidget::wheelEvent(QWheelEvent *event)
+{
+    WheelSpinEvent e = this->convert_qwheel_event(event);
+    emit this->wheelSpined( event->x() , event->y() , event->delta() );
+
+}
+WheelSpinEvent GLWidget::convert_qwheel_event(QWheelEvent *event)
+{
+    const int x = event->x();
+    const int y = event->y();
+    const int step = event->delta();
+    return WheelSpinEvent(this->width() , this->height() , x , y , step);
+}
