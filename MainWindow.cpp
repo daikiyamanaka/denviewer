@@ -28,7 +28,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         QPushButton *button2 = new QPushButton ( tr ( "View Init" ) ) ;
         connect ( button1, SIGNAL ( pressed() ), this, SLOT ( view_fit() ) );
         connect ( button2, SIGNAL ( pressed() ), this, SLOT ( view_init() ) );
-	
 
 
 	int r,g,b;
@@ -59,27 +58,72 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
+        //ViewTab—p
         QVBoxLayout *boxLayout3 = new QVBoxLayout;
         boxLayout3->addWidget ( groupBox1 );
         boxLayout3->addWidget ( button1 );
         boxLayout3->addWidget ( button2 );
         boxLayout3->addWidget ( this->_colorWidget);
         boxLayout3->addWidget ( this->_wireWidthWidget);
-        boxLayout3->addWidget(this->_viewWidget);
-		boxLayout3->addWidget( this->_cameraParameterWidget);
         boxLayout3->addWidget ( this->_VandFWidget);//imamura
         boxLayout3->addStretch ( 1 );
+
+        //CameraTab—p
+        QVBoxLayout *boxLayout4 = new QVBoxLayout;
+        boxLayout4->addWidget ( this->_cameraParameterWidget );
+        boxLayout4->addWidget ( this->_viewWidget );
+        boxLayout4->addStretch ( 1 );
 	
+        //LightTab—p
+        QVBoxLayout *boxLayout5 = new QVBoxLayout;
+
+        QCheckBox *button3 = new QCheckBox ( tr ( "Light1" ) ) ;
+        QCheckBox *button4 = new QCheckBox ( tr ( "Light2" ) ) ;
+        QCheckBox *button5 = new QCheckBox ( tr ( "Light3" ) ) ;
+        connect ( button3, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch0(bool) ) );
+        connect ( button3, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch0(bool) ) );
+        connect ( button4, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch1(bool) ) );
+        connect ( button4, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch1(bool) ) );
+        connect ( button5, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch2(bool) ) );
+        connect ( button5, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch2(bool) ) );
+        button3->setChecked(true);
+        button4->setChecked(true);
+        button5->setChecked(true);
+        boxLayout5->addWidget(button3);
+        boxLayout5->addWidget(button4);
+        boxLayout5->addWidget(button5);
+        boxLayout5->addStretch ( 1 );
+
+        QGroupBox *groupBox2 = new QGroupBox ( tr ( "Light Number" ) );
+        groupBox2->setLayout ( boxLayout5 );
+
+        QPushButton *lightbutton = new QPushButton ( tr ( "Light Fit" ) ) ;
+        connect ( lightbutton, SIGNAL ( pressed() ), this, SLOT ( lightset() ) );
+
+        QVBoxLayout *boxLayout6 = new QVBoxLayout;
+        boxLayout6->addWidget(groupBox2);
+        boxLayout6->addWidget(lightbutton);
+        boxLayout6->addStretch(1);
+
         QWidget* widget1 = new QWidget;
         widget1->setLayout(boxLayout3);
         QTabWidget* tabWidget1 = new QTabWidget;
         tabWidget1->addTab ( widget1, tr ( "Views" ) );
         tabWidget1->setMinimumWidth ( 250 );
+        QWidget* widget2 = new QWidget;
+        widget2->setLayout(boxLayout4);
+        tabWidget1->addTab( widget2, tr ( "Camera" ) );
+        tabWidget1->setMinimumWidth( 250 );
+        QWidget* widget3 = new QWidget;
+        widget3->setLayout(boxLayout6);
+        tabWidget1->addTab( widget3, tr ( "Light" ) );
+        tabWidget1->setMinimumWidth( 250 );
 
         QHBoxLayout *layout = new QHBoxLayout;
         layout->setMargin ( 5 );
         layout->addWidget ( this->_glwidget );
         layout->addWidget ( tabWidget1 );
+        //layout->addWidget ( tabWidget2 );
         widget->setLayout ( layout );
 
         QString message = tr ( "A context menu is available by right-clicking" );
@@ -156,6 +200,21 @@ MainWindow::create_actions ( void )
         this->_exitAct->setStatusTip ( "Exit this application." );
         connect ( this->_exitAct, SIGNAL ( triggered() ), this, SLOT ( close() ) );
 
+        //rendering
+        this->_rendering = new QMenu ( tr ( "Rendering" ));
+        this->_pointcrowds = new QAction (tr("Point crouds"), this);
+        this->_wireflame = new QAction ( tr ( "wire flame" ), this );
+        this->_flatshading = new QAction ( tr ( "flat shading" ), this );
+        this->_rendering->addAction(_pointcrowds);
+        this->_rendering->addAction(_wireflame);
+        this->_rendering->addAction(_flatshading);
+
+        //light
+        this->_light = new QMenu( tr ("LIght"));
+
+        //camera
+        this->_camera = new QMenu(tr ("Camera"));
+
         return;
 }
 void
@@ -170,6 +229,14 @@ MainWindow::create_menus ( void )
         this->_fileMenu->addAction ( this->_snapshotAct );
         this->_fileMenu->addSeparator();
         this->_fileMenu->addAction ( this->_exitAct );
+
+    this->_showmenu = menuBar()->addMenu( tr ( "&Show" ) );
+    this->_showmenu->addMenu(this->_rendering);
+    this->_showmenu->addMenu(this->_light);
+    this->_showmenu->addMenu(this->_camera);
+
+    this->_tool = menuBar()->addMenu( tr ( "&Tools" ) );
+
         return;
 }
 
@@ -396,5 +463,37 @@ MainWindow::get_ver_face(void){
     int ver, face;
     this->_model.getVertexandFace(ver, face);
     this->_VandFWidget->getVandFNumber(ver, face);
+    emit updated();
+}
+
+void MainWindow::lightswitch0(bool i){
+    if(i == true){
+        this->_view.onLight(GL_LIGHT0);
+    }else{
+        this->_view.offLight(GL_LIGHT0);
+    }
+    emit updated();
+}
+
+void MainWindow::lightswitch1(bool i){
+    if(i == true){
+        this->_view.onLight(GL_LIGHT1);
+    }else{
+        this->_view.offLight(GL_LIGHT1);
+    }
+    emit updated();
+}
+
+void MainWindow::lightswitch2(bool i){
+    if(i == true){
+        this->_view.onLight(GL_LIGHT2);
+    }else{
+        this->_view.offLight(GL_LIGHT2);
+    }
+    emit updated();
+}
+
+void MainWindow::lightset(void){
+    this->_model.setLightPosition();
     emit updated();
 }
