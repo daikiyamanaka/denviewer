@@ -469,6 +469,21 @@ MainWindow::mouse_dragged ( float x, float y )
         this->_model.getCameraPosition(xpos,ypos,zpos);
         this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
 
+        Eigen::Vector3f bmin , bmax;
+        Mesh mesh;
+        mesh = this->_model.getMesh();
+        mesh.getBoundingBox(bmin,bmax);
+        Eigen::Vector3f mc = (bmin + bmax)*0.5;
+
+        Eigen::Vector3f eye = this->_model.getCamera().getEye();
+
+        double length = (eye-mc).norm();
+        //double length = std::sqrt( (xpos-mc.x())*(xpos-mc.x()) + (ypos-mc.y())*(ypos-mc.y()) + (zpos-mc.z())*(zpos-mc.z()) );
+        //double length = mc.x();
+        QString strz2;
+        strz2.setNum ( length );
+        message += strz2;
+
         statusBar()->showMessage ( message );
         return;
 
