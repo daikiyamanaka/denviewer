@@ -10,6 +10,7 @@ GLWidget::GLWidget ( Model& model,  View& view, QWidget *parent )
 {
         this->setAcceptDrops( TRUE ) ;
         this->_ball = new VirtualTrackball ( model );
+    this->_move = new Translation(model);
         return;
 }
 
@@ -56,7 +57,10 @@ void
 GLWidget::mousePressEvent ( QMouseEvent* event )
 {
         MouseEvent e = this->convert_qmouse_event ( event );
+        this->_ball = new VirtualTrackball(this->_model);
+        this->_move = new Translation(this->_model);
         this->_ball->mousePressed ( &e );
+        this->_move->mousePressed(&e);
         return;
 };
 
@@ -68,6 +72,10 @@ GLWidget::mouseMoveEvent ( QMouseEvent* event )
                 updateGL();
                 emit mouseDragged ( event->x(), event->y() );
         }
+        if ( this->_move->mouseMoved ( &e ) ) {
+                updateGL();
+                emit mouseDragged ( event->x(), event->y() );
+        }
 };
 
 void
@@ -75,6 +83,10 @@ GLWidget::mouseReleaseEvent ( QMouseEvent* event )
 {
         MouseEvent e = this->convert_qmouse_event ( event );
         this->_ball->mouseReleased ( &e );
+        this->_ball->~MouseListener();
+        this->_move->mouseReleased ( &e );
+        this->_move->~MouseListener();
+
         return;
 }
 
@@ -110,4 +122,26 @@ GLWidget::dropEvent(QDropEvent *event)
     emit fileDropped(filePath);
     event->acceptProposedAction();
     return;
+}
+
+void
+GLWidget::wheelEvent(QWheelEvent *event)
+{
+    WheelSpinEvent e = this->convert_qwheel_event(event);
+    float d;
+    this->_model.getDistanceToCenter(d);
+    if( e.step() > 0 ) d*=0.9;
+    else d/=0.9;
+    this->_model.setDistanceToCenter(d);
+    updateGL();
+
+    emit this->wheelSpined( event->x() , event->y() , event->delta() );
+
+}
+WheelSpinEvent GLWidget::convert_qwheel_event(QWheelEvent *event)
+{
+    const int x = event->x();
+    const int y = event->y();
+    const int step = event->delta();
+    return WheelSpinEvent(this->width() , this->height() , x , y , step);
 }
