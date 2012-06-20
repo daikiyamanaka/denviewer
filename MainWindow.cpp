@@ -469,6 +469,7 @@ MainWindow::mouse_dragged ( float x, float y )
         this->_model.getCameraPosition(xpos,ypos,zpos);
         this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
 
+        /*
         Eigen::Vector3f bmin , bmax;
         Mesh mesh;
         mesh = this->_model.getMesh();
@@ -482,7 +483,7 @@ MainWindow::mouse_dragged ( float x, float y )
         //double length = mc.x();
         QString strz2;
         strz2.setNum ( length );
-        message += strz2;
+        message += strz2;*/
 
         statusBar()->showMessage ( message );
         return;

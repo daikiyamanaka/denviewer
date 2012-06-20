@@ -39,17 +39,17 @@ VirtualTrackball::mouseMoved ( const MouseEvent* event )
         //const float sint = std::sqrt ( 1 - cost * cost );
         const Eigen::Vector3f axis = p0.cross ( p1 ).normalized();
         const Eigen::Quaternionf q ( -cost, sint * axis.x(), sint * axis.y(), sint * axis.z() );
-        const Eigen::Quaternionf q2 ( -cost, -sint * axis.x(), -sint * axis.y(), -sint * axis.z() );
 
+        /*
         Eigen::Vector3f bmin , bmax;
         Mesh mesh;
         mesh = this->_model.getMesh();
         mesh.getBoundingBox(bmin,bmax);
         Eigen::Vector3f mc = (bmin + bmax)*0.5;
-        Eigen::Vector3f c = Eigen::Matrix3f(q2) * ( this->_model.getCamera().getCenter() - mc ) + mc ;
+        Eigen::Vector3f c = Eigen::Matrix3f(q) * ( this->_model.getCamera().getCenter() - mc ) + mc ;
+        this->_model.setCameraPosition(c.x(),c.y(),c.z());*/
 
         this->_model.addRotation ( q );
-        this->_model.setCameraPosition(c.x(),c.y(),c.z());
         return true;
 }
 bool
