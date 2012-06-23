@@ -11,13 +11,14 @@ Mesh::~Mesh ( void )
         return;
 }
 bool
-Mesh::read ( const std::deque<Eigen::Vector3f>& v )
+Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id)
 {
         if ( v.size() % 3 != 0 ) {
                 return false; // 頂点数が不正
         }
         this->clear();
         this->_vertex.insert ( this->_vertex.end(), v.begin(), v.end() );
+        this->_index.insert( this->_index.end(), id.begin(), id.end());
 
         const int numFaces = this->getNumFaces();
         for ( int i = 0 ; i < numFaces ; i+=1 ) {
@@ -32,6 +33,7 @@ Mesh::clear ( void )
 {
         this->_vertex.clear();
         this->_normal.clear();
+        this->_index.clear();
         return;
 }
 Eigen::Vector3f
@@ -39,11 +41,25 @@ Mesh::getPosition ( const int fid, const int vid ) const
 {
         return this->_vertex.at ( fid * 3 + vid );
 }
+
+Eigen::Vector3f
+Mesh::getPosition ( const int id ) const
+{
+        return this->_vertex.at ( id );
+}
+
 Eigen::Vector3f
 Mesh::getNormal ( const int fid ) const
 {
         return this->_normal.at ( fid );
 };
+
+std::vector<int>
+Mesh::getIndex( const int id) const
+{
+    return this->_index.at (id);
+}
+
 int
 Mesh::getNumFaces ( void ) const
 {

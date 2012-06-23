@@ -140,9 +140,15 @@ View::render_mesh ( void )
 
                 const Eigen::Vector3f nrm = mesh.getNormal ( i );
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-                for ( int j = 0 ; j < 3 ; j+=1 ) {
+                /*for ( int j = 0 ; j < 3 ; j+=1 ) {
                         const Eigen::Vector3f p = mesh.getPosition ( i,j );
                         ::glVertex3f ( p.x(), p.y(), p.z() );
+                }*/
+
+                const std::vector<int> index = mesh.getIndex(i);
+                for( int j = 0; j < 3; j++){
+                    const Eigen::Vector3f p = mesh.getPosition ( index[j] );
+                    ::glVertex3f ( p.x(), p.y(), p.z() );
                 }
         }
         ::glEnd();
