@@ -11,6 +11,7 @@ class Mesh
 private:
         std::deque<Eigen::Vector3f> _vertex;
         std::deque<Eigen::Vector3f> _normal;
+        std::deque<Eigen::Vector3f> _vnormal;
         std::deque<std::vector<int> > _index;
 
 
@@ -22,6 +23,7 @@ public:
         Eigen::Vector3f getPosition ( const int fid, const int vid ) const ;
         Eigen::Vector3f getPosition ( const int id) const ;
         Eigen::Vector3f getNormal ( const int fid ) const;
+        Eigen::Vector3f getVNormal ( const int id ) const;
         std::vector<int> getIndex (const int id) const;
         int getNumFaces ( void ) const;
         void getBoundingBox ( Eigen::Vector3f& bmin, Eigen::Vector3f& bmax );

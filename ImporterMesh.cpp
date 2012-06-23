@@ -16,6 +16,7 @@ ImporterMesh::read ( const std::string& filename )
 {
         std::ifstream fin;
 
+
         //determine extension
         int dot_id = filename.find_last_of(".");
         std::string file_type = filename.substr(dot_id+1);
@@ -71,7 +72,7 @@ ImporterMesh::read ( const std::string& filename )
             }
 
             std::string buf, bx,by,bz;
-            while(!fin.eof()){
+            while( !fin.eof() ){
                 fin >> buf;
                 if(buf == "v"){
                     fin >> bx >> by >> bz;
@@ -81,9 +82,9 @@ ImporterMesh::read ( const std::string& filename )
                     fin >> bx >> by >> bz;
                     std::vector<int> id;
                     id.resize(3);
-                    id[0] = atoi(bx.c_str());
-                    id[1] = atoi(by.c_str());
-                    id[2] = atoi(bz.c_str());
+                    id[0] = atoi(bx.c_str())-1;
+                    id[1] = atoi(by.c_str())-1;
+                    id[2] = atoi(bz.c_str())-1;
                     index.push_back(id);
                 }
             }

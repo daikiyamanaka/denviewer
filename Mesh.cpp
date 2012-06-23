@@ -13,19 +13,35 @@ Mesh::~Mesh ( void )
 bool
 Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id)
 {
-        if ( v.size() % 3 != 0 ) {
-                return false; // 頂点数が不正
-        }
+        //if ( v.size() % 3 != 0 ) {
+                //return false; // 頂点数が不正
+        //}
         this->clear();
         this->_vertex.insert ( this->_vertex.end(), v.begin(), v.end() );
         this->_index.insert( this->_index.end(), id.begin(), id.end());
 
+        // compute face normal
         const int numFaces = this->getNumFaces();
         for ( int i = 0 ; i < numFaces ; i+=1 ) {
-                const Eigen::Vector3f v1 = this->getPosition ( i, 1 ) - this->getPosition ( i, 0 ) ;
-                const Eigen::Vector3f v2 = this->getPosition ( i, 2 ) - this->getPosition ( i, 0 ) ;
+                const Eigen::Vector3f v1 = this->getPosition ( this->_index[i][1] ) - this->getPosition ( this->_index[i][0] ) ;
+                const Eigen::Vector3f v2 = this->getPosition ( this->_index[i][2] ) - this->getPosition ( this->_index[i][0] ) ;
                 this->_normal.push_back ( v1.cross ( v2 ).normalized() );
         }
+
+        //compute vertex normal
+        const int numVertexs = this->_vertex.size();
+        for ( int i = 0 ; i < numVertexs ; i+=1 ) {
+            Eigen::Vector3f vn(0,0,0);
+            int neighbor_count = 0;
+            for (int j = 0; j < this->_index.size(); j++){
+                if(this->_index[j][0] == i || this->_index[j][1] == i || this->_index[j][2] == i ){
+                    vn += this->_normal[j];
+                    neighbor_count++;
+                }
+            }
+            this->_vnormal.push_back(vn.normalized());
+        }
+
         return true;
 }
 void
@@ -52,7 +68,13 @@ Eigen::Vector3f
 Mesh::getNormal ( const int fid ) const
 {
         return this->_normal.at ( fid );
-};
+}
+
+Eigen::Vector3f
+Mesh::getVNormal ( const int id ) const
+{
+        return this->_vnormal.at ( id );
+}
 
 std::vector<int>
 Mesh::getIndex( const int id) const
@@ -63,7 +85,7 @@ Mesh::getIndex( const int id) const
 int
 Mesh::getNumFaces ( void ) const
 {
-        return this->_vertex.size() / 3;
+        return this->_index.size();
 }
 void
 Mesh::getBoundingBox ( Eigen::Vector3f& bmin, Eigen::Vector3f& bmax )
