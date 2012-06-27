@@ -3,7 +3,6 @@
 #include <string>
 #include <Eigen/Dense>
 class Mesh;
-
 class ImporterMesh
 {
 private:
@@ -11,7 +10,8 @@ private:
 public:
         ImporterMesh ( Mesh& mesh );
         virtual ~ImporterMesh ( void );
-
-        bool read ( const std::string& filename );
+        virtual bool read ( const std::string& filename ) = 0;
+protected:
+	Mesh& getMesh( void ) ;
 };
 #endif // __IMPORTER_MESH_HPP__

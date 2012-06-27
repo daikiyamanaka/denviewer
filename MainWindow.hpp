@@ -47,6 +47,8 @@ private slots:
         void polygon_wireframe ( void );
         void polygon_surface ( void );
         void polygon_point ( void );
+        void shading_flat ( void );
+        void shading_smooth( void );
         void view_fit ( void );
         void view_init ( void );
         void mouse_dragged ( float x, float y );
@@ -105,6 +107,9 @@ private:
         QRadioButton* _pointRadioButton;
         QRadioButton* _wireRadioButton;
         QRadioButton* _surfaceRadioButton;
+
+        QRadioButton* _flatRadioButton;
+        QRadioButton* _smoothRadioButton;
 
         QAction* _lightAct1;
         QAction* _lightAct2;

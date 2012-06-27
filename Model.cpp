@@ -4,6 +4,11 @@
 #include "ImporterCamera.hpp"
 #include "ExporterCamera.hpp"
 
+#include "ImporterMeshStlBinary.hpp"
+#include "ImporterMeshObj.hpp"
+
+#include "Tokenizer.hpp"
+
 Model::Model ( void )
 {
         return;
@@ -61,10 +66,23 @@ Model::initMesh ( void )
 bool
 Model::openMesh ( const std::string& filename )
 {
-        ImporterMesh importer ( this->_mesh );
-        if ( !importer.read ( filename ) ) return false;
+    ImporterMesh *importer = NULL;
+    Tokenizer tok(filename, ".");
+    std::string ext = tok.get( tok.size() - 1);
+    if( ext == std::string("stl") ){
+        importer = new ImporterMeshStlBinary(this->_mesh);
+    }
+    else if ( ext == std::string("obj") ){
+        importer = new ImporterMeshObj(this->_mesh);
+    }
+    else {
+        return false;
+    }
+    this->initMesh();
+        bool result = importer->read ( filename );
         this->viewInit();
-        return true;
+    delete importer;
+        return result;
 }
 bool
 Model::saveMesh ( const std::string& filename )
@@ -93,6 +111,13 @@ Model::setRenderingMode ( const RenderingMode mode )
 {
         this->_preference.setRenderingMode ( mode );
         return;
+}
+
+void
+Model::setShadingMode(const ShadingMode shading)
+{
+    this->_preference.setShadingMode(shading);
+    return;
 }
 
 

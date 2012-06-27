@@ -26,6 +26,7 @@ View::init ( void )
     ::glEnable( GL_LIGHT1 );
     ::glEnable( GL_LIGHT2 );
         ::glShadeModel ( GL_FLAT );
+        ::glShadeModel ( GL_SMOOTH );
         const Color3f bg = this->_model.getPreference().getBackgroundColor();
         ::glClearColor ( bg.x(), bg.y(), bg.z(), 1 );
         return;
@@ -144,11 +145,20 @@ View::render_mesh ( void )
         ::glBegin ( GL_TRIANGLES );
         for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
 
+            ShadingMode shading = this->_model.getPreference().getShadingMode();
+            if(shading == FLAT){
                 const Eigen::Vector3f nrm = mesh.getNormal ( i );
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-                for ( int j = 0 ; j < 3 ; j+=1 ) {
-                        const Eigen::Vector3f p = mesh.getPosition ( i,j );
-                        ::glVertex3f ( p.x(), p.y(), p.z() );
+            }
+
+                const std::vector<int> index = mesh.getIndex(i);
+                for( int j = 0; j < 3; j++){
+                    if(shading == SMOOTH){
+                        const Eigen::Vector3f n = mesh.getVNormal( index[j] );
+                        ::glNormal3f ( n.x(),n.y(),n.z() );
+                    }
+                    const Eigen::Vector3f p = mesh.getPosition ( index[j] );
+                    ::glVertex3f ( p.x(), p.y(), p.z() );
                 }
         }
         ::glEnd();
