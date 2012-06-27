@@ -13,9 +13,6 @@ Mesh::~Mesh ( void )
 bool
 Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id)
 {
-        //if ( v.size() % 3 != 0 ) {
-                //return false; // 頂点数が不正
-        //}
         this->clear();
         this->_vertex.insert ( this->_vertex.end(), v.begin(), v.end() );
         this->_index.insert( this->_index.end(), id.begin(), id.end());
@@ -30,16 +27,15 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
 
         //compute vertex normal
         const int numVertexs = this->_vertex.size();
-        for ( int i = 0 ; i < numVertexs ; i+=1 ) {
-            Eigen::Vector3f vn(0,0,0);
-            int neighbor_count = 0;
-            for (int j = 0; j < this->_index.size(); j++){
-                if(this->_index[j][0] == i || this->_index[j][1] == i || this->_index[j][2] == i ){
-                    vn += this->_normal[j];
-                    neighbor_count++;
-                }
+        Eigen::Vector3f vn(1,0,0);
+        this->_vnormal.resize(numVertexs,vn);
+        for ( int i = 0 ; i < numFaces ; i+=1 ) {
+            for ( int j = 0 ; j < 3 ; j+=1 ) {
+                this->_vnormal[this->_index[i][j]] += this->_normal[i];
             }
-            this->_vnormal.push_back(vn.normalized());
+        }
+        for ( int i = 0 ; i < this->_vnormal.size() ; i+=1 ) {
+            this->_vnormal[i].normalize();
         }
 
         return true;
@@ -49,6 +45,7 @@ Mesh::clear ( void )
 {
         this->_vertex.clear();
         this->_normal.clear();
+        this->_vnormal.clear();
         this->_index.clear();
         return;
 }
