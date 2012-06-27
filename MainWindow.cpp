@@ -70,9 +70,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_lightCheckBox1 = new QCheckBox(tr ( "Light1" ));
     this->_lightCheckBox2 = new QCheckBox(tr ( "Light2" ));
     this->_lightCheckBox3 = new QCheckBox(tr ( "Light3" ));
-    connect ( this->_lightCheckBox1, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch0(bool) ) );
-    connect ( this->_lightCheckBox2, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch1(bool) ) );
-    connect ( this->_lightCheckBox3, SIGNAL ( clicked(bool) ), this, SLOT ( lightswitch2(bool) ) );
+    connect ( this->_lightCheckBox1, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch0(bool) ) );
+    connect ( this->_lightCheckBox2, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch1(bool) ) );
+    connect ( this->_lightCheckBox3, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch2(bool) ) );
     this->_lightCheckBox1->setChecked(true);
     this->_lightCheckBox2->setChecked(true);
     this->_lightCheckBox3->setChecked(true);
@@ -254,11 +254,13 @@ MainWindow::create_actions ( void )
 
         this->_lightAct2 = new QAction( tr("Light2"), this);
         this->_lightAct2->setCheckable(true);
+        this->_lightAct2->setChecked(true);
         connect(this->_lightAct2 , SIGNAL(triggered(bool)), this->_lightCheckBox2 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox2 , SIGNAL(toggled(bool)) , this->_lightAct2 , SLOT(setChecked(bool)));
 
         this->_lightAct3 = new QAction( tr("Light3"), this);
         this->_lightAct3->setCheckable(true);
+        this->_lightAct3->setChecked(true);
         connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
 
