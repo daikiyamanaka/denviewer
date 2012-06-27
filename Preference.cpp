@@ -5,7 +5,9 @@ Preference::Preference ( void )
         this->setBackgroundColor ( Color3f ( 1,1,1 ) );
         this->setWireColor ( Color3f ( 0,0,0 ) );
         this->setSurfaceColor ( Color3f ( 0.7f, 0, 0 ) );
+    this->setPointColor( Color3f(0 , 0 , 0.7f) );
         this->setWireWidth(1);
+    this->setPointRadius(1);
         this->setRenderingMode ( SURFACE );
         return;
 }
@@ -36,9 +38,23 @@ Preference::setSurfaceColor ( const Color3f c )
 }
 
 void
+Preference::setPointColor(const Color3f c)
+{
+    this->_point = c;
+    return;
+}
+
+void
 Preference::setWireWidth( const int width )
 {
     this->_wire_width = width;
+    return;
+}
+
+void
+Preference::setPointRadius(const int radius)
+{
+    this->_point_radius = radius;
     return;
 }
 
@@ -63,10 +79,22 @@ Preference::getSurfaceColor ( void ) const
         return _surface;
 }
 
+Color3f
+Preference::getPointColor( void ) const
+{
+    return _point;
+}
+
 int
 Preference::getWireWidth( void ) const//<-add
 {
     return _wire_width;
+}
+
+int
+Preference::getPointRadius( void ) const
+{
+    return _point_radius;
 }
 
 RenderingMode

@@ -46,6 +46,7 @@ private slots:
         void saveSnapshot( void );
         void polygon_wireframe ( void );
         void polygon_surface ( void );
+        void polygon_point ( void );
         void view_fit ( void );
         void view_init ( void );
         void mouse_dragged ( float x, float y );
@@ -56,6 +57,7 @@ private slots:
 		void update_camera_position(double xpos , double ypos , double zpos);
 		void update_euler_angle(int alpha , int beta , int gamma);
 		void initialize_camera_position();
+        void wheel_spined( float x , float y , float step );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
@@ -89,6 +91,30 @@ private:
         QMenu* _light;
         QMenu* _camera;
 
+/*<<<<<<< HEAD
         QMenu* _tool;
+=======*/
+        QMenu* _viewMenu;
+        QMenu* _renderingSubMenu;
+        QMenu* _lightSubMenu;
+        QMenu* _cameraSubMenu;
+        QMenu* _toolMenu;
+        QAction* _renderPointAct;
+        QAction* _renderWireAct;
+        QAction* _renderMeshAct;
+        QRadioButton* _pointRadioButton;
+        QRadioButton* _wireRadioButton;
+        QRadioButton* _surfaceRadioButton;
+
+        QAction* _lightAct1;
+        QAction* _lightAct2;
+        QAction* _lightAct3;
+        QCheckBox* _lightCheckBox1;
+        QCheckBox* _lightCheckBox2;
+        QCheckBox* _lightCheckBox3;
+
+
+
+//>>>>>>> master
 };
 #endif // __MAIN_WINDOW_HPP__

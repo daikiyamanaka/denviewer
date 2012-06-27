@@ -69,13 +69,27 @@ View::render ( void )
 
         RenderingMode mode = this->_model.getPreference().getRenderingMode() ;
         if ( mode == WIRE ) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
                 ::glDisable ( GL_LIGHTING );
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
                 const Color3f fg = this->_model.getPreference().getWireColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
                 int width = this->_model.getWireWidth();
                 ::glLineWidth(width);
+        } else if( mode == POINTCLOUD ){
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            ::glDisable ( GL_LIGHTING );
+            ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
+            const Color3f fg = this->_model.getPreference().getPointColor();
+            ::glColor3f ( fg.x(), fg.y(), fg.z() );
+            int radius = this->_model.getPreference().getPointRadius();///edit after
+            ::glLineWidth(radius);
+
         } else if ( mode == SURFACE ) {
+            glDisable(GL_CULL_FACE);
+            glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
                 ::glEnable ( GL_LIGHTING );
                 const Color3f fg = this->_model.getPreference().getSurfaceColor();
 
