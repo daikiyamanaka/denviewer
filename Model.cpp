@@ -131,8 +131,8 @@ Model::viewInit ( void )
         this->_filllight.setDiffuse(0.5*keydif);
         this->_filllight.setSpecular(0.0*keyamb);
 
-        this->_backlight.setAmbient(0.5*keyamb);
-        this->_backlight.setDiffuse(0.5*keyamb);
+        this->_backlight.setAmbient(0.50*keyamb);
+        this->_backlight.setDiffuse(0.50*keydif);
         this->_backlight.setSpecular(0.0*keyamb);
         return;
 }
@@ -259,8 +259,8 @@ Model::setLightPosition(void){
     Eigen::Vector3f bmin, bmax;
     this->_mesh.getBoundingBox ( bmin, bmax );
 
-    float x = 0.5*(bmin[1]+bmax[1]);
-    float y = 0.5*(bmin[1]+bmax[1]);
+    float x = 0.5*(bmin[0]+bmax[0]);
+    float y = 1.0*(bmin[1]+bmax[1]);
 
     Eigen::Vector3f eye = this->_camera.getEye();
     Eigen::Vector3f center = this->_camera.getCenter();
@@ -269,9 +269,9 @@ Model::setLightPosition(void){
     Eigen::Vector3f tocentere = tocenterv/e;
     Eigen::Vector3f up = this->_camera.getUpVector();
     Eigen::Vector3f side = up.cross(tocentere);
-    Eigen::Vector3f lightpos = this->_camera.getEye() + y*up + x*side;
-    Eigen::Vector3f flightpos = this->_camera.getEye() - y*up - x*side;
-    Eigen::Vector3f blightpos = this->_camera.getEye() + tocenterv;
+    Eigen::Vector3f lightpos = this->_camera.getEye() + 2.0*y*up + x*side;
+    Eigen::Vector3f flightpos = this->_camera.getEye() - 0.5*y*up - x*side;
+    Eigen::Vector3f blightpos = this->_camera.getEye() + 2.0*tocenterv;
     /*if(bmin[0]+bmax[0] >= 0.0){
         lightpos[0] -= 0.5*(bmin[0]+bmax[0]);
         flightpos[0] += 0.75*(bmin[0]+bmax[0]);
