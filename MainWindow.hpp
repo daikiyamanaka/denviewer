@@ -1,6 +1,7 @@
 #ifndef __MAIN_WINDOW_HPP__
 #define __MAIN_WINDOW_HPP__ 1
 #include <QMainWindow>
+#include <Eigen/Core>
 QT_BEGIN_NAMESPACE
 class QAction;
 class QActionGroup;
@@ -60,6 +61,11 @@ private slots:
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
+        //
+        void lightswitch0(bool i);
+        void lightswitch1(bool i);
+        void lightswitch2(bool i);
+        void lightset(void);
 private:
         void create_actions ( void );
         void create_menus ( void );
@@ -67,6 +73,7 @@ private:
 private:
 
         QToolBar* _fileToolBar;
+        //
         QMenu* _fileMenu;
         QAction* _newAct;
         QAction* _openAct;
@@ -75,7 +82,18 @@ private:
         QAction* _openCameraAct;
         QAction* _saveCameraAct;
         QAction* _snapshotAct;
+        //
+        QMenu* _showmenu;
+        QMenu* _rendering;
+        QAction* _pointcrowds;
+        QAction* _wireflame;
+        QAction* _flatshading;
+        QMenu* _light;
+        QMenu* _camera;
 
+/*<<<<<<< HEAD
+        QMenu* _tool;
+=======*/
         QMenu* _viewMenu;
         QMenu* _renderingSubMenu;
         QMenu* _lightSubMenu;
@@ -97,5 +115,6 @@ private:
 
 
 
+//>>>>>>> master
 };
 #endif // __MAIN_WINDOW_HPP__

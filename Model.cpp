@@ -26,6 +26,19 @@ Model::getLight ( void )
         return this->_light;
 }
 
+const Light&
+Model::getLight( const unsigned int number){
+    if(number == 0){
+        return this->_keylight;
+    }else if(number == 1){
+        return this->_filllight;
+    }else if(number == 2){
+        return this->_backlight;
+    }else{
+        return this->_light;
+    }
+}
+
 const Camera&
 Model::getCamera ( void )
 {
@@ -105,7 +118,22 @@ Model::viewInit ( void )
         const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
         const Eigen::Quaternionf q ( 1,0,0,0 );
         this->_camera.fitPosition ( center, radius, q );
-        this->_light.setPosition ( this->_camera.getEye() );
+
+        this->setLightPosition();
+
+        Eigen::Vector3f keyamb(0.1, 0.1, 0.1);
+        Eigen::Vector3f keydif = 8.0*keyamb;
+        this->_keylight.setAmbient(keyamb);
+        this->_keylight.setDiffuse(keydif);
+        this->_keylight.setSpecular(keyamb);
+
+        this->_filllight.setAmbient( 0.5*keyamb);
+        this->_filllight.setDiffuse(0.5*keydif);
+        this->_filllight.setSpecular(0.0*keyamb);
+
+        this->_backlight.setAmbient(0.50*keyamb);
+        this->_backlight.setDiffuse(0.50*keydif);
+        this->_backlight.setSpecular(0.0*keyamb);
         return;
 }
 
@@ -237,4 +265,48 @@ Model::getVertexandFace(int &ver, int &face){
 
     face = this->_mesh.getNumFaces();
     ver = face*3;
+}
+
+void
+Model::setLightPosition(void){
+
+    Eigen::Vector3f bmin, bmax;
+    this->_mesh.getBoundingBox ( bmin, bmax );
+
+    float x = 0.5*(bmin[0]+bmax[0]);
+    float y = 1.0*(bmin[1]+bmax[1]);
+
+    Eigen::Vector3f eye = this->_camera.getEye();
+    Eigen::Vector3f center = this->_camera.getCenter();
+    Eigen::Vector3f tocenterv = center - eye;
+    float e = tocenterv.norm();
+    Eigen::Vector3f tocentere = tocenterv/e;
+    Eigen::Vector3f up = this->_camera.getUpVector();
+    Eigen::Vector3f side = up.cross(tocentere);
+    Eigen::Vector3f lightpos = this->_camera.getEye() + 2.0*y*up + x*side;
+    Eigen::Vector3f flightpos = this->_camera.getEye() - 0.5*y*up - x*side;
+    Eigen::Vector3f blightpos = this->_camera.getEye() + 2.0*tocenterv;
+    /*if(bmin[0]+bmax[0] >= 0.0){
+        lightpos[0] -= 0.5*(bmin[0]+bmax[0]);
+        flightpos[0] += 0.75*(bmin[0]+bmax[0]);
+    }else{
+        lightpos[0] += 0.5*(bmin[0]+bmax[0]);
+        flightpos[0] -= 0.75*(bmin[0]+bmax[0]);
+    }
+    if(bmin[1]+bmax[1] >= 0.0){
+        lightpos[1] += 1.0*(bmin[1]+bmax[1]);
+        flightpos[1] -= 0.75*(bmin[1]+bmax[1]);
+    }else{
+        lightpos[1] -= 1.0*(bmin[1]+bmax[1]);
+        flightpos[1] += 0.75*(bmin[1]+bmax[1]);
+    }
+    if(bmin[2]+bmax[2] >= 0.0){
+        blightpos[2] -= 100.0*(bmin[2]+bmax[2]);
+    }else{
+        blightpos[2] += 100.0*(bmin[2]+bmax[2]);
+    }*/
+    this->_keylight.setPosition ( lightpos );
+    this->_filllight.setPosition( flightpos );
+    this->_backlight.setPosition( blightpos );
+    return;
 }

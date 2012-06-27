@@ -23,6 +23,8 @@ View::init ( void )
         ::glEnable( GL_CULL_FACE );
         ::glEnable ( GL_DEPTH_TEST );
         ::glEnable ( GL_LIGHT0 );
+    ::glEnable( GL_LIGHT1 );
+    ::glEnable( GL_LIGHT2 );
         ::glShadeModel ( GL_FLAT );
         const Color3f bg = this->_model.getPreference().getBackgroundColor();
         ::glClearColor ( bg.x(), bg.y(), bg.z(), 1 );
@@ -52,12 +54,16 @@ View::render ( void )
                       center.x(), center.y(), center.z(),
                       up.x(), up.y(), up.z() );
 
-
-
         //light
-        Light light = this->_model.getLight();
-        this->setLight ( light );
-
+        Light light1 = this->_model.getLight(0);
+        Eigen::Vector3f eye1 = light1.getPosition();
+        this->setLight ( light1, GL_LIGHT0, eye1 );
+        Light light2 = this->_model.getLight(1);
+        Eigen::Vector3f eye2 = light2.getPosition();
+        this->setLight ( light2, GL_LIGHT1, eye2 );
+        Light light3 = this->_model.getLight(2);
+        Eigen::Vector3f eye3 = light3.getPosition();
+        this->setLight ( light3, GL_LIGHT2, eye3 );
 
         //draw mesh
 
@@ -151,20 +157,31 @@ View::render_mesh ( void )
 
 
 void
-View::setLight ( const Light& light )
+View::setLight ( const Light& light , const unsigned int number, const Eigen::Vector3f eye)
 {
 
         Color3f amb = light.getAmbient();
         Color3f dif = light.getDiffuse();
         Color3f spe = light.getSpecular();
-        Eigen::Vector3f eye = light.getPosition();
+
+        //Eigen::Vector3f eye = light.getPosition();
         GLfloat light_ambient[4] = {amb.x(), amb.y(), amb.z(), 1.0f};
         GLfloat light_diffuse[4] = {dif.x(), dif.y(), dif.z(), 1.0f};
         GLfloat light_specular[4] = {spe.x(), spe.y(), spe.z(), 1.0f};
         GLfloat light_position[4] = {eye.x(), eye.y(), eye.z(), 1.0f};
-        ::glLightfv ( GL_LIGHT0, GL_AMBIENT, light_ambient );
-        ::glLightfv ( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
-        ::glLightfv ( GL_LIGHT0, GL_SPECULAR, light_specular );
-        ::glLightfv ( GL_LIGHT0, GL_POSITION, light_position );
+        ::glLightfv ( number, GL_AMBIENT, light_ambient );
+        ::glLightfv ( number, GL_DIFFUSE, light_diffuse );
+        ::glLightfv ( number, GL_SPECULAR, light_specular );
+        ::glLightfv ( number, GL_POSITION, light_position );
         return;
+}
+
+void
+View::onLight(const unsigned int number){
+    ::glEnable(number);
+}
+
+void
+View::offLight(const unsigned int number){
+    ::glDisable(number);
 }
