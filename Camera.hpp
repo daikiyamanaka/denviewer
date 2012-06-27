@@ -18,6 +18,7 @@ public:
         void fitPosition ( const Eigen::Vector3f& center,  const float radius , const Eigen::Quaternionf& q );
 
         float getFieldOfViewAngle ( void ) const;
+        float getDistanceToCenter (void ) const;
         Eigen::Vector3f getEye ( void ) const;
         Eigen::Vector3f getCenter ( void ) const;
         Eigen::Vector3f getUpVector ( void ) const;
@@ -25,6 +26,7 @@ public:
         void setFieldOfViewAngle ( const float fov );
         void setCenter ( const Eigen::Vector3f& move );
         void setRotation ( const Eigen::Quaternionf& rot );
+        void setDistanceToCenter( const float d );
         void multiplyRotation ( const Eigen::Quaternionf& rotation );
 private:
         void copy ( const Camera& that );

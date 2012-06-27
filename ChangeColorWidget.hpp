@@ -4,7 +4,7 @@
 #include <QWidget>
 class ChangeColorWidget : public QWidget
 {
-Q_OBJECT //お約束
+Q_OBJECT
 private:
 	QLabel* _faceColorLabel;
 public:

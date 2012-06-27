@@ -204,7 +204,7 @@ Model::getCameraPosition( double &xpos , double &ypos , double &zpos)
 {
     xpos = this->_camera.getCenter().x();
     ypos = this->_camera.getCenter().y();
-    ypos = this->_camera.getCenter().z();
+    zpos = this->_camera.getCenter().z();
 
     return;
 }
@@ -214,6 +214,20 @@ Model::setCameraPosition(const double xpos, const double ypos, const double zpos
 {
     Eigen::Vector3f pos(xpos,ypos,zpos);
     this->_camera.setCenter(pos);
+    return;
+}
+
+void
+Model::getDistanceToCenter(float &d)
+{
+    d = this->_camera.getDistanceToCenter();
+    return;
+}
+
+void
+Model::setDistanceToCenter(const float d)
+{
+    this->_camera.setDistanceToCenter(d);
     return;
 }
 
