@@ -10,6 +10,9 @@ class Model
 private:
         Mesh _mesh;
         Light _light;
+        Light _keylight;
+        Light _filllight;
+        Light _backlight;
         Camera _camera;
         Preference _preference;
 
@@ -20,6 +23,7 @@ public:
 
         const Mesh& getMesh ( void );
         const Light& getLight ( void );
+        const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
         const Preference& getPreference ( void );
 
@@ -54,5 +58,6 @@ public:
 
         //imamura
         void getVertexandFace(int &ver, int &face);
+        void setLightPosition(void);
 };
 #endif // __MODEL_HPP__
