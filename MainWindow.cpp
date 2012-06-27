@@ -19,6 +19,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         connect ( radioButton2, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
         */
 
+        //Rendering Mode
         this->_pointRadioButton = new QRadioButton( tr("Points") );
         this->_wireRadioButton = new QRadioButton ( tr ( "Wireframe" ) );
         this->_surfaceRadioButton = new QRadioButton ( tr ( "Surface" ) );
@@ -36,6 +37,22 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
         groupBox1->setLayout ( boxLayout1 );
 
+        //Shading Mode
+        this->_flatRadioButton = new QRadioButton( tr("Flat") );
+        this->_smoothRadioButton = new QRadioButton( tr("Smooth") );
+        this->_smoothRadioButton->setChecked(true);
+        connect (this->_flatRadioButton, SIGNAL(pressed()), this , SLOT(shading_flat()) );
+        connect (this->_smoothRadioButton, SIGNAL(pressed()), this , SLOT(shading_smooth()) );
+
+        QVBoxLayout *boxLayout_shading = new QVBoxLayout;
+        boxLayout_shading->addWidget ( this->_flatRadioButton );
+        boxLayout_shading->addWidget( this->_smoothRadioButton);
+        boxLayout_shading->addStretch(1);
+
+        QGroupBox *groupBox_shading = new QGroupBox(tr("Shading Mode"));
+        groupBox_shading->setLayout(boxLayout_shading);
+
+        //view
         QPushButton *button1 = new QPushButton ( tr ( "View Fit" ) ) ;
         QPushButton *button2 = new QPushButton ( tr ( "View Init" ) ) ;
         connect ( button1, SIGNAL ( pressed() ), this, SLOT ( view_fit() ) );
@@ -87,6 +104,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
         QVBoxLayout *boxLayout3 = new QVBoxLayout;
         boxLayout3->addWidget ( groupBox1 );
+        boxLayout3->addWidget ( groupBox_shading );
         boxLayout3->addWidget ( button1 );
         boxLayout3->addWidget ( button2 );
         boxLayout3->addWidget ( this->_colorWidget);
@@ -365,6 +383,26 @@ MainWindow::polygon_point( void )
 {
     this->_model.setRenderingMode(POINTCLOUD);
     QString  message ( tr ( "Point mode" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
+}
+
+void
+MainWindow::shading_flat( void )
+{
+    this->_model.setShadingMode(FLAT);
+    QString  message ( tr ( "Flat shading" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
+}
+
+void
+MainWindow::shading_smooth( void )
+{
+    this->_model.setShadingMode(SMOOTH);
+    QString  message ( tr ( "Smooth shading" ) );
     statusBar()->showMessage ( message );
     emit updated();
     return;

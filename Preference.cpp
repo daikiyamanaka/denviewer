@@ -5,10 +5,11 @@ Preference::Preference ( void )
         this->setBackgroundColor ( Color3f ( 1,1,1 ) );
         this->setWireColor ( Color3f ( 0,0,0 ) );
         this->setSurfaceColor ( Color3f ( 0.7f, 0, 0 ) );
-    this->setPointColor( Color3f(0 , 0 , 0.7f) );
+        this->setPointColor( Color3f(0 , 0 , 0.7f) );
         this->setWireWidth(1);
-    this->setPointRadius(1);
+        this->setPointRadius(1);
         this->setRenderingMode ( SURFACE );
+        this->setShadingMode( SMOOTH );
         return;
 }
 Preference:: ~Preference ( void )
@@ -63,6 +64,13 @@ Preference::setRenderingMode ( const RenderingMode status )
 {
         this->_status = status;
 }
+
+void
+Preference::setShadingMode( const ShadingMode shading)
+{
+    this->_shading = shading;
+}
+
 Color3f
 Preference::getBackgroundColor ( void ) const
 {
@@ -101,4 +109,10 @@ RenderingMode
 Preference::getRenderingMode ( void ) const
 {
         return this->_status;
+}
+
+ShadingMode
+Preference::getShadingMode( void ) const
+{
+    return this->_shading;
 }

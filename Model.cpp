@@ -82,6 +82,13 @@ Model::setRenderingMode ( const RenderingMode mode )
         return;
 }
 
+void
+Model::setShadingMode(const ShadingMode shading)
+{
+    this->_preference.setShadingMode(shading);
+    return;
+}
+
 
 void
 Model::viewFit ( void )

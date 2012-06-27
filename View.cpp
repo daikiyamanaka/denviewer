@@ -139,13 +139,18 @@ View::render_mesh ( void )
         ::glBegin ( GL_TRIANGLES );
         for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
 
-                //const Eigen::Vector3f nrm = mesh.getNormal ( i );
-                //::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            ShadingMode shading = this->_model.getPreference().getShadingMode();
+            if(shading == FLAT){
+                const Eigen::Vector3f nrm = mesh.getNormal ( i );
+                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            }
 
                 const std::vector<int> index = mesh.getIndex(i);
                 for( int j = 0; j < 3; j++){
-                    const Eigen::Vector3f n = mesh.getVNormal( index[j] );
-                    ::glNormal3f ( n.x(),n.y(),n.z() );
+                    if(shading == SMOOTH){
+                        const Eigen::Vector3f n = mesh.getVNormal( index[j] );
+                        ::glNormal3f ( n.x(),n.y(),n.z() );
+                    }
                     const Eigen::Vector3f p = mesh.getPosition ( index[j] );
                     ::glVertex3f ( p.x(), p.y(), p.z() );
                 }

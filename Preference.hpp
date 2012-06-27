@@ -9,6 +9,11 @@ enum RenderingMode {
         POINTCLOUD = 2
 };
 
+enum ShadingMode {
+    FLAT = 0,
+    SMOOTH = 1
+};
+
 class Preference
 {
 private:
@@ -21,6 +26,7 @@ private:
         int _point_radius;
 
         RenderingMode _status;
+        ShadingMode _shading;
 
 public:
         Preference ( void ) ;
@@ -33,6 +39,7 @@ public:
         void setWireWidth( const int width );
         void setPointRadius( const int radius );
         void setRenderingMode ( const RenderingMode status );
+        void setShadingMode( const ShadingMode shading);
 
         Color3f getBackgroundColor ( void ) const;
         Color3f getWireColor ( void ) const;
@@ -41,5 +48,6 @@ public:
         int getWireWidth( void ) const;
         int getPointRadius( void ) const;
         RenderingMode getRenderingMode ( void ) const;
+        ShadingMode getShadingMode( void ) const;
 };
 #endif // __PREFERENCE_HPP__

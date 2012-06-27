@@ -29,6 +29,7 @@ public:
         bool openCamera ( const std::string& filename );
         bool saveCamera ( const std::string& filename );
         void setRenderingMode ( const RenderingMode mode );
+        void setShadingMode (const ShadingMode shading);
         void viewFit ( void );
         void viewInit ( void );
 
