@@ -3,66 +3,70 @@
 #include <QtGui>
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
-        QWidget* widget = new QWidget;
-        widget->setContentsMargins ( 5,5,5,5 );
+    QWidget* widget = new QWidget;
+    widget->setContentsMargins ( 5,5,5,5 );
 
-        this->setCentralWidget ( widget );
-        this->_glwidget = new GLWidget ( this->_model,  this->_view, widget );
-        connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
-        connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
-        connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
-        /*
-        QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
-        QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
-        radioButton2->setChecked ( true );
-        connect ( radioButton1, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
-        connect ( radioButton2, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
-        */
+    this->setCentralWidget ( widget );
+    this->_glwidget = new GLWidget ( this->_model,  this->_view, widget );
+    connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
+    connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
+    connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
+    /*
+    QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
+    QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
+    radioButton2->setChecked ( true );
+    connect ( radioButton1, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
+    connect ( radioButton2, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
+    */
 
-        //Rendering Mode
-        this->_pointRadioButton = new QRadioButton( tr("Points") );
-        this->_wireRadioButton = new QRadioButton ( tr ( "Wireframe" ) );
-        this->_surfaceRadioButton = new QRadioButton ( tr ( "Surface" ) );
-        this->_surfaceRadioButton->setChecked( true );
-        connect (this->_pointRadioButton, SIGNAL(pressed()), this , SLOT(polygon_point()) );
-        connect ( this->_wireRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
-        connect ( this->_surfaceRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
+    //Rendering Mode
+    this->_pointRadioButton = new QRadioButton( tr("Points") );
+    this->_wireRadioButton = new QRadioButton ( tr ( "Wireframe" ) );
+    this->_surfaceRadioButton = new QRadioButton ( tr ( "Surface" ) );
+    this->_surfaceRadioButton->setChecked( true );
+    connect (this->_pointRadioButton, SIGNAL(pressed()), this , SLOT(polygon_point()) );
+    connect ( this->_wireRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
+    connect ( this->_surfaceRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
 
-        QVBoxLayout *boxLayout1 = new QVBoxLayout;
-        boxLayout1->addWidget ( this->_pointRadioButton );
-        boxLayout1->addWidget ( this->_wireRadioButton );
-        boxLayout1->addWidget ( this->_surfaceRadioButton );
-        boxLayout1->addStretch ( 1 );
+    QVBoxLayout *boxLayout1 = new QVBoxLayout;
+    boxLayout1->addWidget ( this->_pointRadioButton );
+    boxLayout1->addWidget ( this->_wireRadioButton );
+    boxLayout1->addWidget ( this->_surfaceRadioButton );
+    boxLayout1->addStretch ( 1 );
 
-        QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
-        groupBox1->setLayout ( boxLayout1 );
+    QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
+    groupBox1->setLayout ( boxLayout1 );
 
-        //Shading Mode
-        this->_flatRadioButton = new QRadioButton( tr("Flat") );
-        this->_smoothRadioButton = new QRadioButton( tr("Smooth") );
-        this->_smoothRadioButton->setChecked(true);
-        connect (this->_flatRadioButton, SIGNAL(pressed()), this , SLOT(shading_flat()) );
-        connect (this->_smoothRadioButton, SIGNAL(pressed()), this , SLOT(shading_smooth()) );
+    //Shading Mode
+    this->_flatRadioButton = new QRadioButton( tr("Flat") );
+    this->_smoothRadioButton = new QRadioButton( tr("Smooth") );
+    this->_smoothRadioButton->setChecked(true);
+    connect (this->_flatRadioButton, SIGNAL(pressed()), this , SLOT(shading_flat()) );
+    connect (this->_smoothRadioButton, SIGNAL(pressed()), this , SLOT(shading_smooth()) );
 
-        QVBoxLayout *boxLayout_shading = new QVBoxLayout;
-        boxLayout_shading->addWidget ( this->_flatRadioButton );
-        boxLayout_shading->addWidget( this->_smoothRadioButton);
-        boxLayout_shading->addStretch(1);
+    QVBoxLayout *boxLayout_shading = new QVBoxLayout;
+    boxLayout_shading->addWidget ( this->_flatRadioButton );
+    boxLayout_shading->addWidget( this->_smoothRadioButton);
+    boxLayout_shading->addStretch(1);
 
-        QGroupBox *groupBox_shading = new QGroupBox(tr("Shading Mode"));
-        groupBox_shading->setLayout(boxLayout_shading);
+    QGroupBox *groupBox_shading = new QGroupBox(tr("Shading Mode"));
+    groupBox_shading->setLayout(boxLayout_shading);
 
-        //view
-        QPushButton *button1 = new QPushButton ( tr ( "View Fit" ) ) ;
-        QPushButton *button2 = new QPushButton ( tr ( "View Init" ) ) ;
-        connect ( button1, SIGNAL ( pressed() ), this, SLOT ( view_fit() ) );
-        connect ( button2, SIGNAL ( pressed() ), this, SLOT ( view_init() ) );
+    //view
+    QPushButton *button1 = new QPushButton ( tr ( "View Fit" ) ) ;
+    QPushButton *button2 = new QPushButton ( tr ( "View Init" ) ) ;
+    connect ( button1, SIGNAL ( pressed() ), this, SLOT ( view_fit() ) );
+    connect ( button2, SIGNAL ( pressed() ), this, SLOT ( view_init() ) );
 
 
 	int r,g,b;
 	this->_model.getSurfaceColor ( r,g,b );
-	QColor col(r,g,b);
-	this->_colorWidget = new ChangeColorWidget(col);
+    QColor face(r,g,b);
+    this->_model.getBackgroundColor(r, g, b);
+    QColor background(r, g, b);
+    this->_model.getWireColor(r, g, b);
+    QColor wire(r, g, b);
+    this->_colorWidget = new ChangeColorWidget(face, background, wire);
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
     int wirewidth = this->_model.getWireWidth();
@@ -109,14 +113,14 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
-        //ViewTab—p
-        QVBoxLayout *boxLayout3 = new QVBoxLayout;
-        boxLayout3->addWidget ( groupBox1 );
-        boxLayout3->addWidget ( groupBox_shading );
-        boxLayout3->addWidget ( button1 );
-        boxLayout3->addWidget ( button2 );
-        boxLayout3->addWidget ( this->_colorWidget);
-        boxLayout3->addStretch ( 1 );
+    //ViewTab—p
+    QVBoxLayout *boxLayout3 = new QVBoxLayout;
+    boxLayout3->addWidget ( groupBox1 );
+    boxLayout3->addWidget ( groupBox_shading );
+    boxLayout3->addWidget ( button1 );
+    boxLayout3->addWidget ( button2 );
+    boxLayout3->addWidget ( this->_colorWidget);
+    boxLayout3->addStretch ( 1 );
 
     QVBoxLayout *boxLayout4 = new QVBoxLayout;
     boxLayout4->addWidget(groupBox2);
@@ -129,16 +133,16 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     boxLayout5->addWidget(this->_wireWidthWidget);
     boxLayout5->addStretch( 1 );
 
-        QWidget* widget1 = new QWidget;
-        widget1->setLayout(boxLayout3);
+    QWidget* widget1 = new QWidget;
+    widget1->setLayout(boxLayout3);
 
     QWidget* widget2 = new QWidget;
     widget2->setLayout(boxLayout4);
     QWidget* widget3 = new QWidget;
     widget3->setLayout(boxLayout5);
 
-        QTabWidget* tabWidget1 = new QTabWidget;
-        tabWidget1->addTab ( widget1, tr ( "Views" ) );
+    QTabWidget* tabWidget1 = new QTabWidget;
+    tabWidget1->addTab ( widget1, tr ( "Views" ) );
 
     tabWidget1->addTab(widget2 ,tr("Camera") );
     tabWidget1->addTab(widget3 ,tr("MeshInfo") );

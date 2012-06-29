@@ -3,11 +3,10 @@
 #include <QGridLayout>
 
 
-ChangeColorWidget::ChangeColorWidget(const QColor faceColor,  QWidget *parent ) : QWidget(parent) {
-    QHBoxLayout *hBoxLayout1 = new QHBoxLayout;
+ChangeColorWidget::ChangeColorWidget(const QColor faceColor, const QColor backgroundColor, const QColor wireColor,  QWidget *parent ) : QWidget(parent) {
+    //QHBoxLayout *hBoxLayout1 = new QHBoxLayout;
     QGridLayout * gridlayout = new QGridLayout;
     QPushButton *button3 = new QPushButton ( tr ( "Face Color" ) ) ;
-
 
     this->_faceColorLabel = new QLabel;
     this->_faceColorLabel->setFrameStyle ( QFrame::Sunken | QFrame::Panel );
@@ -17,13 +16,13 @@ ChangeColorWidget::ChangeColorWidget(const QColor faceColor,  QWidget *parent ) 
     QPushButton *backgroundColorButton = new QPushButton(tr("Background Color"));
     this->_backgroundColorLabel = new QLabel;
     this->_backgroundColorLabel->setFrameStyle(QFrame::Sunken | QFrame::Panel);
-    this->_backgroundColorLabel->setPalette( faceColor);
+    this->_backgroundColorLabel->setPalette( backgroundColor);
     this->_backgroundColorLabel->setAutoFillBackground(true);
 
     QPushButton *wireColorButton = new QPushButton(tr("Wire Color"));
     this->_wireColorLabel = new QLabel;
     this->_wireColorLabel->setFrameStyle(QFrame::Sunken | QFrame::Panel);
-    this->_wireColorLabel->setPalette( faceColor);
+    this->_wireColorLabel->setPalette( wireColor);
     this->_wireColorLabel->setAutoFillBackground(true);
 
     /*
