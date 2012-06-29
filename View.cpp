@@ -75,7 +75,7 @@ View::render ( void )
 
         RenderingMode mode = this->_model.getPreference().getRenderingMode() ;
         if ( mode == WIRE ) {
-            /*glEnable(GL_CULL_FACE);
+            glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
                 ::glDisable ( GL_LIGHTING );
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
@@ -83,10 +83,10 @@ View::render ( void )
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
                 int width = this->_model.getWireWidth();
                 ::glLineWidth(width);
-                this->render_mesh();*/
-            ::glCallList(this->_drawWire);
+                //this->render_mesh();
+            //::glCallList(this->_drawWire);
         } else if( mode == POINTCLOUD ){
-            /*glEnable(GL_CULL_FACE);
+            glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
             ::glDisable ( GL_LIGHTING );
             ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
@@ -94,11 +94,11 @@ View::render ( void )
             ::glColor3f ( fg.x(), fg.y(), fg.z() );
             int radius = this->_model.getPreference().getPointRadius();///edit after
             ::glLineWidth(radius);
-            this->render_mesh();*/
-            ::glCallList(this->_drawPointCloud);
+            //this->render_mesh();
+            //::glCallList(this->_drawPointCloud);
 
         } else if ( mode == SURFACE ) {
-            /*glDisable(GL_CULL_FACE);
+            glDisable(GL_CULL_FACE);
             glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
                 ::glEnable ( GL_LIGHTING );
                 const Color3f fg = this->_model.getPreference().getSurfaceColor();
@@ -121,10 +121,11 @@ View::render ( void )
                 ::glMaterialfv ( GL_BACK, GL_AMBIENT,  mat2_ambient );
                 ::glMaterialfv ( GL_BACK, GL_DIFFUSE,  mat2_diffuse );
                 ::glMaterialfv ( GL_BACK, GL_SPECULAR, mat2_specular );
-                ::glMaterialfv ( GL_BACK, GL_SHININESS,mat2_shininess );*/
-            ::glCallList(this->_drawMesh);
+                ::glMaterialfv ( GL_BACK, GL_SHININESS,mat2_shininess );
+            //::glCallList(this->_drawMesh);
 
         }
+        ::glCallList(this->_drawMesh);
         //this->render_mesh();
         return;
 }
@@ -211,56 +212,6 @@ View::createDisplayList( void )
 {
     this->_drawMesh = ::glGenLists(1);
     ::glNewList(this->_drawMesh , GL_COMPILE);
-    glDisable(GL_CULL_FACE);
-    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-    ::glEnable ( GL_LIGHTING );
-    Color3f fg = this->_model.getPreference().getSurfaceColor();
-
-    ::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
-    GLfloat mat_ambient[4] = {fg.x(), fg.y(), fg.z(), 1.0};
-    GLfloat mat_diffuse[4] = {0.8,0.8, 0.8, 1.0};
-    GLfloat mat_specular[4] = {0.2, 0.2, 0.2, 1.0};
-    GLfloat mat_shininess[1] = {100.0f};
-
-    ::glMaterialfv ( GL_FRONT, GL_AMBIENT,  mat_ambient );
-    ::glMaterialfv ( GL_FRONT, GL_DIFFUSE,  mat_diffuse );
-    ::glMaterialfv ( GL_FRONT, GL_SPECULAR, mat_specular );
-    ::glMaterialfv ( GL_FRONT, GL_SHININESS,mat_shininess );
-
-    GLfloat mat2_ambient[4] = {1-fg.x(), 1-fg.y(), 1-fg.z(), 1.0};
-    GLfloat mat2_diffuse[4] = {0.8,0.8, 0.8, 1.0};
-    GLfloat mat2_specular[4] = {0.2, 0.2, 0.2, 1.0};
-    GLfloat mat2_shininess[1] = {100.0f};
-    ::glMaterialfv ( GL_BACK, GL_AMBIENT,  mat2_ambient );
-    ::glMaterialfv ( GL_BACK, GL_DIFFUSE,  mat2_diffuse );
-    ::glMaterialfv ( GL_BACK, GL_SPECULAR, mat2_specular );
-    ::glMaterialfv ( GL_BACK, GL_SHININESS,mat2_shininess );
-    this->render_mesh();
-    ::glEndList();
-
-    this->_drawWire = ::glGenLists(1);
-    ::glNewList(this->_drawWire , GL_COMPILE);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    ::glDisable ( GL_LIGHTING );
-    ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
-    fg = this->_model.getPreference().getWireColor();
-    ::glColor3f ( fg.x(), fg.y(), fg.z() );
-    int width = this->_model.getWireWidth();
-    ::glLineWidth(width);
-    this->render_mesh();
-    ::glEndList();
-
-    this->_drawPointCloud = ::glGenLists(1);
-    ::glNewList(this->_drawPointCloud , GL_COMPILE);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    ::glDisable ( GL_LIGHTING );
-    ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
-    fg = this->_model.getPreference().getPointColor();
-    ::glColor3f ( fg.x(), fg.y(), fg.z() );
-    int radius = this->_model.getPreference().getPointRadius();///edit after
-    ::glLineWidth(radius);
     this->render_mesh();
     ::glEndList();
 

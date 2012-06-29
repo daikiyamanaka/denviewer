@@ -14,8 +14,6 @@ class View
 private:
         Model& _model;
         ::GLuint _drawMesh;
-        ::GLuint _drawWire;
-        ::GLuint _drawPointCloud;
 public:
         View ( Model& model );
         virtual ~View ( void );

@@ -630,8 +630,6 @@ MainWindow::update_color(void) {
 
     color = this->_colorWidget->getWireColor();
     this->_model.setWireColor(color.red(), color.green(), color.blue());
-    this->_view.createDisplayList();
-
 
     emit updated();
 }
