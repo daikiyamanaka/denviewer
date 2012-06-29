@@ -364,6 +364,7 @@ MainWindow::open ( void )
             emit cameraInitialized();
 
             this->get_ver_face();
+            this->_view.createDisplayList();
         }
         return;
 }
@@ -437,6 +438,7 @@ MainWindow::shading_flat( void )
     this->_model.setShadingMode(FLAT);
     QString  message ( tr ( "Flat shading" ) );
     statusBar()->showMessage ( message );
+    this->_view.createDisplayList();
     emit updated();
     return;
 }
@@ -447,6 +449,7 @@ MainWindow::shading_smooth( void )
     this->_model.setShadingMode(SMOOTH);
     QString  message ( tr ( "Smooth shading" ) );
     statusBar()->showMessage ( message );
+    this->_view.createDisplayList();
     emit updated();
     return;
 }
@@ -623,6 +626,7 @@ MainWindow::update_color(void) {
 
     color = this->_colorWidget->getWireColor();
     this->_model.setWireColor(color.red(), color.green(), color.blue());
+    this->_view.createDisplayList();
 
 
     emit updated();
@@ -679,6 +683,7 @@ MainWindow::file_dropped(QString str){
         } else {
         QString  message  = str +  QString( tr ( " reading  done." ) );
                 statusBar()->showMessage ( message );
+        this->_view.createDisplayList();
         emit updated();
         emit cameraInitialized();
         this->get_ver_face();
