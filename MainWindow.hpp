@@ -53,6 +53,7 @@ private slots:
         void view_init ( void );
         void mouse_dragged ( float x, float y );
         void update_surface_color(void);
+        void update_color(void);
         void update_wire_width(void);
         void update_perspective_angle(void);
 		//Yamauchi
@@ -84,6 +85,7 @@ private:
         QAction* _openCameraAct;
         QAction* _saveCameraAct;
         QAction* _snapshotAct;
+        QAction* preferenceAct;
         //
         QMenu* _showmenu;
         QMenu* _rendering;

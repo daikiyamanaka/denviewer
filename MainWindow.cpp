@@ -63,7 +63,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 	this->_model.getSurfaceColor ( r,g,b );
 	QColor col(r,g,b);
 	this->_colorWidget = new ChangeColorWidget(col);
-	connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_surface_color()));
+    connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
     int wirewidth = this->_model.getWireWidth();
     this->_wireWidthWidget = new ChangeWireWidthWidget(wirewidth);
@@ -226,6 +226,10 @@ MainWindow::create_actions ( void )
         this->_exitAct->setStatusTip ( "Exit this application." );
         connect ( this->_exitAct, SIGNAL ( triggered() ), this, SLOT ( close() ) );
 
+        //Preference
+        this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
+
+
 /*<<<<<<< HEAD
         //rendering
         this->_rendering = new QMenu ( tr ( "Rendering" ));
@@ -333,6 +337,7 @@ MainWindow::create_toolbars ( void )
         this->_fileToolBar->addAction ( this->_saveAct );
         this->_fileToolBar->addAction ( this->_openCameraAct );
         this->_fileToolBar->addAction ( this->_saveCameraAct );
+        this->_fileToolBar->addAction( this->preferenceAct);
         return ;
 }
 
@@ -607,6 +612,22 @@ MainWindow::update_surface_color(void) {
 	this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
 	emit updated();
 }
+
+void
+MainWindow::update_color(void) {
+    QColor color = this->_colorWidget->getSurfaceColor();
+    this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
+
+    color = this->_colorWidget->getBackgroundColor();
+    this->_model.setBackgroundColor(color.red(), color.green(), color.blue());
+
+    color = this->_colorWidget->getWireColor();
+    this->_model.setWireColor(color.red(), color.green(), color.blue());
+
+
+    emit updated();
+}
+
 
 void
 MainWindow::update_wire_width( void )

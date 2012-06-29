@@ -34,6 +34,8 @@ View::init ( void )
 void
 View::render ( void )
 {
+        const Color3f bg = this->_model.getPreference().getBackgroundColor();
+        ::glClearColor(bg.x(), bg.y(), bg.z(), 1);
         ::glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         ::glLoadIdentity();
 

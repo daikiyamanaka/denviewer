@@ -6,12 +6,21 @@ class ChangeColorWidget : public QWidget
 {
 Q_OBJECT
 private:
-	QLabel* _faceColorLabel;
+    QLabel* _faceColorLabel;
+    QLabel* _backgroundColorLabel;
+    QLabel* _wireColorLabel;
+    QLabel* _vertexColorLabel;
 public:
 	ChangeColorWidget( QColor faceColor,  QWidget *parent = 0);
-	QColor getSurfaceColor( void ) const ;
+    QColor getSurfaceColor( void ) const ;
+    QColor getBackgroundColor(void);
+    QColor getWireColor(void);
+    QColor getVertexColor(void);
 public slots : 
     void set_surface_color( void ) ;
+    void setBackgroundColor( void);
+    void setWireColor(void);
+    void setVertexColor(void);
 signals :
 	void updated();
 };

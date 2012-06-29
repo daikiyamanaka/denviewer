@@ -38,9 +38,15 @@ public:
         void viewInit ( void );
 
         void addRotation ( const Eigen::Quaternionf& q );
-        //
+
+        // for changing color
         void getSurfaceColor ( int &r, int &g, int &b );
         void setSurfaceColor ( const int r, const int g, const int b );
+        void getBackgroundColor ( int &r, int &g, int &b );
+        void setBackgroundColor ( const int r, const int g, const int b );
+        void getWireColor ( int &r, int &g, int &b );
+        void setWireColor ( const int r, const int g, const int b );
+
 
         int getWireWidth(void);
         void setWireWidth( const int width );
