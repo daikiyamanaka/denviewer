@@ -47,6 +47,8 @@ public:
         void getWireColor ( int &r, int &g, int &b );
         void setWireColor ( const int r, const int g, const int b );
 
+        void getLightColor( int &r, int &g, int &b );
+        void setLightColor(const int r, const int g, const int b);
 
         int getWireWidth(void);
         void setWireWidth( const int width );

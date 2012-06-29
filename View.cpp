@@ -61,6 +61,12 @@ View::render ( void )
                       up.x(), up.y(), up.z() );
 
         //light
+        const Color3f lg = this->_model.getLight(-1).getColor();
+        Eigen::Vector3f color;
+        color[0] = lg.x();
+        color[1] = lg.y();
+        color[2] = lg.z();
+
         Light light1 = this->_model.getLight(0);
         Eigen::Vector3f eye1 = light1.getPosition();
         this->setLight ( light1, GL_LIGHT0, eye1 );
@@ -70,6 +76,10 @@ View::render ( void )
         Light light3 = this->_model.getLight(2);
         Eigen::Vector3f eye3 = light3.getPosition();
         this->setLight ( light3, GL_LIGHT2, eye3 );
+
+        this->setLightColor(light1, GL_LIGHT0, color);
+        this->setLightColor(light2, GL_LIGHT1, color);
+        this->setLightColor(light3, GL_LIGHT2, color);
 
         //draw mesh
 
@@ -195,6 +205,12 @@ View::setLight ( const Light& light , const unsigned int number, const Eigen::Ve
         ::glLightfv ( number, GL_SPECULAR, light_specular );
         ::glLightfv ( number, GL_POSITION, light_position );
         return;
+}
+void
+View::setLightColor( const Light& light , const unsigned int number, const Eigen::Vector3f color){
+    GLfloat light_diffuse[4] = {color.x(), color.y(), color.z(), 1.0f};
+   //::glLightfv(number, GL_COLOR_INDEX, light_color);
+    ::glLightfv(number, GL_DIFFUSE, light_diffuse);
 }
 
 void

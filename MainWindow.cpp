@@ -66,7 +66,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QColor background(r, g, b);
     this->_model.getWireColor(r, g, b);
     QColor wire(r, g, b);
-    this->_colorWidget = new ChangeColorWidget(face, background, wire);
+    this->_model.getLightColor(r, g, b);
+    QColor light(r, g, b);
+    this->_colorWidget = new ChangeColorWidget(face, background, wire, light);
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
     int wirewidth = this->_model.getWireWidth();
@@ -630,6 +632,9 @@ MainWindow::update_color(void) {
 
     color = this->_colorWidget->getWireColor();
     this->_model.setWireColor(color.red(), color.green(), color.blue());
+
+    color = this->_colorWidget->getLightColor();
+    this->_model.setLightColor(color.red(), color.green(), color.blue());
 
     emit updated();
 }

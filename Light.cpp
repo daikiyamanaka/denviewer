@@ -3,6 +3,7 @@
 
 Light::Light ( void )
 {
+        this->setColor ( Color3f ( 0.5,0.5,0.5 ) );
         return;
 }
 
@@ -36,10 +37,21 @@ Light::getSpecular ( void ) const
         return this->_specular;
 }
 
+Color3f
+Light::getColor(void) const
+{
+    return this->_color_index;
+}
+
 void
 Light::setPosition ( const Eigen::Vector3f& v )
 {
         this->_position = v;
+}
+
+void Light::setColor(Color3f _color){
+
+    this->_color_index = _color;
 }
 
 void Light::setAmbient(const Eigen::Vector3f &v){
