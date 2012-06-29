@@ -11,7 +11,7 @@ private:
     QLabel* _wireColorLabel;
     QLabel* _vertexColorLabel;
 public:
-	ChangeColorWidget( QColor faceColor,  QWidget *parent = 0);
+    ChangeColorWidget( QColor faceColor, QColor backgroundColor, QColor wireColor,  QWidget *parent = 0);
     QColor getSurfaceColor( void ) const ;
     QColor getBackgroundColor(void);
     QColor getWireColor(void);
