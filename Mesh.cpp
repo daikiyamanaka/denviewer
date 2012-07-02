@@ -38,6 +38,17 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
             this->_vnormal[i].normalize();
         }
 
+        //compute bounding box;
+        //const int numVertexs = this->_vertex.size();
+        for ( int i = 0 ; i < numVertexs ; i+=1 ) {
+                const Eigen::Vector3f& p = this->getPosition ( i );
+                if ( bmin.x() > p.x() ) bmin.x()  = p.x();
+                if ( bmax.x() < p.x() ) bmax.x()  = p.x();
+                if ( bmin.y() > p.y() ) bmin.y()  = p.y();
+                if ( bmax.y() < p.y() ) bmax.y()  = p.y();
+                if ( bmin.z() > p.z() ) bmin.z()  = p.z();
+                if ( bmax.z() < p.z() ) bmax.z()  = p.z();
+        }
         return true;
 }
 void
@@ -85,10 +96,10 @@ Mesh::getNumFaces ( void ) const
         return this->_index.size();
 }
 void
-Mesh::getBoundingBox ( Eigen::Vector3f& bmin, Eigen::Vector3f& bmax )
+Mesh::getBoundingBox ( Eigen::Vector3f& _bmin, Eigen::Vector3f& _bmax )
 {
-        bmin = this->getPosition ( 0, 0 );
-        bmax = bmin;
+        //bmin = this->getPosition ( 0, 0 );
+        //bmax = bmin;
 
         /*const int numFaces = this->getNumFaces();
         for ( int i = 0 ; i < numFaces ; i+=1 ) {
@@ -103,16 +114,22 @@ Mesh::getBoundingBox ( Eigen::Vector3f& bmin, Eigen::Vector3f& bmax )
                 }
         }*/
 
+        /*
         const int numVertexs = this->_vertex.size();
-                for ( int i = 0 ; i < numVertexs ; i+=1 ) {
-                        const Eigen::Vector3f& p = this->getPosition ( i );
-                        if ( bmin.x() > p.x() ) bmin.x()  = p.x();
-                        if ( bmax.x() < p.x() ) bmax.x()  = p.x();
-                        if ( bmin.y() > p.y() ) bmin.y()  = p.y();
-                        if ( bmax.y() < p.y() ) bmax.y()  = p.y();
-                        if ( bmin.z() > p.z() ) bmin.z()  = p.z();
-                        if ( bmax.z() < p.z() ) bmax.z()  = p.z();
-                }
+        for ( int i = 0 ; i < numVertexs ; i+=1 ) {
+                const Eigen::Vector3f& p = this->getPosition ( i );
+                if ( bmin.x() > p.x() ) bmin.x()  = p.x();
+                if ( bmax.x() < p.x() ) bmax.x()  = p.x();
+                if ( bmin.y() > p.y() ) bmin.y()  = p.y();
+                if ( bmax.y() < p.y() ) bmax.y()  = p.y();
+                if ( bmin.z() > p.z() ) bmin.z()  = p.z();
+                if ( bmax.z() < p.z() ) bmax.z()  = p.z();
+        }
+        */
+
+        _bmin = bmin;
+        _bmax = bmax;
+
         return;
 }
 

@@ -14,6 +14,7 @@ private:
         std::deque<Eigen::Vector3f> _vnormal;
         std::deque<std::vector<int> > _index;
 
+        Eigen::Vector3f bmin, bmax;
 
 public:
         Mesh ( void ) ;
