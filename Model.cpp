@@ -126,7 +126,11 @@ Model::viewFit ( void )
 {
         Eigen::Vector3f bmin, bmax;
         this->_mesh.getBoundingBox ( bmin, bmax );
-        const Eigen::Vector3f center = this->_camera.getCenter();;
+
+        Eigen::Vector3f center;
+        center = ( bmax+bmin )/2;
+
+        //const Eigen::Vector3f center = this->_camera.getCenter();
         const float radius = 1.25 * std::min ( ( bmax - center ).norm(), ( bmin - center ).norm() );
         const Eigen::Quaternionf q = this->_camera.getRotation();
         this->_camera.fitPosition ( center, radius, q );
