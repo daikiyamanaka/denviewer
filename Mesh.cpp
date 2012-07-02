@@ -40,7 +40,9 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
 
         //compute bounding box;
         //const int numVertexs = this->_vertex.size();
-        for ( int i = 0 ; i < numVertexs ; i+=1 ) {
+        bmin = this->getPosition(0);
+        bmax = bmin;
+        for ( int i = 1 ; i < numVertexs ; i+=1 ) {
                 const Eigen::Vector3f& p = this->getPosition ( i );
                 if ( bmin.x() > p.x() ) bmin.x()  = p.x();
                 if ( bmax.x() < p.x() ) bmax.x()  = p.x();
