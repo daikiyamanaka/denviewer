@@ -42,8 +42,10 @@ View::render ( void )
         ::glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         ::glLoadIdentity();
 
-        const double zNear = 0.001;
-        const double zFar  = 100000.0;
+        //const double zNear = 0.001;
+        //const double zFar  = 100000.0;
+        double zNear , zFar;
+        this->_model.getDisplayRange(zNear , zFar);
         const double fov = this->_model.getCamera().getFieldOfViewAngle();
 
         // model view.

@@ -341,6 +341,24 @@ Model::setDistanceToCenter(const float d)
     return;
 }
 
+void
+Model::getDisplayRange(double &near, double &far)
+{
+    if( this->_mesh.getNumFaces() == 0 ){
+        near = 0.001;
+        far = 100000.0;
+        return;
+    }
+    Eigen::Vector3f bmin , bmax , bcenter;
+    this->_mesh.getBoundingBox(bmin , bmax);
+    bcenter = (bmin+bmax)*0.5;
+    float r = (bmax - bmin).norm()*0.5;
+    Eigen::Vector3f eyeLine = ( this->getCamera().getCenter() - this->getCamera().getEye() ).normalized();
+    near = ( bcenter-this->getCamera().getEye() ).dot(eyeLine) - r;
+    far  = ( bcenter-this->getCamera().getEye() ).dot(eyeLine) + r;
+    if(near < 0.001) near = 0.001;
+}
+
 //imamura
 void
 Model::getVertexandFace(int &ver, int &face){

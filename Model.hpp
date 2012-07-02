@@ -63,6 +63,7 @@ public:
 		void setCameraPosition( const double xpos , const double ypos , const double zpos);
         void getDistanceToCenter( float &d );
         void setDistanceToCenter( const float d );
+        void getDisplayRange( double &near , double &far  );
 
         //imamura
         void getVertexandFace(int &ver, int &face);
