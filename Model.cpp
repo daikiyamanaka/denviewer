@@ -414,3 +414,26 @@ Model::setLightPosition(void){
     this->_backlight.setPosition( blightpos );
     return;
 }
+
+void Model::changeLightPosition(const unsigned int number, float a, float b, float c){
+
+    Eigen::Vector3f lightpos;
+    Eigen::Vector3f eye = this->_camera.getEye();
+    Eigen::Vector3f center = this->_camera.getCenter();
+    Eigen::Vector3f tocenterv = center - eye;
+    float e = tocenterv.norm();
+    Eigen::Vector3f tocentere = tocenterv/e;
+    Eigen::Vector3f up = this->_camera.getUpVector();
+    Eigen::Vector3f side = up.cross(tocentere);
+
+    /*if(number == 0){
+        lightpos = this->_keylight.getLight(number) + a*up + b*side + c*tocentere;
+        this->_keylight.setPosition(lightpos);
+    }else if(number == 1){
+        lightpos = this->_filllight.getLight(number) + a*up + b*side + c*tocentere;
+        this->_filllight.setPosition(lightpos);
+    }else if(number == 2){
+        lightpos = this->_backlight.getLight(number) + a*up + b*side + c*tocentere;
+        this->_backlight.setPosition(lightpos);
+    }*/
+}

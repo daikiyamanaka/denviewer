@@ -100,6 +100,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_lightCheckBox2->setChecked(true);
     this->_lightCheckBox3->setChecked(true);
 
+    /*double xposlk, yposlk, zposlk;
+    this->_model.getLight(GL_LIGHT0);*/
+
     QPushButton *lightbutton = new QPushButton ( tr ( "Light Fit" ) ) ;
     connect ( lightbutton, SIGNAL ( pressed() ), this, SLOT ( lightset() ) );
 
@@ -125,7 +128,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     boxLayout3->addStretch ( 1 );
 
     QVBoxLayout *boxLayout4 = new QVBoxLayout;
-    boxLayout4->addWidget(groupBox2);
+    //boxLayout4->addWidget(groupBox2);
     boxLayout4->addWidget(this->_cameraParameterWidget);
     boxLayout4->addWidget(this->_viewWidget);
     boxLayout4->addStretch( 1 );
@@ -143,11 +146,14 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QWidget* widget3 = new QWidget;
     widget3->setLayout(boxLayout5);
 
+    QWidget* lightwidget = new QWidget;
+    lightwidget->setLayout(boxLayout2);
+
     QTabWidget* tabWidget1 = new QTabWidget;
     tabWidget1->addTab ( widget1, tr ( "Views" ) );
-
     tabWidget1->addTab(widget2 ,tr("Camera") );
     tabWidget1->addTab(widget3 ,tr("MeshInfo") );
+    tabWidget1->addTab(lightwidget, tr("Light"));
 
         tabWidget1->setMinimumWidth ( 250 );
 

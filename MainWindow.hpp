@@ -16,6 +16,7 @@ QT_END_NAMESPACE
 #include "ChangeWireWidthWidget.h"
 #include "ChangeViewAngle.h"
 #include "GetCameraParameterWidget.hpp"
+#include "GetLightParameterWidget.hpp"
 #include "ShowVandFWidget.hpp"
 
 class MainWindow : public QMainWindow
@@ -29,6 +30,7 @@ private:
         ChangeWireWidthWidget* _wireWidthWidget;
         ChangeViewAngle* _viewWidget;
 		GetCameraParameterWidget* _cameraParameterWidget;
+        GetLightParameterWidget* _lightParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
 public:
         MainWindow ( Model& model, View& view ) ;
@@ -69,6 +71,7 @@ private slots:
         void lightswitch1(bool i);
         void lightswitch2(bool i);
         void lightset(void);
+        //void
 private:
         void create_actions ( void );
         void create_menus ( void );

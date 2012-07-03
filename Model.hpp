@@ -68,5 +68,6 @@ public:
         //imamura
         void getVertexandFace(int &ver, int &face);
         void setLightPosition(void);
+        void changeLightPosition(const unsigned int number, float a, float b, float c);
 };
 #endif // __MODEL_HPP__
