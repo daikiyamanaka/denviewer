@@ -60,11 +60,17 @@ Preference::setPointRadius(const int radius)
 }
 
 void
+Preference::setRenderingMode(const int status){
+    this->renderingMode = status;
+}
+
+/*
+void
 Preference::setRenderingMode ( const RenderingMode status )
 {
         this->_status = status;
 }
-
+*/
 void
 Preference::setShadingMode( const ShadingMode shading)
 {
@@ -105,12 +111,18 @@ Preference::getPointRadius( void ) const
     return _point_radius;
 }
 
+/*
 RenderingMode
 Preference::getRenderingMode ( void ) const
 {
         return this->_status;
 }
-
+*/
+int
+Preference::getRenderingMode ( void ) const
+{
+    return this->renderingMode;
+}
 ShadingMode
 Preference::getShadingMode( void ) const
 {

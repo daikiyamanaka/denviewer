@@ -34,7 +34,9 @@ public:
         bool saveMesh ( const std::string& filename );
         bool openCamera ( const std::string& filename );
         bool saveCamera ( const std::string& filename );
-        void setRenderingMode ( const RenderingMode mode );
+        //void setRenderingMode ( const RenderingMode mode );
+        void setRenderingMode(const int mode);
+        int getRenderingMode();
         void setShadingMode (const ShadingMode shading);
         void viewFit ( void );
         void viewInit ( void );

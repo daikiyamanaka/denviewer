@@ -44,9 +44,9 @@ private slots:
         void openCamera ( void );
         void saveCamera ( void );
         void saveSnapshot( void );
-        void polygon_wireframe ( void );
-        void polygon_surface ( void );
-        void polygon_point ( void );
+        void polygon_wireframe ( bool checked );
+        void polygon_surface ( bool checked );
+        void polygon_point ( bool checked );
         void shading_flat ( void );
         void shading_smooth( void );
         void view_fit ( void );
@@ -106,9 +106,12 @@ private:
         QAction* _renderPointAct;
         QAction* _renderWireAct;
         QAction* _renderMeshAct;
-        QRadioButton* _pointRadioButton;
-        QRadioButton* _wireRadioButton;
-        QRadioButton* _surfaceRadioButton;
+        //QRadioButton* _pointRadioButton;
+        //QRadioButton* _wireRadioButton;
+        //QRadioButton* _surfaceRadioButton;
+        QCheckBox* _pointCheckBox;
+        QCheckBox* _wireCheckBox;
+        QCheckBox* _surfaceCheckBox;
 
         QRadioButton* _flatRadioButton;
         QRadioButton* _smoothRadioButton;
