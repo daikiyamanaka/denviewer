@@ -4,6 +4,7 @@
 #include "Mesh.hpp"
 #include "Light.hpp"
 #include "Camera.hpp"
+#include "deque"
 
 class Model
 {
@@ -15,6 +16,7 @@ private:
         Light _backlight;
         Camera _camera;
         Preference _preference;
+        std::deque<Camera> _cameraList;
 
 
 public:
@@ -64,6 +66,7 @@ public:
         void getDistanceToCenter( float &d );
         void setDistanceToCenter( const float d );
         void getDisplayRange( double &near , double &far  );
+        void addCameraToList( Camera& camera );
 
         //imamura
         void getVertexandFace(int &ver, int &face);

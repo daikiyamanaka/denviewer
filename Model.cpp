@@ -9,6 +9,8 @@
 
 #include "Tokenizer.hpp"
 
+#include <iostream>
+
 Model::Model ( void )
 {
         return;
@@ -147,6 +149,9 @@ Model::viewInit ( void )
         const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
         const Eigen::Quaternionf q ( 1,0,0,0 );
         this->_camera.fitPosition ( center, radius, q );
+
+        Camera camera = this->_camera;
+        this->addCameraToList(camera);
 
         this->setLightPosition();
 
@@ -412,5 +417,17 @@ Model::setLightPosition(void){
     this->_keylight.setPosition ( lightpos );
     this->_filllight.setPosition( flightpos );
     this->_backlight.setPosition( blightpos );
+    return;
+}
+
+void
+Model::addCameraToList(Camera &camera)
+{
+    std::cerr<<"A ";
+    if( this->_cameraList.size() >= 10 ){
+        this->_cameraList.pop_back();
+    }
+    this->_cameraList.push_front(camera);
+    std::cerr<< this->_cameraList.size() <<std::endl;
     return;
 }
