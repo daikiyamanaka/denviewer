@@ -11,27 +11,20 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
     connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
     connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
-    /*
-    QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
-    QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
-    radioButton2->setChecked ( true );
-    connect ( radioButton1, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
-    connect ( radioButton2, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
-    */
 
     //Rendering Mode
-    this->_pointRadioButton = new QRadioButton( tr("Points") );
-    this->_wireRadioButton = new QRadioButton ( tr ( "Wireframe" ) );
-    this->_surfaceRadioButton = new QRadioButton ( tr ( "Surface" ) );
-    this->_surfaceRadioButton->setChecked( true );
-    connect (this->_pointRadioButton, SIGNAL(pressed()), this , SLOT(polygon_point()) );
-    connect ( this->_wireRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
-    connect ( this->_surfaceRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
+    this->_pointCheckBox = new QCheckBox(tr("Points"));
+    this->_pointCheckBox->setChecked(false);
+    this->_wireCheckBox = new QCheckBox(tr("Wireframe"));
+    this->_wireCheckBox->setChecked(false);
+    this->_surfaceCheckBox = new QCheckBox(tr("Surface"));
+    this->_surfaceCheckBox->setChecked(true);
 
     QVBoxLayout *boxLayout1 = new QVBoxLayout;
-    boxLayout1->addWidget ( this->_pointRadioButton );
-    boxLayout1->addWidget ( this->_wireRadioButton );
-    boxLayout1->addWidget ( this->_surfaceRadioButton );
+
+    boxLayout1->addWidget(this->_pointCheckBox);
+    boxLayout1->addWidget(this->_wireCheckBox);
+    boxLayout1->addWidget(this->_surfaceCheckBox);
     boxLayout1->addStretch ( 1 );
 
     QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
@@ -255,24 +248,31 @@ MainWindow::create_actions ( void )
         this->_renderPointAct = new QAction( tr("&Point") , this );
         this->_renderPointAct->setStatusTip("Rendering Points");
         this->_renderPointAct->setCheckable(true);
-        connect(this->_renderPointAct , SIGNAL(triggered()), this , SLOT(polygon_point()));
-        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointRadioButton , SLOT(setChecked(bool)));
-        connect(this->_pointRadioButton , SIGNAL(toggled(bool)), this->_renderPointAct , SLOT(setChecked(bool)));
+        //this->_renderPointAct->toggled();
+        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this , SLOT(polygon_point(bool)));
+        //connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointRadioButton , SLOT(setChecked(bool)));
+        //connect(this->_pointRadioButton , SIGNAL(toggled(bool)), this->_renderPointAct , SLOT(setChecked(bool)));
+        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointCheckBox , SLOT(setChecked(bool)));
+        connect(this->_pointCheckBox, SIGNAL(toggled(bool)), this->_renderPointAct, SLOT(setChecked(bool)));
 
         this->_renderWireAct = new QAction( tr("&Wire") , this );
         this->_renderWireAct->setStatusTip("Rendering Wireflame");
         this->_renderWireAct->setCheckable(true);
-        connect(this->_renderWireAct , SIGNAL(triggered()), this , SLOT(polygon_wireframe()));
-        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireRadioButton , SLOT(setChecked(bool)));
-        connect( this->_wireRadioButton , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
+        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this , SLOT(polygon_wireframe(bool)));
+        //connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireRadioButton , SLOT(setChecked(bool)));
+        //connect( this->_wireRadioButton , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
+        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireCheckBox , SLOT(setChecked(bool)));
+        connect( this->_wireCheckBox , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
 
         this->_renderMeshAct = new QAction( tr("&Surface") , this );
         this->_renderMeshAct->setStatusTip("Rendering Surface");
         this->_renderMeshAct->setCheckable(true);
         this->_renderMeshAct->setChecked(true);
-        connect(this->_renderMeshAct , SIGNAL(triggered()), this , SLOT(polygon_surface()));
-        connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceRadioButton , SLOT(setChecked(bool)));
-        connect(this->_surfaceRadioButton, SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
+        connect(this->_renderMeshAct , SIGNAL(toggled(bool)), this , SLOT(polygon_surface(bool)));
+        //connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceRadioButton , SLOT(setChecked(bool)));
+        //connect(this->_surfaceRadioButton, SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
+        connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceCheckBox , SLOT(setChecked(bool)));
+        connect( this->_surfaceCheckBox , SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
 
         this->_lightAct1 = new QAction( tr("Light1"), this);
         this->_lightAct1->setCheckable(true);
@@ -409,9 +409,16 @@ MainWindow::saveCamera ( void )
 }
 
 void
-MainWindow::polygon_wireframe ( void )
+MainWindow::polygon_wireframe ( bool checked)
 {
-        this->_model.setRenderingMode ( WIRE );
+    if(checked){
+        this->_model.setRenderingMode (this->_model.getRenderingMode() | WIRE);
+        std::cout << "wire: checked" << std::endl;
+    }
+    else{
+        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
+        std::cout << "wire: unchecked" << std::endl;
+    }
         QString  message ( tr ( "Wireframe mode" ) );
         statusBar()->showMessage ( message );
         emit updated();
@@ -419,9 +426,17 @@ MainWindow::polygon_wireframe ( void )
 }
 
 void
-MainWindow::polygon_surface ( void )
+MainWindow::polygon_surface ( bool checked)
 {
-        this->_model.setRenderingMode ( SURFACE );
+    if(checked){
+        this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
+        std::cout << "surface: checked" << std::endl;
+    }
+    else{
+        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
+        std::cout << "surface: unchecked" << std::endl;
+    }
+
         QString  message ( tr ( "Surface mode" ) );
         statusBar()->showMessage ( message );
         emit updated();
@@ -429,9 +444,16 @@ MainWindow::polygon_surface ( void )
 }
 
 void
-MainWindow::polygon_point( void )
+MainWindow::polygon_point( bool checked)
 {
-    this->_model.setRenderingMode(POINTCLOUD);
+    if(checked){
+        this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
+    }
+    else{
+        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
+    }
+
+    //this->_model.setRenderingMode(this->_model.getRenderingMode() | POINTCLOUD);
     QString  message ( tr ( "Point mode" ) );
     statusBar()->showMessage ( message );
     emit updated();

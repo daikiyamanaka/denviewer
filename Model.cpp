@@ -105,12 +105,22 @@ Model::saveCamera ( const std::string& filename )
         return exporter.write ( filename );
 }
 
-
+/*
 void
 Model::setRenderingMode ( const RenderingMode mode )
 {
         this->_preference.setRenderingMode ( mode );
         return;
+}
+*/
+
+void Model::setRenderingMode(const int mode){
+    this->_preference.setRenderingMode(mode);
+}
+
+int
+Model::getRenderingMode(){
+    return this->_preference.getRenderingMode();
 }
 
 void
