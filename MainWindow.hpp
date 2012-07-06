@@ -61,6 +61,9 @@ private slots:
 		void update_euler_angle(int alpha , int beta , int gamma);
 		void initialize_camera_position();
         void wheel_spined( float x , float y , float step );
+        void back_camera( void );
+        void forward_camera( void );
+        void add_now_camera_to_list(  );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
@@ -122,6 +125,9 @@ private:
         QCheckBox* _lightCheckBox1;
         QCheckBox* _lightCheckBox2;
         QCheckBox* _lightCheckBox3;
+
+        QAction* _backCamera;
+        QAction* _forwardCamera;
 
 
 

@@ -14,9 +14,10 @@ private:
         Light _keylight;
         Light _filllight;
         Light _backlight;
-        Camera _camera;
+        //Camera _camera;
         Preference _preference;
-        std::deque<Camera> _cameraList;
+        std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
+        int _NowCameraId;
 
 
 public:
@@ -68,7 +69,9 @@ public:
         void getDistanceToCenter( float &d );
         void setDistanceToCenter( const float d );
         void getDisplayRange( double &near , double &far  );
-        void addCameraToList( Camera& camera );
+        void addNowCameraToList( void );
+        void backCamera( void );
+        void forwardCamera( void );
 
         //imamura
         void getVertexandFace(int &ver, int &face);

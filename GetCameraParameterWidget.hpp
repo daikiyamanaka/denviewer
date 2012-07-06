@@ -22,6 +22,8 @@ private:
     double _xpos , _ypos , _zpos;
 
     bool _angleSliderChanged;
+    bool _parameterChangedByThisWidget;
+    bool _parameterChangedByOtherWidget;
 
 public:
     explicit GetCameraParameterWidget(int alpha , int beta , int gamma, double xpos , double ypos , double zpos , QWidget *parent = 0);
@@ -30,6 +32,7 @@ public:
 signals:
     void CameraPositionUpdated(double xPos , double yPos , double zPos  );
     void EulerAngleUpdated( int alpha , int beta , int gamma  );
+    void ParameterChanged( void );
 
 public slots:
     void updateAlpha( int alpha );

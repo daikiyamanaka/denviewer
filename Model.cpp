@@ -13,6 +13,8 @@
 
 Model::Model ( void )
 {
+    this->_NowCameraId = 0;
+    this->_cameraList.assign(1 , Camera() );
         return;
 }
 
@@ -49,7 +51,7 @@ Model::getLight( const unsigned int number){
 const Camera&
 Model::getCamera ( void )
 {
-        return this->_camera;
+    return this->_cameraList.at(this->_NowCameraId);
 }
 
 const Preference&
@@ -82,6 +84,16 @@ Model::openMesh ( const std::string& filename )
     }
     this->initMesh();
         bool result = importer->read ( filename );
+        Eigen::Vector3f bmin, bmax;
+        this->_mesh.getBoundingBox ( bmin, bmax );
+
+        const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
+        const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
+        const Eigen::Quaternionf q ( 1,0,0,0 );
+        Camera camera;
+        camera.fitPosition(center , radius , q);
+        this->_cameraList.assign(1, camera );
+        this->_NowCameraId = 0;
         this->viewInit();
     delete importer;
         return result;
@@ -95,15 +107,16 @@ Model::saveMesh ( const std::string& filename )
 bool
 Model::openCamera ( const std::string& filename )
 {
-        ImporterCamera importer ( this->_camera );
+    this->addNowCameraToList();
+    ImporterCamera importer ( this->_cameraList.at(this->_NowCameraId) );
         if ( !importer.read ( filename ) ) return false;
-        this->_light.setPosition ( this->_camera.getEye() );
+                this->_light.setPosition ( this->getCamera().getEye() );
         return true;
 }
 bool
 Model::saveCamera ( const std::string& filename )
 {
-        ExporterCamera exporter ( this->_camera );
+    ExporterCamera exporter ( this->_cameraList.at(this->_NowCameraId) );
         return exporter.write ( filename );
 }
 
@@ -144,9 +157,10 @@ Model::viewFit ( void )
 
         //const Eigen::Vector3f center = this->_camera.getCenter();
         const float radius = 1.25 * std::min ( ( bmax - center ).norm(), ( bmin - center ).norm() );
-        const Eigen::Quaternionf q = this->_camera.getRotation();
-        this->_camera.fitPosition ( center, radius, q );
-        this->_light.setPosition ( this->_camera.getEye() );
+        const Eigen::Quaternionf q = this->getCamera().getRotation();
+        this->addNowCameraToList();
+        this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
+        this->_light.setPosition ( this->getCamera().getEye() );
         return;
 }
 void
@@ -158,10 +172,8 @@ Model::viewInit ( void )
         const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
         const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
         const Eigen::Quaternionf q ( 1,0,0,0 );
-        this->_camera.fitPosition ( center, radius, q );
-
-        Camera camera = this->_camera;
-        this->addCameraToList(camera);
+        this->addNowCameraToList();
+        this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
 
         this->setLightPosition();
 
@@ -184,8 +196,8 @@ Model::viewInit ( void )
 void
 Model::addRotation ( const Eigen::Quaternionf& q )
 {
-        this->_camera.multiplyRotation ( q );
-        this->_light.setPosition ( this->_camera.getEye() );
+        this->_cameraList.at(this->_NowCameraId).multiplyRotation ( q );
+        this->_light.setPosition ( this->getCamera().getEye() );
         return;
 }
 
@@ -278,17 +290,17 @@ Model::setWireWidth(const int width)
 }
 
 void Model::setViewAngle(float _angle){
-    this->_camera.setFieldOfViewAngle(_angle);
+    this->_cameraList.at(this->_NowCameraId).setFieldOfViewAngle(_angle);
 }
 float Model::getViewAngle(void){
-    return this->_camera.getFieldOfViewAngle();
+    return this->getCamera().getFieldOfViewAngle();
 }
 
 void
 Model::getEulerAngle( int &alpha , int &beta , int &gamma  )
 {
     Eigen::Matrix3f m;
-    m = this->_camera.getRotation().matrix();
+    m = this->getCamera().getRotation().matrix();
     double a , b , c;
     //Z>X>Y‚Ì‡‚Å‰ñ“]
     if( 1.0f - std::abs( m(2,1) ) > 1.0e-10 ){
@@ -323,17 +335,17 @@ Model::setEulerAngle(const int alpha, const int beta, const int gamma)
     Eigen::Quaternionf qy ( std::cos(b), 0.0f , std::sin(b) , 0.0f );
     Eigen::Quaternionf q;
     q = qz*qx*qy;//Z>X>Y‚Ì‡‚Å‰ñ“]
-    this->_camera.setRotation(q);
-    this->_light.setPosition ( this->_camera.getEye() );
+    this->_cameraList.at(this->_NowCameraId).setRotation(q);
+    this->_light.setPosition ( this->getCamera().getEye() );
     return;
 }
 
 void
 Model::getCameraPosition( double &xpos , double &ypos , double &zpos)
 {
-    xpos = this->_camera.getCenter().x();
-    ypos = this->_camera.getCenter().y();
-    zpos = this->_camera.getCenter().z();
+    xpos = this->getCamera().getCenter().x();
+    ypos = this->getCamera().getCenter().y();
+    zpos = this->getCamera().getCenter().z();
 
     return;
 }
@@ -342,21 +354,21 @@ void
 Model::setCameraPosition(const double xpos, const double ypos, const double zpos)
 {
     Eigen::Vector3f pos(xpos,ypos,zpos);
-    this->_camera.setCenter(pos);
+    this->_cameraList.at(this->_NowCameraId).setCenter(pos);
     return;
 }
 
 void
 Model::getDistanceToCenter(float &d)
 {
-    d = this->_camera.getDistanceToCenter();
+    d = this->getCamera().getDistanceToCenter();
     return;
 }
 
 void
 Model::setDistanceToCenter(const float d)
 {
-    this->_camera.setDistanceToCenter(d);
+    this->_cameraList.at(this->_NowCameraId).setDistanceToCenter(d);
     return;
 }
 
@@ -395,16 +407,16 @@ Model::setLightPosition(void){
     float x = 0.5*(bmin[0]+bmax[0]);
     float y = 1.0*(bmin[1]+bmax[1]);
 
-    Eigen::Vector3f eye = this->_camera.getEye();
-    Eigen::Vector3f center = this->_camera.getCenter();
+    Eigen::Vector3f eye = this->getCamera().getEye();
+    Eigen::Vector3f center = this->getCamera().getCenter();
     Eigen::Vector3f tocenterv = center - eye;
     float e = tocenterv.norm();
     Eigen::Vector3f tocentere = tocenterv/e;
-    Eigen::Vector3f up = this->_camera.getUpVector();
+    Eigen::Vector3f up = this->getCamera().getUpVector();
     Eigen::Vector3f side = up.cross(tocentere);
-    Eigen::Vector3f lightpos = this->_camera.getEye() + 2.0*y*up + x*side;
-    Eigen::Vector3f flightpos = this->_camera.getEye() - 0.5*y*up - x*side;
-    Eigen::Vector3f blightpos = this->_camera.getEye() + 2.0*tocenterv;
+    Eigen::Vector3f lightpos = this->getCamera().getEye() + 2.0*y*up + x*side;
+    Eigen::Vector3f flightpos = this->getCamera().getEye() - 0.5*y*up - x*side;
+    Eigen::Vector3f blightpos = this->getCamera().getEye() + 2.0*tocenterv;
     /*if(bmin[0]+bmax[0] >= 0.0){
         lightpos[0] -= 0.5*(bmin[0]+bmax[0]);
         flightpos[0] += 0.75*(bmin[0]+bmax[0]);
@@ -431,13 +443,30 @@ Model::setLightPosition(void){
 }
 
 void
-Model::addCameraToList(Camera &camera)
+Model::addNowCameraToList( void )
 {
-    std::cerr<<"A ";
-    if( this->_cameraList.size() >= 10 ){
+    for(int i = 0 ; i < this->_NowCameraId ; i++ ){
+        this->_cameraList.pop_front();
+    }
+    this->_NowCameraId = 0;
+    if( this->_cameraList.size() >= 30 ){
         this->_cameraList.pop_back();
     }
+    Camera camera( this->_cameraList.at(this->_NowCameraId) );
     this->_cameraList.push_front(camera);
-    std::cerr<< this->_cameraList.size() <<std::endl;
+    return;
+}
+
+void
+Model::backCamera( void )
+{
+    if( this->_NowCameraId < this->_cameraList.size() - 1 ) this->_NowCameraId++;
+    return;
+}
+
+void
+Model::forwardCamera( void )
+{
+    if( this->_NowCameraId > 0 ) this->_NowCameraId--;
     return;
 }

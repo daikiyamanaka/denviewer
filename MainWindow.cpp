@@ -83,9 +83,11 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(this->_cameraParameterWidget,SIGNAL(EulerAngleUpdated(int,int,int)),
             this , SLOT(update_euler_angle(int,int,int)));
 
-    this->_lightCheckBox1 = new QCheckBox(tr ( "Light1" ));
-    this->_lightCheckBox2 = new QCheckBox(tr ( "Light2" ));
-    this->_lightCheckBox3 = new QCheckBox(tr ( "Light3" ));
+    connect(this->_cameraParameterWidget, SIGNAL(ParameterChanged()) , this , SLOT(add_now_camera_to_list()));
+
+    this->_lightCheckBox1 = new QCheckBox(tr ( "Key Light" ));
+    this->_lightCheckBox2 = new QCheckBox(tr ( "Fill Light" ));
+    this->_lightCheckBox3 = new QCheckBox(tr ( "Back Light" ));
     connect ( this->_lightCheckBox1, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch0(bool) ) );
     connect ( this->_lightCheckBox2, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch1(bool) ) );
     connect ( this->_lightCheckBox3, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch2(bool) ) );
@@ -121,6 +123,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     boxLayout4->addWidget(groupBox2);
     boxLayout4->addWidget(this->_cameraParameterWidget);
     boxLayout4->addWidget(this->_viewWidget);
+
     boxLayout4->addStretch( 1 );
 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
@@ -228,6 +231,16 @@ MainWindow::create_actions ( void )
         //Preference
         this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
 
+        this->_backCamera = new QAction( tr("Back Camera") , this );
+        this->_backCamera->setShortcut(QKeySequence::Undo);
+        this->_backCamera->setStatusTip ( "Back Camera." );
+        connect ( this->_backCamera, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
+
+        this->_forwardCamera = new QAction( tr("Forward Camera") , this );
+        this->_forwardCamera->setShortcut(QKeySequence::Redo);
+        this->_forwardCamera->setStatusTip ( "Forward Camera." );
+        connect ( this->_forwardCamera, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
+
 
 /*<<<<<<< HEAD
         //rendering
@@ -274,23 +287,25 @@ MainWindow::create_actions ( void )
         connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceCheckBox , SLOT(setChecked(bool)));
         connect( this->_surfaceCheckBox , SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
 
-        this->_lightAct1 = new QAction( tr("Light1"), this);
+        this->_lightAct1 = new QAction( tr("Key Light"), this);
         this->_lightAct1->setCheckable(true);
         this->_lightAct1->setChecked(true);
         connect(this->_lightAct1 , SIGNAL(triggered(bool)), this->_lightCheckBox1 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox1 , SIGNAL(toggled(bool)) , this->_lightAct1 , SLOT(setChecked(bool)));
 
-        this->_lightAct2 = new QAction( tr("Light2"), this);
+        this->_lightAct2 = new QAction( tr("Fill Light"), this);
         this->_lightAct2->setCheckable(true);
         this->_lightAct2->setChecked(true);
         connect(this->_lightAct2 , SIGNAL(triggered(bool)), this->_lightCheckBox2 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox2 , SIGNAL(toggled(bool)) , this->_lightAct2 , SLOT(setChecked(bool)));
 
-        this->_lightAct3 = new QAction( tr("Light3"), this);
+        this->_lightAct3 = new QAction( tr("Back Light"), this);
         this->_lightAct3->setCheckable(true);
         this->_lightAct3->setChecked(true);
         connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
+
+
 
 
 //>>>>>>> master
@@ -329,6 +344,8 @@ MainWindow::create_menus ( void )
     this->_lightSubMenu->addAction(this->_lightAct2);
     this->_lightSubMenu->addAction(this->_lightAct3);
     this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
+    this->_cameraSubMenu->addAction(this->_backCamera);
+    this->_cameraSubMenu->addAction(this->_forwardCamera);
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
 //>>>>>>> master
         return;
@@ -413,11 +430,11 @@ MainWindow::polygon_wireframe ( bool checked)
 {
     if(checked){
         this->_model.setRenderingMode (this->_model.getRenderingMode() | WIRE);
-        std::cout << "wire: checked" << std::endl;
+        //std::cout << "wire: checked" << std::endl;
     }
     else{
         this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
-        std::cout << "wire: unchecked" << std::endl;
+        //std::cout << "wire: unchecked" << std::endl;
     }
         QString  message ( tr ( "Wireframe mode" ) );
         statusBar()->showMessage ( message );
@@ -430,11 +447,11 @@ MainWindow::polygon_surface ( bool checked)
 {
     if(checked){
         this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
-        std::cout << "surface: checked" << std::endl;
+        //std::cout << "surface: checked" << std::endl;
     }
     else{
         this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
-        std::cout << "surface: unchecked" << std::endl;
+        //std::cout << "surface: unchecked" << std::endl;
     }
 
         QString  message ( tr ( "Surface mode" ) );
@@ -523,57 +540,6 @@ MainWindow::mouse_dragged ( float x, float y )
         message += stry;
         message += tr ( ") " );
 
-    /*
-                QString  message ( tr ( "MouseDragging (" ) );
-                QString strw1;
-                strw1.setNum ( this->_model.getCamera().getRotation().w() );
-                message += strw1;
-                message += tr ( ", " );
-                QString strx1;
-                strx1.setNum ( this->_model.getCamera().getRotation().x() );
-                message += strx1;
-                message += tr ( ", " );
-                QString stry1;
-                stry1.setNum ( this->_model.getCamera().getRotation().y() );
-                message += stry1;
-                message += tr ( ", " );
-                QString strz1;
-                strz1.setNum ( this->_model.getCamera().getRotation().z() );
-                message += strz1;
-                message += tr ( ") (" );
-
-                Eigen::Vector3f eyeLine = this->_model.getCamera().getEye() - this->_model.getCamera().getCenter();
-                eyeLine.normalize();
-                Eigen::Vector3f nowUpvector = this->_model.getCamera().getUpVector();
-                float t = ( nowUpvector.z() - nowUpvector.x() )/( eyeLine.z()*nowUpvector.x() - eyeLine.x()*nowUpvector.z() );
-                Eigen::Vector3f newAxis = (Eigen::Vector3f(0,0,1.0f) + t * eyeLine);
-                newAxis.normalize();
-                Eigen::Vector3f a = Eigen::Vector3f(0,0,1.0f) - newAxis.z()*newAxis;
-                Eigen::Vector3f b = eyeLine - eyeLine.dot(newAxis)*newAxis;
-                a.normalize();
-                b.normalize();
-                float newradian = std::acos( a.dot ( b ) )*0.5;
-                const float newcost = std::cos(newradian);
-                const float newsint = std::sin(newradian);
-                //Eigen::Quaternionf newq ( -newcost, newsint * newAxis.x(), newsint * newAxis.y(), newsint * newAxis.z() );
-
-                QString strw2;
-                strw2.setNum ( -newcost );
-                message += strw2;
-                message += tr ( ", " );
-                QString strx2;
-                strx2.setNum ( newsint * newAxis.x() );
-                message += strx2;
-                message += tr ( ", " );
-                QString stry2;
-                stry2.setNum ( newsint * newAxis.y() );
-                message += stry2;
-                message += tr ( ", " );
-                QString strz2;
-                strz2.setNum ( newsint * newAxis.z() );
-                message += strz2;
-                message += tr ( ") " );*/
-
 		int alpha , beta , gamma;
         this->_model.getEulerAngle(alpha , beta , gamma);
         this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
@@ -581,22 +547,6 @@ MainWindow::mouse_dragged ( float x, float y )
         double xpos , ypos , zpos;
         this->_model.getCameraPosition(xpos,ypos,zpos);
         this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
-
-        /*
-        Eigen::Vector3f bmin , bmax;
-        Mesh mesh;
-        mesh = this->_model.getMesh();
-        mesh.getBoundingBox(bmin,bmax);
-        Eigen::Vector3f mc = (bmin + bmax)*0.5;
-
-        Eigen::Vector3f eye = this->_model.getCamera().getEye();
-
-        double length = (eye-mc).norm();
-        //double length = std::sqrt( (xpos-mc.x())*(xpos-mc.x()) + (ypos-mc.y())*(ypos-mc.y()) + (zpos-mc.z())*(zpos-mc.z()) );
-        //double length = mc.x();
-        QString strz2;
-        strz2.setNum ( length );
-        message += strz2;*/
 
         statusBar()->showMessage ( message );
         return;
@@ -606,7 +556,7 @@ MainWindow::mouse_dragged ( float x, float y )
 void
 MainWindow::wheel_spined(float x, float y, float step)
 {
-    QString  message ( tr ( "MouseDragging (" ) );
+    QString  message ( tr ( "Wheel Spining (" ) );
     QString strx;
     strx.setNum ( x );
     message += strx;
@@ -700,6 +650,30 @@ MainWindow::initialize_camera_position()
     this->_model.getEulerAngle(alpha,beta,gamma);
     this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
     return;
+}
+
+void
+MainWindow::back_camera(void)
+{
+    QString  message ( tr ( "Back Camera" ) );
+    this->_model.backCamera();
+    emit updated();
+    statusBar()->showMessage ( message );
+}
+
+void
+MainWindow::forward_camera()
+{
+    QString  message ( tr ( "Forward Camera" ) );
+    this->_model.forwardCamera();
+    emit updated();
+    statusBar()->showMessage(message);
+}
+
+void
+MainWindow::add_now_camera_to_list()
+{
+    this->_model.addNowCameraToList();
 }
 
 void

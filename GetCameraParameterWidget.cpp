@@ -1,5 +1,6 @@
 #include "GetCameraParameterWidget.hpp"
 #include <QtGui>
+#include <iostream>
 
 GetCameraParameterWidget::GetCameraParameterWidget(int alpha, int beta, int gamma, double xpos, double ypos, double zpos, QWidget *parent) : QWidget(parent)
 {
@@ -75,6 +76,13 @@ GetCameraParameterWidget::GetCameraParameterWidget(int alpha, int beta, int gamm
     connect( this->_betaspin , SIGNAL(valueChanged(int)) , this->_betaSlider , SLOT(setValue(int)));
     connect( this->_gammaspin , SIGNAL(valueChanged(int)) , this->_gammaSlider , SLOT(setValue(int)));
 
+    //connect(  this->_alphaSlider,SIGNAL(sliderPressed()) , this , SIGNAL(ParameterChanged()) );
+    //connect(  this->_betaSlider,SIGNAL(sliderPressed()) , this , SIGNAL(ParameterChanged()) );
+    //connect(  this->_gammaSlider,SIGNAL(sliderPressed()) , this , SIGNAL(ParameterChanged()) );
+
+    this->_parameterChangedByThisWidget = false;
+    this->_parameterChangedByOtherWidget = true;
+
     alphaLayout->addWidget(alphaLabel);
     alphaLayout->addWidget(this->_alphaSlider);
     alphaLayout->addWidget(this->_alphaspin);
@@ -107,6 +115,8 @@ GetCameraParameterWidget::GetCameraParameterWidget(int alpha, int beta, int gamm
 void
 GetCameraParameterWidget::setEulerAngle(int alpha , int beta , int gamma )
 {
+    this->_parameterChangedByThisWidget = false;
+    this->_parameterChangedByOtherWidget = true;
     this->_angleSliderChanged = false;
     this->_alpha = alpha;
     this->_beta = beta;
@@ -115,6 +125,7 @@ GetCameraParameterWidget::setEulerAngle(int alpha , int beta , int gamma )
     this->_betaSlider->setValue(this->_beta);
     this->_gammaSlider->setValue(this->_gamma);
     this->_angleSliderChanged = true;
+    this->_parameterChangedByOtherWidget = false;
 
     return;
 }
@@ -122,12 +133,15 @@ GetCameraParameterWidget::setEulerAngle(int alpha , int beta , int gamma )
 void
 GetCameraParameterWidget::setCameraPosition( double xpos , double ypos , double zpos )
 {
+    this->_parameterChangedByThisWidget = false;
+    this->_parameterChangedByOtherWidget = true;
     this->_xpos = xpos;
     this->_ypos = ypos;
     this->_zpos = zpos;
     this->_xPosSpinBox->setValue(this->_xpos);
     this->_yPosSpinBox->setValue(this->_ypos);
     this->_zPosSpinBox->setValue(this->_zpos);
+    this->_parameterChangedByOtherWidget = false;
 
 
     return;
@@ -136,16 +150,22 @@ GetCameraParameterWidget::setCameraPosition( double xpos , double ypos , double 
 void
 GetCameraParameterWidget::updateAlpha(int alpha)
 {
+    if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
+        this->_parameterChangedByThisWidget = true;
+        emit this->ParameterChanged();
+    }
     if( this->_angleSliderChanged )emit this->EulerAngleUpdated(alpha , this->_beta , this->_gamma);
-    //if( this->_angleSliderChanged )emit this->EulerAngleUpdated(alpha - this->_alpha , 0 ,0);
     this->_alpha = alpha;
 }
 
 void
 GetCameraParameterWidget::updateBeta(int beta)
 {
+    if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
+        this->_parameterChangedByThisWidget = true;
+        emit this->ParameterChanged();
+    }
     if( this->_angleSliderChanged )emit this->EulerAngleUpdated(this->_alpha , beta , this->_gamma);
-    //if( this->_angleSliderChanged )emit this->EulerAngleUpdated( 0 , beta - this->_beta, 0 );
     this->_beta = beta;
 
 }
@@ -153,8 +173,11 @@ GetCameraParameterWidget::updateBeta(int beta)
 void
 GetCameraParameterWidget::updateGamma(int gamma)
 {
+    if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
+        this->_parameterChangedByThisWidget = true;
+        emit this->ParameterChanged();
+    }
     if( this->_angleSliderChanged )emit this->EulerAngleUpdated(this->_alpha , this->_beta , gamma);
-    //if( this->_angleSliderChanged ) emit this->EulerAngleUpdated( 0 , 0 , gamma - this->_gamma);
     this->_gamma = gamma;
 
 }
@@ -162,6 +185,10 @@ GetCameraParameterWidget::updateGamma(int gamma)
 void
 GetCameraParameterWidget::updateXPos(double xPos)
 {
+    if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
+        this->_parameterChangedByThisWidget = true;
+        emit this->ParameterChanged();
+    }
     this->_xpos = xPos;
     emit this->CameraPositionUpdated(this->_xpos,this->_ypos,this->_zpos);
 }
@@ -169,6 +196,10 @@ GetCameraParameterWidget::updateXPos(double xPos)
 void
 GetCameraParameterWidget::updateYPos(double yPos)
 {
+    if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
+        this->_parameterChangedByThisWidget = true;
+        emit this->ParameterChanged();
+    }
     this->_ypos = yPos;
     emit this->CameraPositionUpdated(this->_xpos,this->_ypos,this->_zpos);
 }
@@ -176,6 +207,10 @@ GetCameraParameterWidget::updateYPos(double yPos)
 void
 GetCameraParameterWidget::updateZPos(double zPos)
 {
+    if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
+        this->_parameterChangedByThisWidget = true;
+        emit this->ParameterChanged();
+    }
     this->_zpos = zPos;
     emit this->CameraPositionUpdated(this->_xpos,this->_ypos,this->_zpos);
 }
