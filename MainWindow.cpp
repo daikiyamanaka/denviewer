@@ -378,10 +378,23 @@ MainWindow::new_file ( void )
 void
 MainWindow::open ( void )
 {
-        QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( !this->_model.openMesh ( filename.toStdString() ) ) {
+    QStringList fileFilterList;
+    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("OBJ File(*.obj)");
+
+    QFileDialog *openDlg = new QFileDialog( this , tr("Open File"),".");
+    openDlg->setNameFilters(fileFilterList);
+    openDlg->setAcceptMode(QFileDialog::AcceptOpen);
+    QStringList fileNames;
+    if( openDlg->exec() ){
+        fileNames = openDlg->selectedFiles();
+    }
+
+        //QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
+        if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
+                return;
         } else {
             emit updated();
             emit cameraInitialized();
