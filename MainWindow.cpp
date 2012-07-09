@@ -79,6 +79,12 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_viewWidget = new ChangeViewAngle(angle);
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
+    int width = 800;
+    int height = 600;
+    this->_windowWidget = new ChangeWindowSizeWidget(width, height);
+    connect(this->_windowWidget, SIGNAL(updated(int,int)), this, SLOT(update_window_size(int,  int)));
+    connect(this->_windowWidget, SIGNAL(sizechanged(int,int)), this, SLOT(set_width_height(int,int)));
+
 	int alpha , beta , gamma;
     double xpos , ypos , zpos;
     this->_model.getEulerAngle(alpha , beta , gamma);
@@ -136,6 +142,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
+    boxLayout5->addWidget(this->_windowWidget);
     boxLayout5->addStretch( 1 );
 
     QWidget* widget1 = new QWidget;
@@ -171,12 +178,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         this->create_menus();
         this->create_toolbars();
         this->setWindowTitle ( tr ( "Viewer" ) );
-        this->setMinimumSize ( 800, 600 );
+        this->setMinimumSize ( 100, 100 );
         this->resize ( 800, 600 );
         connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
-
-
-
 
         return;
 }
@@ -298,9 +302,9 @@ MainWindow::create_actions ( void )
         connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
 
-
-//>>>>>>> master
-
+        //this->_sizeChange = new QAction(tr("Window Size Changed"), this);
+        //connect(this->_sizeChange, SIGNAL(resize()), this, set_width_height(int, int));
+        //QEvent::Resize();
         return;
 }
 void
@@ -675,6 +679,13 @@ MainWindow::update_euler_angle(int alpha, int beta, int gamma)
 }
 
 void
+MainWindow::update_window_size(int width, int height)
+{
+    this->resize(width, height);
+    emit updated();
+}
+
+void
 MainWindow::initialize_camera_position()
 {
     this->_cameraParameterWidget->setCameraPosition(this->_model.getCamera().getCenter().x(),
@@ -743,4 +754,12 @@ void MainWindow::lightswitch2(bool i){
 void MainWindow::lightset(void){
     this->_model.setLightPosition();
     emit updated();
+}
+
+void
+MainWindow::set_width_height(int width, int height)
+{
+    this->resize(width, height);
+    emit updated();
+    return;
 }

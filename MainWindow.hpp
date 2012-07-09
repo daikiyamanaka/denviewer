@@ -18,6 +18,7 @@ QT_END_NAMESPACE
 #include "GetCameraParameterWidget.hpp"
 #include "GetLightParameterWidget.hpp"
 #include "ShowVandFWidget.hpp"
+#include "ChangeWindowSizeWidget.hpp"//imamura
 
 class MainWindow : public QMainWindow
 {
@@ -32,6 +33,7 @@ private:
 		GetCameraParameterWidget* _cameraParameterWidget;
         GetLightParameterWidget* _lightParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
+        ChangeWindowSizeWidget* _windowWidget;
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
@@ -71,6 +73,8 @@ private slots:
         void lightswitch1(bool i);
         void lightswitch2(bool i);
         void lightset(void);
+        void update_window_size(int width, int height);
+        void set_width_height(int width, int height);
         //void
 private:
         void create_actions ( void );
@@ -123,7 +127,7 @@ private:
         QCheckBox* _lightCheckBox2;
         QCheckBox* _lightCheckBox3;
 
-
+        QAction* _sizeChange;
 
 //>>>>>>> master
 };
