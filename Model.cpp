@@ -1,11 +1,13 @@
 #include "Model.hpp"
 #include "ImporterMesh.hpp"
 #include "ExporterMesh.hpp"
+#include "ExporterStlBinary.hpp"
 #include "ImporterCamera.hpp"
 #include "ExporterCamera.hpp"
 
 #include "ImporterMeshStlBinary.hpp"
 #include "ImporterMeshObj.hpp"
+#include "ImporterStlAscii.hpp"
 
 #include "Tokenizer.hpp"
 
@@ -75,6 +77,8 @@ Model::openMesh ( const std::string& filename )
     std::string ext = tok.get( tok.size() - 1);
     if( ext == std::string("stl") ){
         importer = new ImporterMeshStlBinary(this->_mesh);
+        ImporterMeshStlBinary impb(this->_mesh);
+        if(!impb.check(filename) ) importer = new ImporterStlAscii(this->_mesh);
     }
     else if ( ext == std::string("obj") ){
         importer = new ImporterMeshObj(this->_mesh);
@@ -101,8 +105,12 @@ Model::openMesh ( const std::string& filename )
 bool
 Model::saveMesh ( const std::string& filename )
 {
-        ExporterMesh exporter ( this->_mesh );
-        return exporter.write ( filename );
+    ExporterMesh *exporter = NULL;
+    exporter = new ExporterStlBinary(this->_mesh);
+        //ExporterStlBinary exporter ( this->_mesh );
+    bool result = exporter->write(filename);
+    delete exporter;
+        return result;
 }
 bool
 Model::openCamera ( const std::string& filename )
@@ -395,7 +403,7 @@ void
 Model::getVertexandFace(int &ver, int &face){
 
     face = this->_mesh.getNumFaces();
-    ver = face*3;
+    ver = this->_mesh.getNumVertex();
 }
 
 void
