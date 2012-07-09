@@ -110,6 +110,17 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
+    this->_saveMeshAsciiButton = new QRadioButton( tr("Ascii") );
+    this->_saveMeshBinaryButton= new QRadioButton( tr("Binary") );
+    this->_saveMeshAsciiButton->setChecked(true);
+    QVBoxLayout *saveBoxLayout = new QVBoxLayout;
+    saveBoxLayout->addWidget(this->_saveMeshAsciiButton);
+    saveBoxLayout->addWidget(this->_saveMeshBinaryButton);
+    QGroupBox *saveGroupBox = new QGroupBox( tr("Save") );
+    saveGroupBox->setLayout(saveBoxLayout);
+
+    connect(this->_saveMeshBinaryButton , SIGNAL(toggled(bool)) ,this ,SLOT(save_mesh_binary(bool)) );
+
     //ViewTab—p
     QVBoxLayout *boxLayout3 = new QVBoxLayout;
     boxLayout3->addWidget ( groupBox1 );
@@ -129,6 +140,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
+    boxLayout5->addWidget(saveGroupBox);
     boxLayout5->addStretch( 1 );
 
     QWidget* widget1 = new QWidget;
@@ -408,12 +420,26 @@ MainWindow::open ( void )
 void
 MainWindow::save ( void )
 {
-        QString filename = QFileDialog::getSaveFileName ( this, tr ( "Save file to" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( !this->_model.saveMesh ( filename.toStdString() ) ) {
-                QString  message ( tr ( "Save failed." ) );
-                statusBar()->showMessage ( message );
-        }
-        return;
+    QStringList fileFilterList;
+    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("OBJ File(*.obj)");
+
+    QFileDialog *saveDlg = new QFileDialog( this , tr("Save File"),".");
+    saveDlg->setNameFilters(fileFilterList);
+    saveDlg->setAcceptMode(QFileDialog::AcceptSave);
+    saveDlg->setConfirmOverwrite(true);
+
+    QStringList fileNames;
+    if(saveDlg->exec()){
+        fileNames = saveDlg->selectedFiles();
+    }
+    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary ) ) {
+            QString message ( tr ( "Save failed." ) );
+            statusBar()->showMessage ( message );
+            return;
+    }
+
+    return;
 }
 
 void
@@ -746,4 +772,10 @@ void MainWindow::lightswitch2(bool i){
 void MainWindow::lightset(void){
     this->_model.setLightPosition();
     emit updated();
+}
+
+void MainWindow::save_mesh_binary(bool isBinary)
+{
+    this->_saveBinary = isBinary;
+    return;
 }

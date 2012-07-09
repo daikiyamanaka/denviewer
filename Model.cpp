@@ -1,13 +1,16 @@
 #include "Model.hpp"
 #include "ImporterMesh.hpp"
 #include "ExporterMesh.hpp"
-#include "ExporterStlBinary.hpp"
 #include "ImporterCamera.hpp"
 #include "ExporterCamera.hpp"
 
 #include "ImporterMeshStlBinary.hpp"
 #include "ImporterMeshObj.hpp"
 #include "ImporterStlAscii.hpp"
+
+#include "ExporterStlBinary.hpp"
+#include "ExporterStlAscii.hpp"
+#include "ExporterObj.hpp"
 
 #include "Tokenizer.hpp"
 
@@ -103,14 +106,25 @@ Model::openMesh ( const std::string& filename )
         return result;
 }
 bool
-Model::saveMesh ( const std::string& filename )
+Model::saveMesh ( const std::string& filename, bool isBinary )
 {
     ExporterMesh *exporter = NULL;
-    exporter = new ExporterStlBinary(this->_mesh);
-        //ExporterStlBinary exporter ( this->_mesh );
+    Tokenizer tok(filename, ".");
+    std::string ext = tok.get( tok.size() - 1);
+    if( ext == std::string("stl") ){
+        if( isBinary ) exporter = new ExporterStlBinary(this->_mesh);
+        else exporter = new ExporterStlAscii(this->_mesh);
+    }
+    else if ( ext == std::string("obj") ){
+        exporter = new ExporterObj(this->_mesh);
+    }
+    else {
+        return false;
+    }
+
     bool result = exporter->write(filename);
     delete exporter;
-        return result;
+    return result;
 }
 bool
 Model::openCamera ( const std::string& filename )
