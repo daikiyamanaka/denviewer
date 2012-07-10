@@ -29,5 +29,6 @@ private:
         void render_mesh ( void );
         void setLight ( const Light& light , const unsigned int number, const Eigen::Vector3f eye);
         void setLightColor( const Light& light , const unsigned int number, const Eigen::Vector3f color);
+        void render_arrow(void);
 };
 #endif // __VIEW_HPP__

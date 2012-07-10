@@ -23,7 +23,7 @@ public slots:
     void set_window_height(int height);
     void set_window_width(int width);
 protected:
-    void resizeEvent(QResizeEvent* event);
+    //void resizeEvent(QResizeEvent* event);
 
 };
 

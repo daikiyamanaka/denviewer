@@ -66,7 +66,7 @@ ChangeWindowSizeWidget::getWindowWidth(void)
     return this->spinwidth->value();
 }
 
-void
+/*void
 ChangeWindowSizeWidget::ResizeEvent(QResizeEvent *event)
 {
 
@@ -75,3 +75,4 @@ ChangeWindowSizeWidget::ResizeEvent(QResizeEvent *event)
     //this->_height = event->size().height();
     return;
 }
+*/

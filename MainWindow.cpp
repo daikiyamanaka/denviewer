@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
+
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
     QWidget* widget = new QWidget;
@@ -105,9 +106,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_lightCheckBox1->setChecked(true);
     this->_lightCheckBox2->setChecked(true);
     this->_lightCheckBox3->setChecked(true);
-
-    /*double xposlk, yposlk, zposlk;
-    this->_model.getLight(GL_LIGHT0);*/
 
     QPushButton *lightbutton = new QPushButton ( tr ( "Light Fit" ) ) ;
     connect ( lightbutton, SIGNAL ( pressed() ), this, SLOT ( lightset() ) );
@@ -511,57 +509,6 @@ MainWindow::mouse_dragged ( float x, float y )
         message += stry;
         message += tr ( ") " );
 
-    /*
-                QString  message ( tr ( "MouseDragging (" ) );
-                QString strw1;
-                strw1.setNum ( this->_model.getCamera().getRotation().w() );
-                message += strw1;
-                message += tr ( ", " );
-                QString strx1;
-                strx1.setNum ( this->_model.getCamera().getRotation().x() );
-                message += strx1;
-                message += tr ( ", " );
-                QString stry1;
-                stry1.setNum ( this->_model.getCamera().getRotation().y() );
-                message += stry1;
-                message += tr ( ", " );
-                QString strz1;
-                strz1.setNum ( this->_model.getCamera().getRotation().z() );
-                message += strz1;
-                message += tr ( ") (" );
-
-                Eigen::Vector3f eyeLine = this->_model.getCamera().getEye() - this->_model.getCamera().getCenter();
-                eyeLine.normalize();
-                Eigen::Vector3f nowUpvector = this->_model.getCamera().getUpVector();
-                float t = ( nowUpvector.z() - nowUpvector.x() )/( eyeLine.z()*nowUpvector.x() - eyeLine.x()*nowUpvector.z() );
-                Eigen::Vector3f newAxis = (Eigen::Vector3f(0,0,1.0f) + t * eyeLine);
-                newAxis.normalize();
-                Eigen::Vector3f a = Eigen::Vector3f(0,0,1.0f) - newAxis.z()*newAxis;
-                Eigen::Vector3f b = eyeLine - eyeLine.dot(newAxis)*newAxis;
-                a.normalize();
-                b.normalize();
-                float newradian = std::acos( a.dot ( b ) )*0.5;
-                const float newcost = std::cos(newradian);
-                const float newsint = std::sin(newradian);
-                //Eigen::Quaternionf newq ( -newcost, newsint * newAxis.x(), newsint * newAxis.y(), newsint * newAxis.z() );
-
-                QString strw2;
-                strw2.setNum ( -newcost );
-                message += strw2;
-                message += tr ( ", " );
-                QString strx2;
-                strx2.setNum ( newsint * newAxis.x() );
-                message += strx2;
-                message += tr ( ", " );
-                QString stry2;
-                stry2.setNum ( newsint * newAxis.y() );
-                message += stry2;
-                message += tr ( ", " );
-                QString strz2;
-                strz2.setNum ( newsint * newAxis.z() );
-                message += strz2;
-                message += tr ( ") " );*/
-
 		int alpha , beta , gamma;
         this->_model.getEulerAngle(alpha , beta , gamma);
         this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
@@ -569,6 +516,11 @@ MainWindow::mouse_dragged ( float x, float y )
         double xpos , ypos , zpos;
         this->_model.getCameraPosition(xpos,ypos,zpos);
         this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
+        //double cx, cy, cz;
+        //this->_model.getCenterArrowPos(cx, cy, cz);
+        this->_model.ChangeCenterArrow(xpos, ypos, zpos);
+        double cx , cy , cz;
+        this->_model.getCenterArrowPos(cx, cy, cz);
 
         /*
         Eigen::Vector3f bmin , bmax;
@@ -667,7 +619,8 @@ void MainWindow::update_perspective_angle(void){
 void
 MainWindow::update_camera_position(double xpos, double ypos, double zpos)
 {
-    this->_model.setCameraPosition(xpos,ypos,zpos);
+    this->_model.setCameraPosition(xpos, ypos, zpos);
+    this->_model.ChangeCenterArrow(xpos, ypos, zpos);
     emit updated();
 }
 
@@ -694,6 +647,7 @@ MainWindow::initialize_camera_position()
     int alpha , beta , gamma;
     this->_model.getEulerAngle(alpha,beta,gamma);
     this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
+    this->_model.setCenterArrowPos();
     return;
 }
 

@@ -4,6 +4,7 @@
 #include "Mesh.hpp"
 #include "Light.hpp"
 #include "Camera.hpp"
+#include "CenterArrow.hpp"
 
 class Model
 {
@@ -15,6 +16,7 @@ private:
         Light _backlight;
         Camera _camera;
         Preference _preference;
+        CenterArrow _carrow;
 
 
 public:
@@ -26,6 +28,7 @@ public:
         const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
         const Preference& getPreference ( void );
+        const CenterArrow& getCenterArrow(void);
 
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
@@ -69,5 +72,9 @@ public:
         void getVertexandFace(int &ver, int &face);
         void setLightPosition(void);
         void changeLightPosition(const unsigned int number, float a, float b, float c);
+
+        void getCenterArrowPos(double &xpos , double &ypos , double &zpos);
+        void setCenterArrowPos();
+        void ChangeCenterArrow(double xpos, double ypos, double zpos);
 };
 #endif // __MODEL_HPP__

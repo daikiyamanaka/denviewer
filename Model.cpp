@@ -56,6 +56,12 @@ Model::getPreference ( void )
         return this->_preference;
 }
 
+const CenterArrow&
+Model::getCenterArrow(void)
+{
+    return this->_carrow;
+}
+
 bool
 Model::initMesh ( void )
 {
@@ -436,4 +442,36 @@ void Model::changeLightPosition(const unsigned int number, float a, float b, flo
         lightpos = this->_backlight.getLight(number) + a*up + b*side + c*tocentere;
         this->_backlight.setPosition(lightpos);
     }*/
+}
+
+void
+Model::getCenterArrowPos(double &xpos , double &ypos , double &zpos)
+{
+    Eigen::Vector3f center = this->_carrow.GetCenter();
+    xpos = center(0);
+    ypos = center(1);
+    zpos = center(2);
+
+    return;
+}
+
+void
+Model::setCenterArrowPos()
+{
+    Eigen::Vector3f bmin  , bmax;
+    this->_mesh.getBoundingBox(bmin , bmax);
+    Eigen::Vector3f modelCenter = (bmin + bmax)*0.5;
+    this->_camera.getCenter();
+    this->_carrow.setCenterVec(modelCenter,
+                               this->_camera.getUpVector(),
+                               this->_camera.getEye(),
+                               this->_camera.getDistanceToCenter()*0.5);
+    return;
+}
+
+void
+Model::ChangeCenterArrow(double xpos, double ypos, double zpos)
+{
+    this->_carrow.setCenter(xpos, ypos, zpos);
+    return;
 }

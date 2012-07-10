@@ -1,5 +1,6 @@
 #include "View.hpp"
 #include "Model.hpp"
+
 /*
 #include <qgl.h>
 #if defined(Q_WS_MAC)
@@ -139,6 +140,7 @@ View::render ( void )
         }
         ::glCallList(this->_drawMesh);
         //this->render_mesh();
+        this->render_arrow();
         return;
 }
 void
@@ -185,6 +187,7 @@ View::render_mesh ( void )
                 }
         }
         ::glEnd();
+
         return;
 }
 
@@ -233,4 +236,36 @@ View::createDisplayList( void )
     this->render_mesh();
     ::glEndList();
 
+}
+
+void
+View::render_arrow(void)
+{
+    glDisable(GL_LIGHTING);
+
+    const CenterArrow& carrow = this->_model.getCenterArrow();
+
+    float scale = carrow.GetScale()/5.0;
+    Eigen::Vector3f center = carrow.GetCenter();
+
+    glColor3f(1.0, 0.0, 0.0);
+    glBegin(GL_LINES);
+    Eigen::Vector3f up = center + scale*carrow.GetXvec();
+    glVertex3f(center[0], center[1], center[2]);
+    glVertex3f(up[0], up[1], up[2]);
+    glEnd();
+
+    glColor3f(0.0, 1.0, 0.0);
+    glBegin(GL_LINES);
+    Eigen::Vector3f side = center + scale*carrow.GetYvec();
+    glVertex3f(center[0], center[1], center[2]);
+    glVertex3f(side[0], side[1], side[2]);
+    glEnd();
+
+    glColor3f(0.0, 0.0, 1.0);
+    glBegin(GL_LINES);
+    Eigen::Vector3f in = center + scale*carrow.GetZvec();
+    glVertex3f(center[0], center[1], center[2]);
+    glVertex3f(in[0], in[1], in[2]);
+    glEnd();
 }

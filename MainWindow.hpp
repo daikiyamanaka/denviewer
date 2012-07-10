@@ -75,7 +75,7 @@ private slots:
         void lightset(void);
         void update_window_size(int width, int height);
         void set_width_height(int width, int height);
-        //void
+
 private:
         void create_actions ( void );
         void create_menus ( void );
