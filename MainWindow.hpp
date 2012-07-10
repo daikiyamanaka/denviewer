@@ -63,7 +63,8 @@ private slots:
         void wheel_spined( float x , float y , float step );
         void back_camera( void );
         void forward_camera( void );
-        void add_now_camera_to_list(  );
+        void add_now_camera_to_list( void );
+        void save_mesh_binary( bool isBinary );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
@@ -128,6 +129,11 @@ private:
 
         QAction* _backCamera;
         QAction* _forwardCamera;
+
+        QRadioButton* _saveMeshBinaryButton;
+        QRadioButton* _saveMeshAsciiButton;
+        bool _saveBinary;
+
 
 
 
