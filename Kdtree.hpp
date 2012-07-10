@@ -21,7 +21,7 @@
      * @note You can integrate with any own vector types, but it must have  following two methods:
      * @li T::operator[](int);
      * @li T::T(const T& d);
-     * @li T::copy( const T& d) copying entity of d.
+     * @li T::copy( const T& d) copying entity of d.//T::operator=( const T& d )
      */
     template <typename T, size_t Dim = 3>
     class Kdtree
