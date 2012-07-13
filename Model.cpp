@@ -7,6 +7,7 @@
 #include "ImporterMeshStlBinary.hpp"
 #include "ImporterMeshObj.hpp"
 #include "ImporterStlAscii.hpp"
+#include "ImporterPointsCloudPcdAscii.hpp"
 
 #include "ExporterStlBinary.hpp"
 #include "ExporterStlAscii.hpp"
@@ -85,6 +86,9 @@ Model::openMesh ( const std::string& filename )
     }
     else if ( ext == std::string("obj") ){
         importer = new ImporterMeshObj(this->_mesh);
+    }
+    else if(ext == std::string("pcd") ){
+        importer = new ImporterPointsCloudPcdAscii(this->_mesh);
     }
     else {
         return false;

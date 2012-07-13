@@ -22,7 +22,6 @@ ImporterMeshObj::read ( const std::string& filename )
         if ( !fin.is_open() ) {
                 return false;
         }
-	std::deque<Eigen::Vector3f> pos;
 
     //std::deque<int> index;
     std::deque<std::vector<int> > index;

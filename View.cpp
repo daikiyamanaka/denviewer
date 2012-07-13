@@ -171,26 +171,42 @@ void
 View::render_mesh ( void )
 {
         const Mesh& mesh = this->_model.getMesh();
-        ::glBegin ( GL_TRIANGLES );
-        for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
+        bool index_data = mesh.IndexDataExists();
+        bool vnormal_data = mesh.VNormalDataExists();
 
-            ShadingMode shading = this->_model.getPreference().getShadingMode();
-            if(shading == FLAT){
-                const Eigen::Vector3f nrm = mesh.getNormal ( i );
-                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-            }
+        if( index_data ){
+            ::glBegin ( GL_TRIANGLES );
+            for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
 
-                const std::vector<int> index = mesh.getIndex(i);
-                for( int j = 0; j < 3; j++){
-                    if(shading == SMOOTH){
-                        const Eigen::Vector3f n = mesh.getVNormal( index[j] );
-                        ::glNormal3f ( n.x(),n.y(),n.z() );
-                    }
-                    const Eigen::Vector3f p = mesh.getPosition ( index[j] );
-                    ::glVertex3f ( p.x(), p.y(), p.z() );
+                ShadingMode shading = this->_model.getPreference().getShadingMode();
+                if(shading == FLAT){
+                    const Eigen::Vector3f nrm = mesh.getNormal ( i );
+                    ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
                 }
+
+                    const std::vector<int> index = mesh.getIndex(i);
+                    for( int j = 0; j < 3; j++){
+                        if(shading == SMOOTH){
+                            const Eigen::Vector3f n = mesh.getVNormal( index[j] );
+                            ::glNormal3f ( n.x(),n.y(),n.z() );
+                        }
+                        const Eigen::Vector3f p = mesh.getPosition ( index[j] );
+                        ::glVertex3f ( p.x(), p.y(), p.z() );
+                    }
+            }
+            ::glEnd();
+        }else{
+            ::glBegin ( GL_POINTS );
+            for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+                if( vnormal_data ){
+                    const Eigen::Vector3f nrm = mesh.getVNormal(i);
+                    ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+                }
+                const Eigen::Vector3f p = mesh.getPosition(i);
+                ::glVertex3f ( p.x(), p.y(), p.z() );
+            }
+             ::glEnd();
         }
-        ::glEnd();
         return;
 }
 
