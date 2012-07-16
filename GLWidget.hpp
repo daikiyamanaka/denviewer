@@ -16,6 +16,7 @@ private:
         View& _view;
         MouseListener *_ball;
         MouseListener *_move;
+        //ChangeWindowSizeWidget* _changewh;
         //VirtualTrackball* _ball;
 public:
         GLWidget ( Model& model, View& view, QWidget *parent = 0 );
@@ -27,6 +28,7 @@ signals:
         void mouseDragged ( float x, float y );
         void fileDropped ( QString file);
         void wheelSpined ( float x , float y , float step );
+        void resizedWindow(int width, int height);
 protected:
         void initializeGL ( void  );
         void paintGL ( void ) ;

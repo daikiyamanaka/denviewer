@@ -34,6 +34,7 @@ private:
         GetLightParameterWidget* _lightParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
         ChangeWindowSizeWidget* _windowWidget;
+        int oldw, oldh;
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
@@ -75,6 +76,7 @@ private slots:
         void lightset(void);
         void update_window_size(int width, int height);
         void set_width_height(int width, int height);
+        void set_carrow(bool i);
 
 private:
         void create_actions ( void );

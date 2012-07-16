@@ -49,7 +49,7 @@ void
 GLWidget::resizeGL ( int width, int height )
 {
         this->_view.resize ( width, height );
-
+    //emit resizedWindow(width, height);
         return;
 }
 
@@ -138,6 +138,7 @@ GLWidget::wheelEvent(QWheelEvent *event)
     emit this->wheelSpined( event->x() , event->y() , event->delta() );
 
 }
+
 WheelSpinEvent GLWidget::convert_qwheel_event(QWheelEvent *event)
 {
     const int x = event->x();

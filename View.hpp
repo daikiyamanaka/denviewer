@@ -14,6 +14,7 @@ class View
 private:
         Model& _model;
         ::GLuint _drawMesh;
+        bool _carrow;
 public:
         View ( Model& model );
         virtual ~View ( void );
@@ -23,6 +24,7 @@ public:
         //
         void onLight( const unsigned int number);
         void offLight( const unsigned int number);
+        void carrow(bool arrow);
 
         void createDisplayList(void);
 private:

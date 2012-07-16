@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
+#include "iostream"
 
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
@@ -12,6 +13,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
     connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
     connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
+
     /*
     QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
     QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
@@ -80,11 +82,16 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_viewWidget = new ChangeViewAngle(angle);
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
+    //windowsize
     int width = 800;
     int height = 600;
     this->_windowWidget = new ChangeWindowSizeWidget(width, height);
     connect(this->_windowWidget, SIGNAL(updated(int,int)), this, SLOT(update_window_size(int,  int)));
-    connect(this->_windowWidget, SIGNAL(sizechanged(int,int)), this, SLOT(set_width_height(int,int)));
+    connect (this->_windowWidget, SIGNAL(sizechanged(int,int)), this, SLOT(set_width_height(int,int)));
+
+    QRadioButton* _centerarrow = new QRadioButton(tr("Center Arrow"));
+    connect(_centerarrow, SIGNAL(toggled(bool)), this, SLOT(set_carrow(bool)));
+    _centerarrow->setChecked(true);
 
 	int alpha , beta , gamma;
     double xpos , ypos , zpos;
@@ -141,6 +148,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
     boxLayout5->addWidget(this->_windowWidget);
+    boxLayout5->addWidget(_centerarrow);
     boxLayout5->addStretch( 1 );
 
     QWidget* widget1 = new QWidget;
@@ -161,6 +169,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     tabWidget1->addTab(lightwidget, tr("Light"));
 
         tabWidget1->setMinimumWidth ( 250 );
+        oldw = 250;
 
         QHBoxLayout *layout = new QHBoxLayout;
         layout->setMargin ( 5 );
@@ -177,9 +186,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
         this->create_toolbars();
         this->setWindowTitle ( tr ( "Viewer" ) );
         this->setMinimumSize ( 100, 100 );
-        this->resize ( 800, 600 );
+        //this->resize ( 800, 600 );
         connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
-
+        std::cerr << "w =" << this->size().width() << " h = " <<this->size().height() << std::endl;
         return;
 }
 
@@ -243,23 +252,6 @@ MainWindow::create_actions ( void )
         //Preference
         this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
 
-
-/*<<<<<<< HEAD
-        //rendering
-        this->_rendering = new QMenu ( tr ( "Rendering" ));
-        this->_pointcrowds = new QAction (tr("Point crouds"), this);
-        this->_wireflame = new QAction ( tr ( "wire flame" ), this );
-        this->_flatshading = new QAction ( tr ( "flat shading" ), this );
-        this->_rendering->addAction(_pointcrowds);
-        this->_rendering->addAction(_wireflame);
-        this->_rendering->addAction(_flatshading);
-
-        //light
-        this->_light = new QMenu( tr ("LIght"));
-
-        //camera
-        this->_camera = new QMenu(tr ("Camera"));
-=======*/
         this->_renderPointAct = new QAction( tr("&Point") , this );
         this->_renderPointAct->setStatusTip("Rendering Points");
         this->_renderPointAct->setCheckable(true);
@@ -634,7 +626,11 @@ MainWindow::update_euler_angle(int alpha, int beta, int gamma)
 void
 MainWindow::update_window_size(int width, int height)
 {
-    this->resize(width, height);
+    int h = size().height();
+    //this->resize(oldw+width, height);
+    //oldh = height;
+    //this->_view.resize(width, height);
+    this->_glwidget->resize(width, height);
     emit updated();
 }
 
@@ -713,7 +709,16 @@ void MainWindow::lightset(void){
 void
 MainWindow::set_width_height(int width, int height)
 {
-    this->resize(width, height);
+
+    this->_windowWidget->setWindowHeight(height);
+    this->_windowWidget->setWindowWidth(width);
     emit updated();
-    return;
+    //return;
+}
+
+void
+MainWindow::set_carrow(bool i)
+{
+    this->_view.carrow(i);
+    emit updated();
 }

@@ -1,4 +1,5 @@
 #include "ChangeWindowSizeWidget.hpp"
+#include "iostream"
 
 ChangeWindowSizeWidget::ChangeWindowSizeWidget(int width, int height, QWidget *parent) :
     QWidget(parent)
@@ -66,13 +67,27 @@ ChangeWindowSizeWidget::getWindowWidth(void)
     return this->spinwidth->value();
 }
 
-/*void
-ChangeWindowSizeWidget::ResizeEvent(QResizeEvent *event)
+void
+ChangeWindowSizeWidget::setWindowWidth(int width)
 {
-
-    event->size();
-    //this->_width = event->size().width();
-    //this->_height = event->size().height();
+    this->_width = width;
+    this->spinwidth->setValue(width);
     return;
 }
-*/
+
+void
+ChangeWindowSizeWidget::setWindowHeight(int height)
+{
+    this->_height = height;
+    this->spinheight->setValue(height);
+    return;
+}
+
+void
+ChangeWindowSizeWidget::resizeEvent(QResizeEvent *event)
+{
+    int w = event->size().width();
+    int h = event->size().height();
+    emit sizechanged(w, h);
+    return;
+}

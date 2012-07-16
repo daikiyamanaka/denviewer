@@ -140,7 +140,8 @@ View::render ( void )
         }
         ::glCallList(this->_drawMesh);
         //this->render_mesh();
-        this->render_arrow();
+        if(this->_carrow)
+            this->render_arrow();
         return;
 }
 void
@@ -268,4 +269,11 @@ View::render_arrow(void)
     glVertex3f(center[0], center[1], center[2]);
     glVertex3f(in[0], in[1], in[2]);
     glEnd();
+}
+
+void
+View::carrow(bool arrow)
+{
+    this->_carrow = arrow;
+    return;
 }
