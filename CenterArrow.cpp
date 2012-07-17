@@ -5,17 +5,20 @@ CenterArrow::CenterArrow()
 }
 
 void
-CenterArrow::setCenterVec(const Eigen::Vector3f &modelcenter,
-                          const Eigen::Vector3f &upvec,
-                          const Eigen::Vector3f &camcenter,
-                          const float max)
+CenterArrow::setCenterVec(const Eigen::Vector3f modelcenter, const float max)
 {
+    Eigen::Vector3f x(1.0, 0.0, 0.0);
+    Eigen::Vector3f y(0.0, 1.0, 0.0);
+    Eigen::Vector3f z(0.0, 0.0, 1.0);
     this->_center = modelcenter;
-    this->_yvec = upvec;
+    /*this->_yvec = upvec;
     this->_zvec = modelcenter - camcenter;
     this->_zvec.normalize();
     this->_xvec = _yvec.cross(_zvec);
-    this->_xvec.normalize();
+    this->_xvec.normalize();*/
+    this->_yvec = y;
+    this->_xvec = x;
+    this->_zvec = z;
     this->_scale = max;
     return;
 }

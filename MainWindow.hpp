@@ -49,9 +49,9 @@ private slots:
         void openCamera ( void );
         void saveCamera ( void );
         void saveSnapshot( void );
-        void polygon_wireframe ( void );
-        void polygon_surface ( void );
-        void polygon_point ( void );
+        void polygon_wireframe ( bool checked );
+        void polygon_surface ( bool checked );
+        void polygon_point ( bool checked );
         void shading_flat ( void );
         void shading_smooth( void );
         void view_fit ( void );
@@ -66,6 +66,10 @@ private slots:
 		void update_euler_angle(int alpha , int beta , int gamma);
 		void initialize_camera_position();
         void wheel_spined( float x , float y , float step );
+        void back_camera( void );
+        void forward_camera( void );
+        void add_now_camera_to_list( void );
+        void save_mesh_binary( bool isBinary );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
@@ -115,9 +119,12 @@ private:
         QAction* _renderPointAct;
         QAction* _renderWireAct;
         QAction* _renderMeshAct;
-        QRadioButton* _pointRadioButton;
-        QRadioButton* _wireRadioButton;
-        QRadioButton* _surfaceRadioButton;
+        //QRadioButton* _pointRadioButton;
+        //QRadioButton* _wireRadioButton;
+        //QRadioButton* _surfaceRadioButton;
+        QCheckBox* _pointCheckBox;
+        QCheckBox* _wireCheckBox;
+        QCheckBox* _surfaceCheckBox;
 
         QRadioButton* _flatRadioButton;
         QRadioButton* _smoothRadioButton;
@@ -129,8 +136,14 @@ private:
         QCheckBox* _lightCheckBox2;
         QCheckBox* _lightCheckBox3;
 
-        QAction* _sizeChange;
+        //QAction* _sizeChange;
 
-//>>>>>>> master
+        QAction* _backCamera;
+        QAction* _forwardCamera;
+
+        QRadioButton* _saveMeshBinaryButton;
+        QRadioButton* _saveMeshAsciiButton;
+        bool _saveBinary;
+
 };
 #endif // __MAIN_WINDOW_HPP__

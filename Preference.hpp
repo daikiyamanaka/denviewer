@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include "Color3f.hpp"
 enum RenderingMode {
-        WIRE = 0,
-        SURFACE = 1,
-        POINTCLOUD = 2
+        WIRE = 0x01,
+        SURFACE = 0x02,
+        POINTCLOUD = 0x04
 };
 
 enum ShadingMode {
@@ -25,7 +25,8 @@ private:
         int _wire_width;
         int _point_radius;
 
-        RenderingMode _status;
+        //RenderingMode _status;
+        int renderingMode;
         ShadingMode _shading;
 
 public:
@@ -38,7 +39,8 @@ public:
         void setPointColor ( const Color3f c );
         void setWireWidth( const int width );
         void setPointRadius( const int radius );
-        void setRenderingMode ( const RenderingMode status );
+        //void setRenderingMode ( const RenderingMode status );
+        void setRenderingMode(const int status);
         void setShadingMode( const ShadingMode shading);
 
         Color3f getBackgroundColor ( void ) const;
@@ -47,7 +49,8 @@ public:
         Color3f getPointColor ( void ) const;
         int getWireWidth( void ) const;
         int getPointRadius( void ) const;
-        RenderingMode getRenderingMode ( void ) const;
+        //RenderingMode getRenderingMode ( void ) const;
+        int getRenderingMode(void) const;
         ShadingMode getShadingMode( void ) const;
 };
 #endif // __PREFERENCE_HPP__

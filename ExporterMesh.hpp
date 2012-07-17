@@ -1,17 +1,20 @@
-#ifndef __EXPORTER_MESH_HPP__
-#define __EXPORTER_MESH_HPP__ 1
-#include <string>
-#include <Eigen/Dense>
+#ifndef EXPORTERMESH_HPP
+#define EXPORTERMESH_HPP
 #include "Mesh.hpp"
+#include "string"
+
+class Mesh;
 class ExporterMesh
 {
 private:
-        const Mesh& _mesh;
+    Mesh& _mesh;
 public:
-        ExporterMesh ( const Mesh& mesh );
-        virtual ~ExporterMesh ( void );
-        bool write ( const std::string& filename );
-private:
-        bool write_vec ( const Eigen::Vector3f& vec, std::ofstream& fout );
+    ExporterMesh( Mesh &mesh );
+    virtual ~ExporterMesh( void );
+    virtual bool write( const std::string & filename) = 0;
+
+protected:
+   Mesh& getMesh( void );
 };
-#endif // __ExPORTER_MESH_HPP__
+
+#endif // EXPORTERMESH_HPP

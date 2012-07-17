@@ -5,6 +5,8 @@
 #include "Light.hpp"
 #include "Camera.hpp"
 #include "CenterArrow.hpp"
+#include "deque"
+
 
 class Model
 {
@@ -16,7 +18,11 @@ private:
         Light _backlight;
         Camera _camera;
         Preference _preference;
+
         CenterArrow _carrow;
+
+        std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
+        int _NowCameraId;
 
 
 public:
@@ -32,10 +38,12 @@ public:
 
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
-        bool saveMesh ( const std::string& filename );
+        bool saveMesh ( const std::string& filename , bool isBinary = false );
         bool openCamera ( const std::string& filename );
         bool saveCamera ( const std::string& filename );
-        void setRenderingMode ( const RenderingMode mode );
+        //void setRenderingMode ( const RenderingMode mode );
+        void setRenderingMode(const int mode);
+        int getRenderingMode();
         void setShadingMode (const ShadingMode shading);
         void viewFit ( void );
         void viewInit ( void );
@@ -67,6 +75,9 @@ public:
         void getDistanceToCenter( float &d );
         void setDistanceToCenter( const float d );
         void getDisplayRange( double &near , double &far  );
+        void addNowCameraToList( void );
+        void backCamera( void );
+        void forwardCamera( void );
 
         //imamura
         void getVertexandFace(int &ver, int &face);

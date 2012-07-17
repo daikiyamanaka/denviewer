@@ -112,3 +112,4 @@ Camera::copy ( const Camera& that )
         this->_rotation = that._rotation;
         return;
 }
+

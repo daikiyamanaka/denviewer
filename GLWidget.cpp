@@ -56,6 +56,7 @@ GLWidget::resizeGL ( int width, int height )
 void
 GLWidget::mousePressEvent ( QMouseEvent* event )
 {
+    this->_model.addNowCameraToList();
         MouseEvent e = this->convert_qmouse_event ( event );
         this->_ball = new VirtualTrackball(this->_model);
         this->_move = new Translation(this->_model);
@@ -127,6 +128,7 @@ GLWidget::dropEvent(QDropEvent *event)
 void
 GLWidget::wheelEvent(QWheelEvent *event)
 {
+    this->_model.addNowCameraToList();
     WheelSpinEvent e = this->convert_qwheel_event(event);
     float d;
     this->_model.getDistanceToCenter(d);

@@ -14,27 +14,19 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
     connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
 
-    /*
-    QRadioButton *radioButton1 = new QRadioButton ( tr ( "Wireframe" ) );
-    QRadioButton *radioButton2 = new QRadioButton ( tr ( "Surface" ) );
-    radioButton2->setChecked ( true );
-    connect ( radioButton1, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
-    connect ( radioButton2, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
-    */
-
     //Rendering Mode
-    this->_pointRadioButton = new QRadioButton( tr("Points") );
-    this->_wireRadioButton = new QRadioButton ( tr ( "Wireframe" ) );
-    this->_surfaceRadioButton = new QRadioButton ( tr ( "Surface" ) );
-    this->_surfaceRadioButton->setChecked( true );
-    connect (this->_pointRadioButton, SIGNAL(pressed()), this , SLOT(polygon_point()) );
-    connect ( this->_wireRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_wireframe() ) );
-    connect ( this->_surfaceRadioButton, SIGNAL ( pressed() ), this, SLOT ( polygon_surface() ) );
+    this->_pointCheckBox = new QCheckBox(tr("Points"));
+    this->_pointCheckBox->setChecked(false);
+    this->_wireCheckBox = new QCheckBox(tr("Wireframe"));
+    this->_wireCheckBox->setChecked(false);
+    this->_surfaceCheckBox = new QCheckBox(tr("Surface"));
+    this->_surfaceCheckBox->setChecked(true);
 
     QVBoxLayout *boxLayout1 = new QVBoxLayout;
-    boxLayout1->addWidget ( this->_pointRadioButton );
-    boxLayout1->addWidget ( this->_wireRadioButton );
-    boxLayout1->addWidget ( this->_surfaceRadioButton );
+
+    boxLayout1->addWidget(this->_pointCheckBox);
+    boxLayout1->addWidget(this->_wireCheckBox);
+    boxLayout1->addWidget(this->_surfaceCheckBox);
     boxLayout1->addStretch ( 1 );
 
     QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
@@ -104,9 +96,11 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(this->_cameraParameterWidget,SIGNAL(EulerAngleUpdated(int,int,int)),
             this , SLOT(update_euler_angle(int,int,int)));
 
-    this->_lightCheckBox1 = new QCheckBox(tr ( "Light1" ));
-    this->_lightCheckBox2 = new QCheckBox(tr ( "Light2" ));
-    this->_lightCheckBox3 = new QCheckBox(tr ( "Light3" ));
+    connect(this->_cameraParameterWidget, SIGNAL(ParameterChanged()) , this , SLOT(add_now_camera_to_list()));
+
+    this->_lightCheckBox1 = new QCheckBox(tr ( "Key Light" ));
+    this->_lightCheckBox2 = new QCheckBox(tr ( "Fill Light" ));
+    this->_lightCheckBox3 = new QCheckBox(tr ( "Back Light" ));
     connect ( this->_lightCheckBox1, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch0(bool) ) );
     connect ( this->_lightCheckBox2, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch1(bool) ) );
     connect ( this->_lightCheckBox3, SIGNAL ( toggled(bool) ), this, SLOT ( lightswitch2(bool) ) );
@@ -129,6 +123,17 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
+    this->_saveMeshAsciiButton = new QRadioButton( tr("Ascii") );
+    this->_saveMeshBinaryButton= new QRadioButton( tr("Binary") );
+    this->_saveMeshAsciiButton->setChecked(true);
+    QVBoxLayout *saveBoxLayout = new QVBoxLayout;
+    saveBoxLayout->addWidget(this->_saveMeshAsciiButton);
+    saveBoxLayout->addWidget(this->_saveMeshBinaryButton);
+    QGroupBox *saveGroupBox = new QGroupBox( tr("Save") );
+    saveGroupBox->setLayout(saveBoxLayout);
+
+    connect(this->_saveMeshBinaryButton , SIGNAL(toggled(bool)) ,this ,SLOT(save_mesh_binary(bool)) );
+
     //ViewTab—p
     QVBoxLayout *boxLayout3 = new QVBoxLayout;
     boxLayout3->addWidget ( groupBox1 );
@@ -142,13 +147,18 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     //boxLayout4->addWidget(groupBox2);
     boxLayout4->addWidget(this->_cameraParameterWidget);
     boxLayout4->addWidget(this->_viewWidget);
+
     boxLayout4->addStretch( 1 );
 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
+
     boxLayout5->addWidget(this->_windowWidget);
     boxLayout5->addWidget(_centerarrow);
+
+    boxLayout5->addWidget(saveGroupBox);
+
     boxLayout5->addStretch( 1 );
 
     QWidget* widget1 = new QWidget;
@@ -252,49 +262,64 @@ MainWindow::create_actions ( void )
         //Preference
         this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
 
+
+        this->_backCamera = new QAction( tr("Back Camera") , this );
+        this->_backCamera->setShortcut(QKeySequence::Undo);
+        this->_backCamera->setStatusTip ( "Back Camera." );
+        connect ( this->_backCamera, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
+
+        this->_forwardCamera = new QAction( tr("Forward Camera") , this );
+        this->_forwardCamera->setShortcut(QKeySequence::Redo);
+        this->_forwardCamera->setStatusTip ( "Forward Camera." );
+        connect ( this->_forwardCamera, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
+
         this->_renderPointAct = new QAction( tr("&Point") , this );
         this->_renderPointAct->setStatusTip("Rendering Points");
         this->_renderPointAct->setCheckable(true);
-        connect(this->_renderPointAct , SIGNAL(triggered()), this , SLOT(polygon_point()));
-        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointRadioButton , SLOT(setChecked(bool)));
-        connect(this->_pointRadioButton , SIGNAL(toggled(bool)), this->_renderPointAct , SLOT(setChecked(bool)));
+        //this->_renderPointAct->toggled();
+        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this , SLOT(polygon_point(bool)));
+        //connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointRadioButton , SLOT(setChecked(bool)));
+        //connect(this->_pointRadioButton , SIGNAL(toggled(bool)), this->_renderPointAct , SLOT(setChecked(bool)));
+        connect(this->_renderPointAct , SIGNAL(toggled(bool)), this->_pointCheckBox , SLOT(setChecked(bool)));
+        connect(this->_pointCheckBox, SIGNAL(toggled(bool)), this->_renderPointAct, SLOT(setChecked(bool)));
 
         this->_renderWireAct = new QAction( tr("&Wire") , this );
         this->_renderWireAct->setStatusTip("Rendering Wireflame");
         this->_renderWireAct->setCheckable(true);
-        connect(this->_renderWireAct , SIGNAL(triggered()), this , SLOT(polygon_wireframe()));
-        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireRadioButton , SLOT(setChecked(bool)));
-        connect( this->_wireRadioButton , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
+        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this , SLOT(polygon_wireframe(bool)));
+        //connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireRadioButton , SLOT(setChecked(bool)));
+        //connect( this->_wireRadioButton , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
+        connect(this->_renderWireAct , SIGNAL(toggled(bool)), this->_wireCheckBox , SLOT(setChecked(bool)));
+        connect( this->_wireCheckBox , SIGNAL(toggled(bool)), this->_renderWireAct , SLOT(setChecked(bool)));
 
         this->_renderMeshAct = new QAction( tr("&Surface") , this );
         this->_renderMeshAct->setStatusTip("Rendering Surface");
         this->_renderMeshAct->setCheckable(true);
         this->_renderMeshAct->setChecked(true);
-        connect(this->_renderMeshAct , SIGNAL(triggered()), this , SLOT(polygon_surface()));
-        connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceRadioButton , SLOT(setChecked(bool)));
-        connect(this->_surfaceRadioButton, SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
+        connect(this->_renderMeshAct , SIGNAL(toggled(bool)), this , SLOT(polygon_surface(bool)));
+        //connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceRadioButton , SLOT(setChecked(bool)));
+        //connect(this->_surfaceRadioButton, SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
+        connect(this->_renderMeshAct, SIGNAL(toggled(bool)), this->_surfaceCheckBox , SLOT(setChecked(bool)));
+        connect( this->_surfaceCheckBox , SIGNAL(toggled(bool)), this->_renderMeshAct , SLOT(setChecked(bool)));
 
-        this->_lightAct1 = new QAction( tr("Light1"), this);
+        this->_lightAct1 = new QAction( tr("Key Light"), this);
         this->_lightAct1->setCheckable(true);
         this->_lightAct1->setChecked(true);
         connect(this->_lightAct1 , SIGNAL(triggered(bool)), this->_lightCheckBox1 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox1 , SIGNAL(toggled(bool)) , this->_lightAct1 , SLOT(setChecked(bool)));
 
-        this->_lightAct2 = new QAction( tr("Light2"), this);
+        this->_lightAct2 = new QAction( tr("Fill Light"), this);
         this->_lightAct2->setCheckable(true);
         this->_lightAct2->setChecked(true);
         connect(this->_lightAct2 , SIGNAL(triggered(bool)), this->_lightCheckBox2 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox2 , SIGNAL(toggled(bool)) , this->_lightAct2 , SLOT(setChecked(bool)));
 
-        this->_lightAct3 = new QAction( tr("Light3"), this);
+        this->_lightAct3 = new QAction( tr("Back Light"), this);
         this->_lightAct3->setCheckable(true);
         this->_lightAct3->setChecked(true);
         connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
 
-        //this->_sizeChange = new QAction(tr("Window Size Changed"), this);
-        //connect(this->_sizeChange, SIGNAL(resize()), this, set_width_height(int, int));
-        //QEvent::Resize();
         return;
 }
 void
@@ -329,6 +354,8 @@ MainWindow::create_menus ( void )
     this->_lightSubMenu->addAction(this->_lightAct2);
     this->_lightSubMenu->addAction(this->_lightAct3);
     this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
+    this->_cameraSubMenu->addAction(this->_backCamera);
+    this->_cameraSubMenu->addAction(this->_forwardCamera);
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
 //>>>>>>> master
         return;
@@ -361,10 +388,23 @@ MainWindow::new_file ( void )
 void
 MainWindow::open ( void )
 {
-        QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( !this->_model.openMesh ( filename.toStdString() ) ) {
+    QStringList fileFilterList;
+    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("OBJ File(*.obj)");
+
+    QFileDialog *openDlg = new QFileDialog( this , tr("Open File"),".");
+    openDlg->setNameFilters(fileFilterList);
+    openDlg->setAcceptMode(QFileDialog::AcceptOpen);
+    QStringList fileNames;
+    if( openDlg->exec() ){
+        fileNames = openDlg->selectedFiles();
+    }
+
+        //QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
+        if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
+                return;
         } else {
             emit updated();
             emit cameraInitialized();
@@ -378,12 +418,26 @@ MainWindow::open ( void )
 void
 MainWindow::save ( void )
 {
-        QString filename = QFileDialog::getSaveFileName ( this, tr ( "Save file to" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( !this->_model.saveMesh ( filename.toStdString() ) ) {
-                QString  message ( tr ( "Save failed." ) );
-                statusBar()->showMessage ( message );
-        }
-        return;
+    QStringList fileFilterList;
+    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("OBJ File(*.obj)");
+
+    QFileDialog *saveDlg = new QFileDialog( this , tr("Save File"),".");
+    saveDlg->setNameFilters(fileFilterList);
+    saveDlg->setAcceptMode(QFileDialog::AcceptSave);
+    saveDlg->setConfirmOverwrite(true);
+
+    QStringList fileNames;
+    if(saveDlg->exec()){
+        fileNames = saveDlg->selectedFiles();
+    }
+    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary ) ) {
+            QString message ( tr ( "Save failed." ) );
+            statusBar()->showMessage ( message );
+            return;
+    }
+
+    return;
 }
 
 void
@@ -409,9 +463,16 @@ MainWindow::saveCamera ( void )
 }
 
 void
-MainWindow::polygon_wireframe ( void )
+MainWindow::polygon_wireframe ( bool checked)
 {
-        this->_model.setRenderingMode ( WIRE );
+    if(checked){
+        this->_model.setRenderingMode (this->_model.getRenderingMode() | WIRE);
+        //std::cout << "wire: checked" << std::endl;
+    }
+    else{
+        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
+        //std::cout << "wire: unchecked" << std::endl;
+    }
         QString  message ( tr ( "Wireframe mode" ) );
         statusBar()->showMessage ( message );
         emit updated();
@@ -419,9 +480,17 @@ MainWindow::polygon_wireframe ( void )
 }
 
 void
-MainWindow::polygon_surface ( void )
+MainWindow::polygon_surface ( bool checked)
 {
-        this->_model.setRenderingMode ( SURFACE );
+    if(checked){
+        this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
+        //std::cout << "surface: checked" << std::endl;
+    }
+    else{
+        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
+        //std::cout << "surface: unchecked" << std::endl;
+    }
+
         QString  message ( tr ( "Surface mode" ) );
         statusBar()->showMessage ( message );
         emit updated();
@@ -429,9 +498,16 @@ MainWindow::polygon_surface ( void )
 }
 
 void
-MainWindow::polygon_point( void )
+MainWindow::polygon_point( bool checked)
 {
-    this->_model.setRenderingMode(POINTCLOUD);
+    if(checked){
+        this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
+    }
+    else{
+        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
+    }
+
+    //this->_model.setRenderingMode(this->_model.getRenderingMode() | POINTCLOUD);
     QString  message ( tr ( "Point mode" ) );
     statusBar()->showMessage ( message );
     emit updated();
@@ -514,22 +590,6 @@ MainWindow::mouse_dragged ( float x, float y )
         double cx , cy , cz;
         this->_model.getCenterArrowPos(cx, cy, cz);
 
-        /*
-        Eigen::Vector3f bmin , bmax;
-        Mesh mesh;
-        mesh = this->_model.getMesh();
-        mesh.getBoundingBox(bmin,bmax);
-        Eigen::Vector3f mc = (bmin + bmax)*0.5;
-
-        Eigen::Vector3f eye = this->_model.getCamera().getEye();
-
-        double length = (eye-mc).norm();
-        //double length = std::sqrt( (xpos-mc.x())*(xpos-mc.x()) + (ypos-mc.y())*(ypos-mc.y()) + (zpos-mc.z())*(zpos-mc.z()) );
-        //double length = mc.x();
-        QString strz2;
-        strz2.setNum ( length );
-        message += strz2;*/
-
         statusBar()->showMessage ( message );
         return;
 
@@ -538,7 +598,7 @@ MainWindow::mouse_dragged ( float x, float y )
 void
 MainWindow::wheel_spined(float x, float y, float step)
 {
-    QString  message ( tr ( "MouseDragging (" ) );
+    QString  message ( tr ( "Wheel Spining (" ) );
     QString strx;
     strx.setNum ( x );
     message += strx;
@@ -648,6 +708,30 @@ MainWindow::initialize_camera_position()
 }
 
 void
+MainWindow::back_camera(void)
+{
+    QString  message ( tr ( "Back Camera" ) );
+    this->_model.backCamera();
+    emit updated();
+    statusBar()->showMessage ( message );
+}
+
+void
+MainWindow::forward_camera()
+{
+    QString  message ( tr ( "Forward Camera" ) );
+    this->_model.forwardCamera();
+    emit updated();
+    statusBar()->showMessage(message);
+}
+
+void
+MainWindow::add_now_camera_to_list()
+{
+    this->_model.addNowCameraToList();
+}
+
+void
 MainWindow::file_dropped(QString str){
     QString  message  = str +  QString( tr ( " reading...." ) );
     statusBar()->showMessage ( message );
@@ -721,4 +805,12 @@ MainWindow::set_carrow(bool i)
 {
     this->_view.carrow(i);
     emit updated();
+}
+
+void
+MainWindow::save_mesh_binary(bool isBinary)
+{
+    this->_saveBinary = isBinary;
+    return;
+
 }

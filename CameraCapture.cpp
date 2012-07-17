@@ -2,13 +2,13 @@
 
 CameraCapture::CameraCapture()
 {
-    init();
+    //init();
 }
 
 CameraCapture::~CameraCapture(){
 
 }
-
+/*
 void CameraCapture::captureImage(cv::Mat &img){
 
 }
@@ -16,4 +16,4 @@ void CameraCapture::captureImage(cv::Mat &img){
 void CameraCapture::init(){
 
 }
-
+*/

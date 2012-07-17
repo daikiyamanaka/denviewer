@@ -2,6 +2,8 @@
 #define __CAMERA_HPP__ 1
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#define EIGEN_DONT_ALIGN_STATICALLY
+
 class Camera
 {
 private:
@@ -10,6 +12,8 @@ private:
         float    _fieldOfViewAngle;
         Eigen::Quaternionf _rotation;
 public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         Camera ( const Eigen::Vector3f center = Eigen::Vector3f(), const float distanceToCenter = 10, const float fieldOfViewAngle = 60 );
         Camera ( const Camera& that );
         Camera& operator = ( const Camera& that );
@@ -28,6 +32,7 @@ public:
         void setRotation ( const Eigen::Quaternionf& rot );
         void setDistanceToCenter( const float d );
         void multiplyRotation ( const Eigen::Quaternionf& rotation );
+
 private:
         void copy ( const Camera& that );
 };

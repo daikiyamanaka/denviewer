@@ -13,10 +13,7 @@ private:
     float _scale;
 public:
     CenterArrow();
-    void setCenterVec(const Eigen::Vector3f& modelcenter,
-                      const Eigen::Vector3f& upvec,
-                      const Eigen::Vector3f& camcenter,
-                      const float max);
+    void setCenterVec(const Eigen::Vector3f modelcenter, const float max);
     void setCenter(double xpos, double ypos, double zpos);
     Eigen::Vector3f GetCenter(void) const;
     Eigen::Vector3f GetXvec(void) const;
