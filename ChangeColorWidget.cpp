@@ -3,7 +3,7 @@
 #include <QGridLayout>
 
 
-ChangeColorWidget::ChangeColorWidget(const QColor faceColor, const QColor backgroundColor, const QColor wireColor, const QColor lightColor, QWidget *parent ) : QWidget(parent) {
+ChangeColorWidget::ChangeColorWidget(const QColor faceColor, const QColor backgroundColor, const QColor wireColor, const QColor pointColor, const QColor lightColor, QWidget *parent ) : QWidget(parent) {
     //QHBoxLayout *hBoxLayout1 = new QHBoxLayout;
     QGridLayout * gridlayout = new QGridLayout;
     QPushButton *button3 = new QPushButton ( tr ( "Face Color" ) ) ;
@@ -25,13 +25,13 @@ ChangeColorWidget::ChangeColorWidget(const QColor faceColor, const QColor backgr
     this->_wireColorLabel->setPalette( wireColor);
     this->_wireColorLabel->setAutoFillBackground(true);
 
-    /*
-    QPushButton *vertexColorButton = new QPushButton(tr("Vertex Color"));
+
+    QPushButton *vertexColorButton = new QPushButton(tr("Point Color"));
     this->_vertexColorLabel = new QLabel;
     this->_vertexColorLabel->setFrameStyle(QFrame::Sunken | QFrame::Panel);
-    this->_faceColorLabel->setPalette( faceColor);
-    this->_faceColorLabel->setAutoFillBackground(true);
-    */
+    this->_vertexColorLabel->setPalette( pointColor);
+    this->_vertexColorLabel->setAutoFillBackground(true);
+
 
     QPushButton *lightColorButton = new QPushButton(tr("Light Color"));
     this->_lightColorLabel = new QLabel;
@@ -43,7 +43,7 @@ ChangeColorWidget::ChangeColorWidget(const QColor faceColor, const QColor backgr
     connect (backgroundColorButton, SIGNAL(pressed()), this, SLOT(setBackgroundColor()));
     connect (wireColorButton, SIGNAL(pressed()), this, SLOT(setWireColor()));
     connect (lightColorButton, SIGNAL(pressed()), this, SLOT(setLightColor()));
-//    connect (vertexColorButton, SIGNAL(pressed()), this, SLOT(setVertexColor()));
+    connect (vertexColorButton, SIGNAL(pressed()), this, SLOT(setVertexColor()));
 
     gridlayout->addWidget(button3, 0, 0);
     gridlayout->addWidget(this->_faceColorLabel, 0, 1);
@@ -51,10 +51,10 @@ ChangeColorWidget::ChangeColorWidget(const QColor faceColor, const QColor backgr
     gridlayout->addWidget(this->_backgroundColorLabel, 1, 1);
     gridlayout->addWidget( wireColorButton, 2, 0);
     gridlayout->addWidget(this->_wireColorLabel, 2, 1);
-    //gridlayout->addWidget( vertexColorButton, 3, 0);
-    //gridlayout->addWidget(this->_vertexColorLabel, 3, 1);
-    gridlayout->addWidget( lightColorButton, 3, 0);
-    gridlayout->addWidget(this->_lightColorLabel, 3, 1);
+    gridlayout->addWidget( vertexColorButton, 3, 0);
+    gridlayout->addWidget(this->_vertexColorLabel, 3, 1);
+    gridlayout->addWidget( lightColorButton, 4, 0);
+    gridlayout->addWidget(this->_lightColorLabel, 4, 1);
 
 
 

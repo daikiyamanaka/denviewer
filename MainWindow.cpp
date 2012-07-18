@@ -59,9 +59,11 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QColor background(r, g, b);
     this->_model.getWireColor(r, g, b);
     QColor wire(r, g, b);
+    this->_model.getVertexColor(r, g, b);
+    QColor vertex(r, g, b);
     this->_model.getLightColor(r, g, b);
     QColor light(r, g, b);
-    this->_colorWidget = new ChangeColorWidget(face, background, wire, light);
+    this->_colorWidget = new ChangeColorWidget(face, background, wire, vertex, light);
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
     int wirewidth = this->_model.getWireWidth();
@@ -145,28 +147,28 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     tabWidget1->addTab(widget2 ,tr("Camera") );
     tabWidget1->addTab(widget3 ,tr("MeshInfo") );
 
-        tabWidget1->setMinimumWidth ( 250 );
+    tabWidget1->setMinimumWidth ( 250 );
 
-        QHBoxLayout *layout = new QHBoxLayout;
-        layout->setMargin ( 5 );
-        layout->addWidget ( this->_glwidget );
-        layout->addWidget ( tabWidget1 );
-        //layout->addWidget ( tabWidget2 );
-        widget->setLayout ( layout );
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin ( 5 );
+    layout->addWidget ( this->_glwidget );
+    layout->addWidget ( tabWidget1 );
+    //layout->addWidget ( tabWidget2 );
+    widget->setLayout ( layout );
 
-        QString message = tr ( "A context menu is available by right-clicking" );
-        this->statusBar()->showMessage ( message );
+    QString message = tr ( "A context menu is available by right-clicking" );
+    this->statusBar()->showMessage ( message );
 
-        this->create_actions();
-        this->create_menus();
-        this->create_toolbars();
-        this->setWindowTitle ( tr ( "Viewer" ) );
-        this->setMinimumSize ( 800, 600 );
-        this->resize ( 800, 600 );
-        connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
+    this->create_actions();
+    this->create_menus();
+    this->create_toolbars();
+    this->setWindowTitle ( tr ( "Viewer" ) );
+    this->setMinimumSize ( 800, 600 );
+    this->resize ( 800, 600 );
+    connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
 
-
-
+    //Preference Dialog
+    _dialog = new PreferencesDialog(this, this->_model.getPreference());
 
         return;
 }
@@ -230,6 +232,7 @@ MainWindow::create_actions ( void )
 
         //Preference
         this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
+        connect(this->preferenceAct, SIGNAL(triggered()), this, SLOT( changePreference()));
 
         this->_backCamera = new QAction( tr("Back Camera") , this );
         this->_backCamera->setShortcut(QKeySequence::Undo);
@@ -605,6 +608,9 @@ MainWindow::update_color(void) {
     color = this->_colorWidget->getWireColor();
     this->_model.setWireColor(color.red(), color.green(), color.blue());
 
+    color = this->_colorWidget->getVertexColor();
+    this->_model.setVertexColor(color.red(), color.green(), color.blue());
+
     color = this->_colorWidget->getLightColor();
     this->_model.setLightColor(color.red(), color.green(), color.blue());
 
@@ -733,4 +739,19 @@ void MainWindow::lightswitch2(bool i){
 void MainWindow::lightset(void){
     this->_model.setLightPosition();
     emit updated();
+}
+
+void MainWindow::changePreference(void){
+    std::cout << "preference is pressed" << std::endl;
+    /*
+    if (!_dialog) {
+        _dialog = new PreferencesDialog(this);
+        //connect(findDialog, SIGNAL(findNext()), this, SLOT(findNext()));
+    }
+
+    _dialog->show();
+*/
+    _dialog->exec();
+    //_dialog->raise();
+   // _dialog->activateWindow();
 }

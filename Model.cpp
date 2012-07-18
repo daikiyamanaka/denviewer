@@ -258,6 +258,25 @@ Model::setWireColor ( const int r, const int g, const int b )
 }
 
 void
+Model::getVertexColor ( int &r, int &g, int &b )
+{
+    const Color3f c = this->getPreference().getVertexColor();
+    r = static_cast<int> ( 255 * c.x() );
+    g = static_cast<int> ( 255 * c.y() );
+    b = static_cast<int> ( 255 * c.z() );
+
+}
+void
+Model::setVertexColor ( const int r, const int g, const int b )
+{
+    Color3f c;
+    c.x() = r * 1.0 / 255;
+    c.y() = g * 1.0 / 255;
+    c.z() = b * 1.0 / 255;
+    this->_preference.setVertexColor ( c );
+}
+
+void
 Model::getLightColor ( int &r, int &g, int &b )
 {
     const Color3f c = this->_light.getColor();

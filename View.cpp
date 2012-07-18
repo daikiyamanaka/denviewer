@@ -135,7 +135,7 @@ View::render ( void )
             glCullFace(GL_BACK);
             ::glDisable ( GL_LIGHTING );
             ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
-            const Color3f fg = this->_model.getPreference().getPointColor();
+            const Color3f fg = this->_model.getPreference().getVertexColor();
             ::glColor3f ( fg.x(), fg.y(), fg.z() );
             int radius = this->_model.getPreference().getPointRadius();///edit after
             ::glLineWidth(radius);

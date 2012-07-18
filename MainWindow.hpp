@@ -17,6 +17,7 @@ QT_END_NAMESPACE
 #include "ChangeViewAngle.h"
 #include "GetCameraParameterWidget.hpp"
 #include "ShowVandFWidget.hpp"
+#include "PreferencesDialog.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -30,6 +31,7 @@ private:
         ChangeViewAngle* _viewWidget;
 		GetCameraParameterWidget* _cameraParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
+        PreferencesDialog *_dialog;
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
@@ -72,6 +74,9 @@ private slots:
         void lightswitch1(bool i);
         void lightswitch2(bool i);
         void lightset(void);
+
+        void changePreference(void);
+
 private:
         void create_actions ( void );
         void create_menus ( void );
