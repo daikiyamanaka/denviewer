@@ -28,7 +28,7 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
 
     //ignore first 7 lines
     std::string buf;
-    for(int i = 0; i < 7; i++)
+    for(int i = 0; i < 11; i++)
     {
         std::getline(fin,buf);
     }
