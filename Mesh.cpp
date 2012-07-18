@@ -1,5 +1,4 @@
 #include "Mesh.hpp"
-#include <iostream>
 
 Mesh::Mesh ( void )
 {
@@ -52,7 +51,6 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
                 if ( bmin.z() > p.z() ) bmin.z()  = p.z();
                 if ( bmax.z() < p.z() ) bmax.z()  = p.z();
         }
-        std::cout << bmax << "/" << bmin << std::endl;
         return true;
 }
 void

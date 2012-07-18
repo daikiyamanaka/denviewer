@@ -391,8 +391,11 @@ void
 MainWindow::open ( void )
 {
     QStringList fileFilterList;
+    fileFilterList += tr("Supported File(*.stl *.obj *.pcd)");
     fileFilterList += tr("STL File(*.stl)");
     fileFilterList += tr("OBJ File(*.obj)");
+    fileFilterList += tr("PCD File(*.pcd)");
+    fileFilterList += tr("All files(*.)");
 
     QFileDialog *openDlg = new QFileDialog( this , tr("Open File"),".");
     openDlg->setNameFilters(fileFilterList);
