@@ -6,6 +6,12 @@
 
 #include "ImporterMeshStlBinary.hpp"
 #include "ImporterMeshObj.hpp"
+#include "ImporterStlAscii.hpp"
+#include "ImporterPointsCloudPcdAscii.hpp"
+
+#include "ExporterStlBinary.hpp"
+#include "ExporterStlAscii.hpp"
+#include "ExporterObj.hpp"
 
 #include "Tokenizer.hpp"
 
@@ -75,9 +81,14 @@ Model::openMesh ( const std::string& filename )
     std::string ext = tok.get( tok.size() - 1);
     if( ext == std::string("stl") ){
         importer = new ImporterMeshStlBinary(this->_mesh);
+        ImporterMeshStlBinary impb(this->_mesh);
+        if(!impb.check(filename) ) importer = new ImporterStlAscii(this->_mesh);
     }
     else if ( ext == std::string("obj") ){
         importer = new ImporterMeshObj(this->_mesh);
+    }
+    else if(ext == std::string("pcd") ){
+        importer = new ImporterPointsCloudPcdAscii(this->_mesh);
     }
     else {
         return false;
@@ -99,10 +110,25 @@ Model::openMesh ( const std::string& filename )
         return result;
 }
 bool
-Model::saveMesh ( const std::string& filename )
+Model::saveMesh ( const std::string& filename, bool isBinary )
 {
-        ExporterMesh exporter ( this->_mesh );
-        return exporter.write ( filename );
+    ExporterMesh *exporter = NULL;
+    Tokenizer tok(filename, ".");
+    std::string ext = tok.get( tok.size() - 1);
+    if( ext == std::string("stl") ){
+        if( isBinary ) exporter = new ExporterStlBinary(this->_mesh);
+        else exporter = new ExporterStlAscii(this->_mesh);
+    }
+    else if ( ext == std::string("obj") ){
+        exporter = new ExporterObj(this->_mesh);
+    }
+    else {
+        return false;
+    }
+
+    bool result = exporter->write(filename);
+    delete exporter;
+    return result;
 }
 bool
 Model::openCamera ( const std::string& filename )
@@ -414,7 +440,7 @@ void
 Model::getVertexandFace(int &ver, int &face){
 
     face = this->_mesh.getNumFaces();
-    ver = face*3;
+    ver = this->_mesh.getNumVertex();
 }
 
 void

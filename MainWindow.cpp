@@ -112,6 +112,17 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
+    this->_saveMeshAsciiButton = new QRadioButton( tr("Ascii") );
+    this->_saveMeshBinaryButton= new QRadioButton( tr("Binary") );
+    this->_saveMeshAsciiButton->setChecked(true);
+    QVBoxLayout *saveBoxLayout = new QVBoxLayout;
+    saveBoxLayout->addWidget(this->_saveMeshAsciiButton);
+    saveBoxLayout->addWidget(this->_saveMeshBinaryButton);
+    QGroupBox *saveGroupBox = new QGroupBox( tr("Save") );
+    saveGroupBox->setLayout(saveBoxLayout);
+
+    connect(this->_saveMeshBinaryButton , SIGNAL(toggled(bool)) ,this ,SLOT(save_mesh_binary(bool)) );
+
     //ViewTab—p
     QVBoxLayout *boxLayout3 = new QVBoxLayout;
     boxLayout3->addWidget ( groupBox1 );
@@ -131,6 +142,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
+    boxLayout5->addWidget(saveGroupBox);
     boxLayout5->addStretch( 1 );
 
     QWidget* widget1 = new QWidget;
@@ -381,10 +393,26 @@ MainWindow::new_file ( void )
 void
 MainWindow::open ( void )
 {
-        QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( !this->_model.openMesh ( filename.toStdString() ) ) {
+    QStringList fileFilterList;
+    fileFilterList += tr("Supported File(*.stl *.obj *.pcd)");
+    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("OBJ File(*.obj)");
+    fileFilterList += tr("PCD File(*.pcd)");
+    fileFilterList += tr("All files(*.)");
+
+    QFileDialog *openDlg = new QFileDialog( this , tr("Open File"),".");
+    openDlg->setNameFilters(fileFilterList);
+    openDlg->setAcceptMode(QFileDialog::AcceptOpen);
+    QStringList fileNames;
+    if( openDlg->exec() ){
+        fileNames = openDlg->selectedFiles();
+    }
+
+        //QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
+        if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
+                return;
         } else {
             emit updated();
             emit cameraInitialized();
@@ -398,12 +426,26 @@ MainWindow::open ( void )
 void
 MainWindow::save ( void )
 {
-        QString filename = QFileDialog::getSaveFileName ( this, tr ( "Save file to" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( !this->_model.saveMesh ( filename.toStdString() ) ) {
-                QString  message ( tr ( "Save failed." ) );
-                statusBar()->showMessage ( message );
-        }
-        return;
+    QStringList fileFilterList;
+    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("OBJ File(*.obj)");
+
+    QFileDialog *saveDlg = new QFileDialog( this , tr("Save File"),".");
+    saveDlg->setNameFilters(fileFilterList);
+    saveDlg->setAcceptMode(QFileDialog::AcceptSave);
+    saveDlg->setConfirmOverwrite(true);
+
+    QStringList fileNames;
+    if(saveDlg->exec()){
+        fileNames = saveDlg->selectedFiles();
+    }
+    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary ) ) {
+            QString message ( tr ( "Save failed." ) );
+            statusBar()->showMessage ( message );
+            return;
+    }
+
+    return;
 }
 
 void
@@ -754,4 +796,11 @@ void MainWindow::changePreference(void){
     _dialog->exec();
     //_dialog->raise();
    // _dialog->activateWindow();
+}
+
+void MainWindow::save_mesh_binary(bool isBinary)
+{
+    this->_saveBinary = isBinary;
+    return;
+
 }
