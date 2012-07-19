@@ -251,15 +251,15 @@ MainWindow::create_actions ( void )
         this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
         connect(this->preferenceAct, SIGNAL(triggered()), this, SLOT( changePreference()));
 
-        this->_backCamera = new QAction( tr("Back Camera") , this );
-        this->_backCamera->setShortcut(QKeySequence::Undo);
-        this->_backCamera->setStatusTip ( "Back Camera." );
-        connect ( this->_backCamera, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
+        this->_backCameraAct = new QAction( QIcon ( ":/resources/camera_back.png" ),tr("Back Camera") , this );
+        this->_backCameraAct->setShortcut(QKeySequence::Undo);
+        this->_backCameraAct->setStatusTip ( "Back Camera." );
+        connect ( this->_backCameraAct, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
 
-        this->_forwardCamera = new QAction( tr("Forward Camera") , this );
-        this->_forwardCamera->setShortcut(QKeySequence::Redo);
-        this->_forwardCamera->setStatusTip ( "Forward Camera." );
-        connect ( this->_forwardCamera, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
+        this->_forwardCameraAct = new QAction( QIcon ( ":/resources/camera_forward.png" ), tr("Forward Camera") , this );
+        this->_forwardCameraAct->setShortcut(QKeySequence::Redo);
+        this->_forwardCameraAct->setStatusTip ( "Forward Camera." );
+        connect ( this->_forwardCameraAct, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
 
 
 /*<<<<<<< HEAD
@@ -364,8 +364,8 @@ MainWindow::create_menus ( void )
     this->_lightSubMenu->addAction(this->_lightAct2);
     this->_lightSubMenu->addAction(this->_lightAct3);
     this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
-    this->_cameraSubMenu->addAction(this->_backCamera);
-    this->_cameraSubMenu->addAction(this->_forwardCamera);
+    this->_cameraSubMenu->addAction(this->_backCameraAct);
+    this->_cameraSubMenu->addAction(this->_forwardCameraAct);
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
 //>>>>>>> master
         return;
@@ -380,6 +380,12 @@ MainWindow::create_toolbars ( void )
         this->_fileToolBar->addAction ( this->_saveAct );
         this->_fileToolBar->addAction ( this->_openCameraAct );
         this->_fileToolBar->addAction ( this->_saveCameraAct );
+
+        this->_fileToolBar->addSeparator();
+        this->_fileToolBar->addAction ( this->_backCameraAct);
+        this->_fileToolBar->addAction ( this->_forwardCameraAct);
+
+        this->_fileToolBar->addSeparator();
         this->_fileToolBar->addAction( this->preferenceAct);
         return ;
 }

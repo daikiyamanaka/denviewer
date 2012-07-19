@@ -136,8 +136,8 @@ private:
         QCheckBox* _lightCheckBox2;
         QCheckBox* _lightCheckBox3;
 
-        QAction* _backCamera;
-        QAction* _forwardCamera;
+        QAction* _backCameraAct;
+        QAction* _forwardCameraAct;
 
         bool _saveBinary;
 
