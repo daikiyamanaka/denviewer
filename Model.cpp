@@ -21,6 +21,7 @@ Model::Model ( void )
 {
     this->_NowCameraId = 0;
     this->_cameraList.assign(1 , Camera() );
+    std::cout << "model" << std::endl;
         return;
 }
 
@@ -29,10 +30,10 @@ Model::~Model ( void )
         return;
 }
 
-const Mesh&
-Model::getMesh ( void )
+const std::vector<Mesh>&
+Model::getMesh ( void)
 {
-        return this->_mesh;
+    return this->_mesh;
 }
 
 const Light&
@@ -79,35 +80,44 @@ Model::openMesh ( const std::string& filename )
     ImporterMesh *importer = NULL;
     Tokenizer tok(filename, ".");
     std::string ext = tok.get( tok.size() - 1);
+    Mesh mesh;
     if( ext == std::string("stl") ){
-        importer = new ImporterMeshStlBinary(this->_mesh);
-        ImporterMeshStlBinary impb(this->_mesh);
-        if(!impb.check(filename) ) importer = new ImporterStlAscii(this->_mesh);
+        importer = new ImporterMeshStlBinary(mesh);
+        ImporterMeshStlBinary impb(mesh);
+        if(!impb.check(filename) ) importer = new ImporterStlAscii(mesh);
     }
     else if ( ext == std::string("obj") ){
-        importer = new ImporterMeshObj(this->_mesh);
+        importer = new ImporterMeshObj(mesh);
     }
     else if(ext == std::string("pcd") ){
-        importer = new ImporterPointsCloudPcdAscii(this->_mesh);
+        importer = new ImporterPointsCloudPcdAscii(mesh);
     }
     else {
         return false;
     }
-    this->initMesh();
-        bool result = importer->read ( filename );
-        Eigen::Vector3f bmin, bmax;
-        this->_mesh.getBoundingBox ( bmin, bmax );
 
-        const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
-        const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
-        const Eigen::Quaternionf q ( 1,0,0,0 );
-        Camera camera;
-        camera.fitPosition(center , radius , q);
-        this->_cameraList.assign(1, camera );
-        this->_NowCameraId = 0;
-        this->viewInit();
+    mesh.clear();
+
+    //this->initMesh();
+    bool result = importer->read ( filename );
+    this->_mesh.push_back(mesh);
+    this->_checked.push_back(true);
+
+    Eigen::Vector3f bmin, bmax;
+    //this->_mesh.getBoundingBox ( bmin, bmax );
+    mesh.getBoundingBox ( bmin, bmax );
+
+    const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
+    const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
+    const Eigen::Quaternionf q ( 1,0,0,0 );
+    Camera camera;
+    camera.fitPosition(center , radius , q);
+    this->_cameraList.assign(1, camera );
+    this->_NowCameraId = 0;
+    this->viewInit();
     delete importer;
-        return result;
+
+    return result;
 }
 bool
 Model::saveMesh ( const std::string& filename, bool isBinary )
@@ -115,12 +125,13 @@ Model::saveMesh ( const std::string& filename, bool isBinary )
     ExporterMesh *exporter = NULL;
     Tokenizer tok(filename, ".");
     std::string ext = tok.get( tok.size() - 1);
+    Mesh mesh = this->_mesh[0];
     if( ext == std::string("stl") ){
-        if( isBinary ) exporter = new ExporterStlBinary(this->_mesh);
-        else exporter = new ExporterStlAscii(this->_mesh);
+        if( isBinary ) exporter = new ExporterStlBinary(mesh);
+        else exporter = new ExporterStlAscii(mesh);
     }
     else if ( ext == std::string("obj") ){
-        exporter = new ExporterObj(this->_mesh);
+        exporter = new ExporterObj(mesh);
     }
     else {
         return false;
@@ -176,7 +187,9 @@ void
 Model::viewFit ( void )
 {
         Eigen::Vector3f bmin, bmax;
-        this->_mesh.getBoundingBox ( bmin, bmax );
+
+
+        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
         Eigen::Vector3f center;
         center = ( bmax+bmin )/2;
@@ -193,7 +206,7 @@ void
 Model::viewInit ( void )
 {
         Eigen::Vector3f bmin, bmax;
-        this->_mesh.getBoundingBox ( bmin, bmax );
+        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
         const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
         const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
@@ -217,6 +230,13 @@ Model::viewInit ( void )
         this->_backlight.setDiffuse(0.50*keydif);
         this->_backlight.setSpecular(0.0*keyamb);
         return;
+}
+
+int
+Model::getActiveMeshIndex(){
+
+    //std::cout << "getActiveMeshIndex" <<std::endl;
+   return 0;
 }
 
 void
@@ -341,6 +361,15 @@ float Model::getViewAngle(void){
     return this->getCamera().getFieldOfViewAngle();
 }
 
+void Model::setMeshCheckState(std::vector<bool> checked){
+    this->_checked = checked;
+
+}
+
+std::vector<bool> Model::getMeshCheckState(void){
+    return this->_checked;
+}
+
 void
 Model::getEulerAngle( int &alpha , int &beta , int &gamma  )
 {
@@ -420,13 +449,20 @@ Model::setDistanceToCenter(const float d)
 void
 Model::getDisplayRange(double &near, double &far)
 {
-    if( this->_mesh.getNumFaces() == 0 ){
+    if(this->_mesh.size() == 0){
         near = 0.001;
         far = 100000.0;
         return;
     }
+
+    if( this->_mesh[getActiveMeshIndex()].getNumFaces() == 0 ){
+        near = 0.001;
+        far = 100000.0;
+        return;
+    }
+
     Eigen::Vector3f bmin , bmax , bcenter;
-    this->_mesh.getBoundingBox(bmin , bmax);
+    this->_mesh[getActiveMeshIndex()].getBoundingBox(bmin , bmax);
     bcenter = (bmin+bmax)*0.5;
     float r = (bmax - bmin).norm()*0.5;
     Eigen::Vector3f eyeLine = ( this->getCamera().getCenter() - this->getCamera().getEye() ).normalized();
@@ -439,15 +475,15 @@ Model::getDisplayRange(double &near, double &far)
 void
 Model::getVertexandFace(int &ver, int &face){
 
-    face = this->_mesh.getNumFaces();
-    ver = this->_mesh.getNumVertex();
+    face = this->_mesh[getActiveMeshIndex()].getNumFaces();
+    ver = this->_mesh[getActiveMeshIndex()].getNumVertex();
 }
 
 void
 Model::setLightPosition(void){
 
     Eigen::Vector3f bmin, bmax;
-    this->_mesh.getBoundingBox ( bmin, bmax );
+    this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
     float x = 0.5*(bmin[0]+bmax[0]);
     float y = 1.0*(bmin[1]+bmax[1]);

@@ -9,7 +9,9 @@
 class Model
 {
 private:
-        Mesh _mesh;
+        std::vector<Mesh> _mesh;
+        //std::vector<bool> _selected;
+        std::vector<bool> _checked;
         Light _light;
         Light _keylight;
         Light _filllight;
@@ -24,7 +26,7 @@ public:
         Model ( void ) ;
         virtual ~Model ( void ) ;
 
-        const Mesh& getMesh ( void );
+        const std::vector<Mesh>& getMesh ( void );
         const Light& getLight ( void );
         const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
@@ -41,6 +43,8 @@ public:
         void setShadingMode (const ShadingMode shading);
         void viewFit ( void );
         void viewInit ( void );
+
+        int getActiveMeshIndex();
 
         void addRotation ( const Eigen::Quaternionf& q );
 
@@ -62,6 +66,9 @@ public:
 
         void setViewAngle(float _angle);
         float getViewAngle(void);
+
+        void setMeshCheckState(std::vector<bool> checked);
+        std::vector<bool> getMeshCheckState();
 
 		//Yamauchi
 		void getEulerAngle( int &alpha , int &beta , int &gamma);
