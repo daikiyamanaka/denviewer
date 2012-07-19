@@ -808,7 +808,6 @@ void MainWindow::changePreference(void){
    // _dialog->activateWindow();
 }
 
-<<<<<<< HEAD
 void MainWindow::checkBinary(QString str){
     if( str.contains("binary" , Qt::CaseInsensitive ) ) this->_saveBinary = true;
     else this->_saveBinary = false;
