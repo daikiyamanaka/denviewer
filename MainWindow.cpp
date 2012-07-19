@@ -440,6 +440,7 @@ MainWindow::save ( void )
     saveDlg->setNameFilters(fileFilterList);
     saveDlg->setAcceptMode(QFileDialog::AcceptSave);
     saveDlg->setConfirmOverwrite(true);
+    this->_saveBinary = false;
 
     connect(saveDlg , SIGNAL(filterSelected(QString)) , this , SLOT(checkBinary(QString)) );
 
@@ -447,7 +448,7 @@ MainWindow::save ( void )
     if(saveDlg->exec()){
         fileNames = saveDlg->selectedFiles();
     }
-    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary ) ) {
+    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary , this->modelLayerWidget->getSelectedIndex() ) ) {
             QString message ( tr ( "Save failed." ) );
             statusBar()->showMessage ( message );
             return;

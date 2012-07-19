@@ -120,12 +120,13 @@ Model::openMesh ( const std::string& filename )
     return result;
 }
 bool
-Model::saveMesh ( const std::string& filename, bool isBinary )
+Model::saveMesh ( const std::string& filename, bool isBinary, size_t id )
 {
     ExporterMesh *exporter = NULL;
     Tokenizer tok(filename, ".");
     std::string ext = tok.get( tok.size() - 1);
-    Mesh mesh = this->_mesh[0];
+    if( id > this->_mesh.size() - 1 ) return false;
+    Mesh mesh = this->_mesh[id];
     if( ext == std::string("stl") ){
         if( isBinary ) exporter = new ExporterStlBinary(mesh);
         else exporter = new ExporterStlAscii(mesh);

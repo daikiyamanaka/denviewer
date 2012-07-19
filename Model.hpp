@@ -34,7 +34,7 @@ public:
 
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
-        bool saveMesh ( const std::string& filename , bool isBinary = false );
+        bool saveMesh ( const std::string& filename , bool isBinary = false , size_t id = 0 );
         bool openCamera ( const std::string& filename );
         bool saveCamera ( const std::string& filename );
         //void setRenderingMode ( const RenderingMode mode );
