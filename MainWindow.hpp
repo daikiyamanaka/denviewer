@@ -18,6 +18,7 @@ QT_END_NAMESPACE
 #include "GetCameraParameterWidget.hpp"
 #include "ShowVandFWidget.hpp"
 #include "PreferencesDialog.hpp"
+#include "ModelLayerWidget.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -32,6 +33,7 @@ private:
 		GetCameraParameterWidget* _cameraParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
         PreferencesDialog *_dialog;
+        ModelLayerWidget* modelLayerWidget;
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
@@ -77,6 +79,7 @@ private slots:
         void lightset(void);
 
         void changePreference(void);
+        void changeModelLayer(void);
 
 private:
         void create_actions ( void );

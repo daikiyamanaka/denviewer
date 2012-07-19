@@ -3,6 +3,9 @@
 #include <QtGui>
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
+
+
+
     QWidget* widget = new QWidget;
     widget->setContentsMargins ( 5,5,5,5 );
 
@@ -74,6 +77,8 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_viewWidget = new ChangeViewAngle(angle);
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
+
+
 	int alpha , beta , gamma;
     double xpos , ypos , zpos;
     this->_model.getEulerAngle(alpha , beta , gamma);
@@ -123,6 +128,8 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     connect(this->_saveMeshBinaryButton , SIGNAL(toggled(bool)) ,this ,SLOT(save_mesh_binary(bool)) );
 
+
+
     //ViewTab—p
     QVBoxLayout *boxLayout3 = new QVBoxLayout;
     boxLayout3->addWidget ( groupBox1 );
@@ -161,12 +168,22 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     tabWidget1->setMinimumWidth ( 250 );
 
+    QTabWidget* tabWidget2 = new QTabWidget;
+    modelLayerWidget = new ModelLayerWidget;
+    tabWidget2->addTab ( modelLayerWidget, tr ( "ModelLayer" ) );
+    tabWidget2->setMinimumWidth ( 200 );
+
+    connect(this->modelLayerWidget, SIGNAL(updated()), this, SLOT(changeModelLayer()));
+
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin ( 5 );
+    layout->addWidget ( tabWidget2 );
     layout->addWidget ( this->_glwidget );
     layout->addWidget ( tabWidget1 );
-    //layout->addWidget ( tabWidget2 );
+
     widget->setLayout ( layout );
+
+
 
     QString message = tr ( "A context menu is available by right-clicking" );
     this->statusBar()->showMessage ( message );
@@ -175,14 +192,14 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->create_menus();
     this->create_toolbars();
     this->setWindowTitle ( tr ( "Viewer" ) );
-    this->setMinimumSize ( 800, 600 );
-    this->resize ( 800, 600 );
+    this->setMinimumSize ( 1000, 600 );
+    this->resize ( 1000, 600 );
+
     connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
 
     //Preference Dialog
     _dialog = new PreferencesDialog(this, this->_model.getPreference());
-
-        return;
+    return;
 }
 
 //Pop-up menu
@@ -416,7 +433,7 @@ MainWindow::open ( void )
         } else {
             emit updated();
             emit cameraInitialized();
-
+            this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
             this->get_ver_face();
             this->_view.createDisplayList();
         }
@@ -585,7 +602,7 @@ MainWindow::mouse_dragged ( float x, float y )
         message += stry;
         message += tr ( ") " );
 
-		int alpha , beta , gamma;
+        int alpha , beta , gamma;
         this->_model.getEulerAngle(alpha , beta , gamma);
         this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
 
@@ -737,6 +754,8 @@ MainWindow::file_dropped(QString str){
         this->_view.createDisplayList();
         emit updated();
         emit cameraInitialized();
+        //this->modelLayerWidget->addList(str.toStdString());
+        this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
         this->get_ver_face();
     }
 
@@ -796,6 +815,13 @@ void MainWindow::changePreference(void){
     _dialog->exec();
     //_dialog->raise();
    // _dialog->activateWindow();
+}
+
+void MainWindow::changeModelLayer(void){
+    std::cout << "changeModelLayer" << std::endl;
+    this->_model.setMeshCheckState(this->modelLayerWidget->getCheckState());
+    this->_view.createDisplayList();
+    emit updated();
 }
 
 void MainWindow::save_mesh_binary(bool isBinary)

@@ -170,7 +170,17 @@ View::resize ( const int width, const int height )
 void
 View::render_mesh ( void )
 {
-        const Mesh& mesh = this->_model.getMesh();
+    const std::vector<Mesh>& meshes = this->_model.getMesh();
+    std::vector<bool> checkState= this->_model.getMeshCheckState();
+   // std::cout << checkState.size() <<std::endl;
+
+    for(int k=0; k<meshes.size(); k++){
+
+    //for(int k=0; k<checkState.size(); k++){
+        if(!checkState[k]){
+            continue;
+        }
+        const Mesh& mesh = meshes[k];
         bool index_data = mesh.IndexDataExists();
         bool vnormal_data = mesh.VNormalDataExists();
 
@@ -207,6 +217,7 @@ View::render_mesh ( void )
             }
              ::glEnd();
         }
+    }
         return;
 }
 
