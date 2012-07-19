@@ -21,7 +21,7 @@ Model::Model ( void )
 {
     this->_NowCameraId = 0;
     this->_cameraList.assign(1 , Camera() );
-    std::cout << "model" << std::endl;
+    //std::cout << "model" << std::endl;
         return;
 }
 
@@ -234,6 +234,11 @@ Model::viewInit ( void )
 
 int
 Model::getActiveMeshIndex(){
+	for( size_t i = 0 ; i < this->_mesh.size() ; i++ ){
+        if( this->_checked.at(i)){
+         return i;
+        }
+    }
 
     //std::cout << "getActiveMeshIndex" <<std::endl;
    return 0;

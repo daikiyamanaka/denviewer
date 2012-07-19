@@ -50,16 +50,16 @@ void ModelLayerWidget::deleteAll(){
 }
 
 void ModelLayerWidget::changeItemsState(QListWidgetItem* item){
-    std::cout << "change items state" << std::endl;
+    //std::cout << "change items state" << std::endl;
 
     for(int i=0; i<modelList->count(); i++){
         if(modelList->item(i)->checkState() == Qt::Checked){
             checked[i] = true;
-            std::cout << "true" << std::endl;
+            //std::cout << "true" << std::endl;
         }
         else{
             checked[i] = false;
-            std::cout << "false" << std::endl;
+            //std::cout << "false" << std::endl;
         }
         //checked[i] = Qt::Checked & modelList->item(i)->checkState();
     }

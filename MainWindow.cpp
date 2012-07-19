@@ -815,7 +815,7 @@ void MainWindow::checkBinary(QString str){
 }
 
 void MainWindow::changeModelLayer(void){
-    std::cout << "changeModelLayer" << std::endl;
+    //std::cout << "changeModelLayer" << std::endl;
     this->_model.setMeshCheckState(this->modelLayerWidget->getCheckState());
     this->_view.createDisplayList();
     emit updated();
