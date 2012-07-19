@@ -139,6 +139,9 @@ private:
         QAction* _backCameraAct;
         QAction* _forwardCameraAct;
 
+        QAction* _viewInitAct;
+        QAction* _viewFitAct;
+
         bool _saveBinary;
 
 

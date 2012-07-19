@@ -261,6 +261,16 @@ MainWindow::create_actions ( void )
         this->_forwardCameraAct->setStatusTip ( "Forward Camera." );
         connect ( this->_forwardCameraAct, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
 
+        this->_viewFitAct = new QAction( QIcon ( ":/resources/view_fit.png" ), tr("View Fit") , this );
+        this->_viewFitAct->setShortcut(QKeySequence::Redo);
+        this->_viewFitAct->setStatusTip ( "View Fit." );
+        connect ( this->_viewFitAct, SIGNAL ( triggered() ), this , SLOT(view_fit()) );
+
+        this->_viewInitAct = new QAction( QIcon ( ":/resources/view_init.png" ), tr("View Init") , this );
+        this->_viewInitAct->setShortcut(QKeySequence::Redo);
+        this->_viewInitAct->setStatusTip ( "View Init." );
+        connect ( this->_viewInitAct, SIGNAL ( triggered() ), this , SLOT(view_init()) );
+
 
 /*<<<<<<< HEAD
         //rendering
@@ -384,6 +394,8 @@ MainWindow::create_toolbars ( void )
         this->_fileToolBar->addSeparator();
         this->_fileToolBar->addAction ( this->_backCameraAct);
         this->_fileToolBar->addAction ( this->_forwardCameraAct);
+        this->_fileToolBar->addAction( this->_viewFitAct);
+        this->_fileToolBar->addAction( this->_viewInitAct);
 
         this->_fileToolBar->addSeparator();
         this->_fileToolBar->addAction( this->preferenceAct);
