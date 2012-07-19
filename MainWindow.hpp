@@ -35,7 +35,7 @@ private:
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
-        void contextMenuEvent ( QContextMenuEvent* event );
+        //void contextMenuEvent ( QContextMenuEvent* event );
 signals:
         void updated( void );
 		void cameraInitialized(void);//Yamauchi Add
@@ -66,7 +66,6 @@ private slots:
         void back_camera( void );
         void forward_camera( void );
         void add_now_camera_to_list( void );
-        void save_mesh_binary( bool isBinary );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
@@ -77,6 +76,8 @@ private slots:
         void lightset(void);
 
         void changePreference(void);
+
+        void checkBinary(QString str);
 
 private:
         void create_actions ( void );
@@ -135,8 +136,6 @@ private:
         QAction* _backCamera;
         QAction* _forwardCamera;
 
-        QRadioButton* _saveMeshBinaryButton;
-        QRadioButton* _saveMeshAsciiButton;
         bool _saveBinary;
 
 

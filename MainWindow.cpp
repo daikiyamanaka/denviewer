@@ -1,6 +1,8 @@
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
+#include <iostream>
+
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
     QWidget* widget = new QWidget;
@@ -112,17 +114,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
-    this->_saveMeshAsciiButton = new QRadioButton( tr("Ascii") );
-    this->_saveMeshBinaryButton= new QRadioButton( tr("Binary") );
-    this->_saveMeshAsciiButton->setChecked(true);
-    QVBoxLayout *saveBoxLayout = new QVBoxLayout;
-    saveBoxLayout->addWidget(this->_saveMeshAsciiButton);
-    saveBoxLayout->addWidget(this->_saveMeshBinaryButton);
-    QGroupBox *saveGroupBox = new QGroupBox( tr("Save") );
-    saveGroupBox->setLayout(saveBoxLayout);
-
-    connect(this->_saveMeshBinaryButton , SIGNAL(toggled(bool)) ,this ,SLOT(save_mesh_binary(bool)) );
-
     //ViewTab—p
     QVBoxLayout *boxLayout3 = new QVBoxLayout;
     boxLayout3->addWidget ( groupBox1 );
@@ -142,7 +133,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
-    boxLayout5->addWidget(saveGroupBox);
     boxLayout5->addStretch( 1 );
 
     QWidget* widget1 = new QWidget;
@@ -168,7 +158,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     //layout->addWidget ( tabWidget2 );
     widget->setLayout ( layout );
 
-    QString message = tr ( "A context menu is available by right-clicking" );
+    QString message = tr ( "A context menu is not available by right-clicking" );
     this->statusBar()->showMessage ( message );
 
     this->create_actions();
@@ -186,6 +176,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 }
 
 //Pop-up menu
+/*
 void
 MainWindow::contextMenuEvent ( QContextMenuEvent* event )
 {
@@ -195,7 +186,7 @@ MainWindow::contextMenuEvent ( QContextMenuEvent* event )
         menu.addAction ( this->_saveAct );
         menu.exec ( event->globalPos() );
         return;
-}
+}*/
 
 void
 MainWindow::create_actions ( void )
@@ -398,7 +389,7 @@ MainWindow::open ( void )
     fileFilterList += tr("STL File(*.stl)");
     fileFilterList += tr("OBJ File(*.obj)");
     fileFilterList += tr("PCD File(*.pcd)");
-    fileFilterList += tr("All files(*.)");
+    fileFilterList += tr("All files(*.*)");
 
     QFileDialog *openDlg = new QFileDialog( this , tr("Open File"),".");
     openDlg->setNameFilters(fileFilterList);
@@ -427,13 +418,16 @@ void
 MainWindow::save ( void )
 {
     QStringList fileFilterList;
-    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("STL File Ascii(*.stl)");
+    fileFilterList += tr("STL File Binary(*.stl)");
     fileFilterList += tr("OBJ File(*.obj)");
 
     QFileDialog *saveDlg = new QFileDialog( this , tr("Save File"),".");
     saveDlg->setNameFilters(fileFilterList);
     saveDlg->setAcceptMode(QFileDialog::AcceptSave);
     saveDlg->setConfirmOverwrite(true);
+
+    connect(saveDlg , SIGNAL(filterSelected(QString)) , this , SLOT(checkBinary(QString)) );
 
     QStringList fileNames;
     if(saveDlg->exec()){
@@ -784,7 +778,7 @@ void MainWindow::lightset(void){
 }
 
 void MainWindow::changePreference(void){
-    std::cout << "preference is pressed" << std::endl;
+    //std::cout << "preference is pressed" << std::endl;
     /*
     if (!_dialog) {
         _dialog = new PreferencesDialog(this);
@@ -798,9 +792,10 @@ void MainWindow::changePreference(void){
    // _dialog->activateWindow();
 }
 
-void MainWindow::save_mesh_binary(bool isBinary)
-{
-    this->_saveBinary = isBinary;
-    return;
+void MainWindow::checkBinary(QString str){
+    if( str.contains("binary" , Qt::CaseInsensitive ) ) this->_saveBinary = true;
+    else this->_saveBinary = false;
 
+    //std::cerr<< str.toStdString() <<std::endl;
+    return;
 }
