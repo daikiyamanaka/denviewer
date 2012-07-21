@@ -441,7 +441,8 @@ MainWindow::open ( void )
             emit cameraInitialized();
             this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
             this->get_ver_face();
-            this->_view.createDisplayList();
+            //this->_view.createDisplayList();
+            this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
         }
         return;
 }
@@ -555,7 +556,7 @@ MainWindow::shading_flat( void )
     this->_model.setShadingMode(FLAT);
     QString  message ( tr ( "Flat shading" ) );
     statusBar()->showMessage ( message );
-    this->_view.createDisplayList();
+    //this->_view.createDisplayList();
     emit updated();
     return;
 }
@@ -566,7 +567,7 @@ MainWindow::shading_smooth( void )
     this->_model.setShadingMode(SMOOTH);
     QString  message ( tr ( "Smooth shading" ) );
     statusBar()->showMessage ( message );
-    this->_view.createDisplayList();
+    //this->_view.createDisplayList();
     emit updated();
     return;
 }
@@ -761,13 +762,14 @@ MainWindow::file_dropped(QString str){
         } else {
         QString  message  = str +  QString( tr ( " reading  done." ) );
                 statusBar()->showMessage ( message );
-        this->_view.createDisplayList();
-        emit updated();
-        emit cameraInitialized();
-        //this->modelLayerWidget->addList(str.toStdString());
-        this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
-        this->get_ver_face();
-    }
+                //this->_view.createDisplayList();
+                this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+                emit updated();
+                emit cameraInitialized();
+                //this->modelLayerWidget->addList(str.toStdString());
+                this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
+                this->get_ver_face();
+        }
 
         return;
 }
@@ -836,6 +838,6 @@ void MainWindow::checkBinary(QString str){
 void MainWindow::changeModelLayer(void){
     //std::cout << "changeModelLayer" << std::endl;
     this->_model.setMeshCheckState(this->modelLayerWidget->getCheckState());
-    this->_view.createDisplayList();
+    //this->_view.createDisplayList();
     emit updated();
 }
