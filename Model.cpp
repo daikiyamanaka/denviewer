@@ -20,6 +20,7 @@
 Model::Model ( void )
 {
     this->_NowCameraId = 0;
+    this->_activeMeshId = 0;
     this->_cameraList.assign(1 , Camera() );
     //std::cout << "model" << std::endl;
         return;
@@ -114,6 +115,7 @@ Model::openMesh ( const std::string& filename )
     camera.fitPosition(center , radius , q);
     this->_cameraList.assign(1, camera );
     this->_NowCameraId = 0;
+    this->_activeMeshId = this->_mesh.size() - 1;
     this->viewInit();
     delete importer;
 
@@ -235,14 +237,16 @@ Model::viewInit ( void )
 
 int
 Model::getActiveMeshIndex(){
-	for( size_t i = 0 ; i < this->_mesh.size() ; i++ ){
-        if( this->_checked.at(i)){
-         return i;
-        }
-    }
+   return this->_activeMeshId;
+}
 
-    //std::cout << "getActiveMeshIndex" <<std::endl;
-   return 0;
+void
+Model::setActiveMeshIndex(int id)
+{
+    if(id >= this->_mesh.size() ) this->_activeMeshId = 0;
+    else this->_activeMeshId = id;
+    //std::cerr<< this->_activeMeshId <<std::endl;
+    return;
 }
 
 void
@@ -469,6 +473,26 @@ Model::getDisplayRange(double &near, double &far)
 
     Eigen::Vector3f bmin , bmax , bcenter;
     this->_mesh[getActiveMeshIndex()].getBoundingBox(bmin , bmax);
+    float minx = bmin.x();
+    float miny = bmin.y();
+    float minz = bmin.z();
+    float maxx = bmax.x();
+    float maxy = bmax.y();
+    float maxz = bmax.z();
+
+    for( int i = 0 ; i < this->_mesh.size() ; i++ ){
+        if( !this->_checked.at(i) ) continue;
+        Eigen::Vector3f tmin, tmax;
+        this->_mesh[i].getBoundingBox(tmin,tmax);
+        minx = std::min(minx , tmin.x() );
+        miny = std::min(miny , tmin.y() );
+        minz = std::min(minz , tmin.z() );
+        maxx = std::max(maxx , tmax.x() );
+        maxy = std::max(maxy , tmax.y() );
+        maxz = std::max(maxz , tmax.z() );
+    }
+    bmin = Eigen::Vector3f(minx,miny,minz);
+    bmax = Eigen::Vector3f(maxx,maxy,maxz);
     bcenter = (bmin+bmax)*0.5;
     float r = (bmax - bmin).norm()*0.5;
     Eigen::Vector3f eyeLine = ( this->getCamera().getCenter() - this->getCamera().getEye() ).normalized();

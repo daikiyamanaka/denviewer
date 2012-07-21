@@ -162,6 +162,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     tabWidget2->setMinimumWidth ( 200 );
 
     connect(this->modelLayerWidget, SIGNAL(updated()), this, SLOT(changeModelLayer()));
+    connect(this->modelLayerWidget, SIGNAL(selectedItemChanged()) , this , SLOT(change_active_mesh_index()));
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin ( 5 );
@@ -443,6 +444,7 @@ MainWindow::open ( void )
             this->get_ver_face();
             //this->_view.createDisplayList();
             this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+            this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
         }
         return;
 }
@@ -764,6 +766,7 @@ MainWindow::file_dropped(QString str){
                 statusBar()->showMessage ( message );
                 //this->_view.createDisplayList();
                 this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+                this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
                 emit updated();
                 emit cameraInitialized();
                 //this->modelLayerWidget->addList(str.toStdString());
@@ -839,5 +842,14 @@ void MainWindow::changeModelLayer(void){
     //std::cout << "changeModelLayer" << std::endl;
     this->_model.setMeshCheckState(this->modelLayerWidget->getCheckState());
     //this->_view.createDisplayList();
+    emit updated();
+}
+
+void
+MainWindow::change_active_mesh_index(void)
+{
+    int id = this->modelLayerWidget->getSelectedIndex();
+    this->_model.setActiveMeshIndex(id);
+    this->view_fit();
     emit updated();
 }

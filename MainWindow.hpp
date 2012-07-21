@@ -81,6 +81,7 @@ private slots:
         void changeModelLayer(void);
 
         void checkBinary(QString str);
+        void change_active_mesh_index( void );
 
 private:
         void create_actions ( void );

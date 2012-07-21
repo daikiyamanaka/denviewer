@@ -12,6 +12,7 @@ ModelLayerWidget::ModelLayerWidget(QWidget *parent ) : QWidget(parent)
     this->setLayout(layout);
 
     connect(modelList, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(changeItemsState(QListWidgetItem*)));
+    connect(modelList , SIGNAL(itemSelectionChanged()) , this , SIGNAL(selectedItemChanged()));
 }
 
 

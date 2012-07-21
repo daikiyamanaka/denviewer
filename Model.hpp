@@ -20,6 +20,7 @@ private:
         Preference _preference;
         std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
         int _NowCameraId;
+        int _activeMeshId;
 
 
 public:
@@ -45,6 +46,7 @@ public:
         void viewInit ( void );
 
         int getActiveMeshIndex();
+        void setActiveMeshIndex( int id );
 
         void addRotation ( const Eigen::Quaternionf& q );
 

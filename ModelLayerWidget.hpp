@@ -21,6 +21,7 @@ private:
 
 signals:
     void updated();
+    void selectedItemChanged(void);
 
 public slots:
     void addList(const std::string &filename);
