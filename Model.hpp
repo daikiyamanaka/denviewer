@@ -22,6 +22,8 @@ private:
         int _NowCameraId;
         int _activeMeshId;
 
+        std::vector<Preference, Eigen::aligned_allocator<Preference> > _Preferences;
+
 
 public:
         Model ( void ) ;
@@ -32,6 +34,7 @@ public:
         const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
         const Preference& getPreference ( void );
+        const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
 
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
@@ -51,14 +54,14 @@ public:
         void addRotation ( const Eigen::Quaternionf& q );
 
         // for changing color
-        void getSurfaceColor ( int &r, int &g, int &b );
-        void setSurfaceColor ( const int r, const int g, const int b );
-        void getBackgroundColor ( int &r, int &g, int &b );
-        void setBackgroundColor ( const int r, const int g, const int b );
-        void getWireColor ( int &r, int &g, int &b );
-        void setWireColor ( const int r, const int g, const int b );
-        void getVertexColor( int &r, int &g, int &b );
-        void setVertexColor( const int r, const int g, const int b );
+        void getSurfaceColor ( const int id , int &r, int &g, int &b );
+        void setSurfaceColor ( const int id, const int r, const int g, const int b );
+        void getBackgroundColor ( const int id, int &r, int &g, int &b );
+        void setBackgroundColor ( const int id, const int r, const int g, const int b );
+        void getWireColor ( const int id, int &r, int &g, int &b );
+        void setWireColor ( const int id, const int r, const int g, const int b );
+        void getVertexColor( const int id, int &r, int &g, int &b );
+        void setVertexColor( const int id, const int r, const int g, const int b );
 
         void getLightColor( int &r, int &g, int &b );
         void setLightColor(const int r, const int g, const int b);

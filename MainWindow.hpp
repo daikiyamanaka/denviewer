@@ -82,6 +82,7 @@ private slots:
 
         void checkBinary(QString str);
         void change_active_mesh_index( void );
+        void change_pallet_color_to_Id_mesh( int id );
 
 private:
         void create_actions ( void );

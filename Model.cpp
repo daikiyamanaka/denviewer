@@ -23,6 +23,7 @@ Model::Model ( void )
     this->_activeMeshId = 0;
     this->_cameraList.assign(1 , Camera() );
     //std::cout << "model" << std::endl;
+    this->_Preferences.assign(1 , Preference() );
         return;
 }
 
@@ -68,6 +69,12 @@ Model::getPreference ( void )
         return this->_preference;
 }
 
+const std::vector<Preference, Eigen::aligned_allocator<Preference> >&
+Model::getPreferences( void )
+{
+    return this->_Preferences;
+}
+
 bool
 Model::initMesh ( void )
 {
@@ -103,6 +110,7 @@ Model::openMesh ( const std::string& filename )
     bool result = importer->read ( filename );
     this->_mesh.push_back(mesh);
     this->_checked.push_back(true);
+    if( this->_mesh.size() > 1 ) this->_Preferences.push_back( Preference() );
 
     Eigen::Vector3f bmin, bmax;
     //this->_mesh.getBoundingBox ( bmin, bmax );
@@ -170,18 +178,18 @@ Model::setRenderingMode ( const RenderingMode mode )
 */
 
 void Model::setRenderingMode(const int mode){
-    this->_preference.setRenderingMode(mode);
+    this->_Preferences.at(this->_activeMeshId).setRenderingMode(mode);
 }
 
 int
 Model::getRenderingMode(){
-    return this->_preference.getRenderingMode();
+    return this->_Preferences.at(this->_activeMeshId).getRenderingMode();
 }
 
 void
 Model::setShadingMode(const ShadingMode shading)
 {
-    this->_preference.setShadingMode(shading);
+    this->_Preferences.at(this->_activeMeshId).setShadingMode(shading);
     return;
 }
 
@@ -258,78 +266,86 @@ Model::addRotation ( const Eigen::Quaternionf& q )
 }
 
 void
-Model::getSurfaceColor ( int &r, int &g, int &b )
+Model::getSurfaceColor (const int id, int &r, int &g, int &b )
 {
-	const Color3f c = this->getPreference().getSurfaceColor();
+    //const Color3f c = this->getPreference().getSurfaceColor();
+    const Color3f c = this->_Preferences.at(id).getSurfaceColor();
 	r = static_cast<int> ( 255 * c.x() );
 	g = static_cast<int> ( 255 * c.y() );
 	b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setSurfaceColor ( const int r, const int g, const int b )
+Model::setSurfaceColor ( const int id, const int r, const int g, const int b )
 {
 	Color3f c;
 	c.x() = r * 1.0 / 255;
 	c.y() = g * 1.0 / 255;
 	c.z() = b * 1.0 / 255;
-	this->_preference.setSurfaceColor ( c );
+    //this->_preference.setSurfaceColor ( c );
+    this->_Preferences.at(id).setSurfaceColor( c );
 }
 
 void
-Model::getBackgroundColor ( int &r, int &g, int &b )
+Model::getBackgroundColor (const int id , int &r, int &g, int &b )
 {
-    const Color3f c = this->getPreference().getBackgroundColor();
+    //const Color3f c = this->getPreference().getBackgroundColor();
+    const Color3f c = this->_Preferences.at(id).getBackgroundColor();
     r = static_cast<int> ( 255 * c.x() );
     g = static_cast<int> ( 255 * c.y() );
     b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setBackgroundColor ( const int r, const int g, const int b )
+Model::setBackgroundColor ( const int id ,  const int r, const int g, const int b )
 {
     Color3f c;
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
-    this->_preference.setBackgroundColor ( c );
+    //this->_preference.setBackgroundColor ( c );
+    this->_Preferences.at(id).setBackgroundColor( c );
 }
 void
-Model::getWireColor ( int &r, int &g, int &b )
+Model::getWireColor ( const int id, int &r, int &g, int &b )
 {
-    const Color3f c = this->getPreference().getWireColor();
+    //const Color3f c = this->getPreference().getWireColor();
+    const Color3f c = this->_Preferences.at(id).getWireColor();
     r = static_cast<int> ( 255 * c.x() );
     g = static_cast<int> ( 255 * c.y() );
     b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setWireColor ( const int r, const int g, const int b )
+Model::setWireColor ( const int id, const int r, const int g, const int b )
 {
     Color3f c;
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
-    this->_preference.setWireColor ( c );
+    //this->_preference.setWireColor ( c );
+    this->_Preferences.at(id).setWireColor(  c );
 }
 
 void
-Model::getVertexColor ( int &r, int &g, int &b )
+Model::getVertexColor ( const int id ,  int &r, int &g, int &b )
 {
-    const Color3f c = this->getPreference().getVertexColor();
+    //const Color3f c = this->getPreference().getVertexColor();
+    const Color3f c = this->_Preferences.at(id).getVertexColor();
     r = static_cast<int> ( 255 * c.x() );
     g = static_cast<int> ( 255 * c.y() );
     b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setVertexColor ( const int r, const int g, const int b )
+Model::setVertexColor ( const int id,  const int r, const int g, const int b )
 {
     Color3f c;
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
-    this->_preference.setVertexColor ( c );
+    //this->_preference.setVertexColor ( c );
+    this->_Preferences.at(id).setVertexColor( c );
 }
 
 void
@@ -355,13 +371,13 @@ Model::setLightColor ( const int r, const int g, const int b )
 int
 Model::getWireWidth( void )
 {
-    return this->getPreference().getWireWidth();
+    return this->getPreferences().at(this->_activeMeshId).getWireWidth();
 }
 
 void
 Model::setWireWidth(const int width)
 {
-    this->_preference.setWireWidth(width);
+    this->_Preferences.at(this->_activeMeshId).setWireWidth(width);
 }
 
 void Model::setViewAngle(float _angle){
@@ -512,9 +528,28 @@ Model::getVertexandFace(int &ver, int &face){
 void
 Model::setLightPosition(void){
 
-    Eigen::Vector3f bmin, bmax;
-    this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
+    Eigen::Vector3f bmin , bmax , bcenter;
+    this->_mesh[getActiveMeshIndex()].getBoundingBox(bmin , bmax);
+    float minx = bmin.x();
+    float miny = bmin.y();
+    float minz = bmin.z();
+    float maxx = bmax.x();
+    float maxy = bmax.y();
+    float maxz = bmax.z();
 
+    for( int i = 0 ; i < this->_mesh.size() ; i++ ){
+        if( !this->_checked.at(i) ) continue;
+        Eigen::Vector3f tmin, tmax;
+        this->_mesh[i].getBoundingBox(tmin,tmax);
+        minx = std::min(minx , tmin.x() );
+        miny = std::min(miny , tmin.y() );
+        minz = std::min(minz , tmin.z() );
+        maxx = std::max(maxx , tmax.x() );
+        maxy = std::max(maxy , tmax.y() );
+        maxz = std::max(maxz , tmax.z() );
+    }
+    bmin = Eigen::Vector3f(minx,miny,minz);
+    bmax = Eigen::Vector3f(maxx,maxy,maxz);
     float x = 0.5*(bmin[0]+bmax[0]);
     float y = 1.0*(bmin[1]+bmax[1]);
 

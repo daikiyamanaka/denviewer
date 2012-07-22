@@ -29,7 +29,7 @@ View::init ( void )
     ::glEnable( GL_LIGHT2 );
         ::glShadeModel ( GL_FLAT );
         ::glShadeModel ( GL_SMOOTH );
-        const Color3f bg = this->_model.getPreference().getBackgroundColor();
+        const Color3f bg = this->_model.getPreferences().at(0).getBackgroundColor();
         ::glClearColor ( bg.x(), bg.y(), bg.z(), 1 );
         this->createDisplayList();
         return;
@@ -37,7 +37,7 @@ View::init ( void )
 void
 View::render ( void )
 {
-        const Color3f bg = this->_model.getPreference().getBackgroundColor();
+        const Color3f bg = this->_model.getPreferences().at(0).getBackgroundColor();
         ::glClearColor(bg.x(), bg.y(), bg.z(), 1);
         ::glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         ::glLoadIdentity();
@@ -89,9 +89,9 @@ View::render ( void )
         for( int i = 0 ; i < this->_drawMeshList.size() ; i++){
             if( !this->_model.getMeshCheckState().at(i) ) continue;
 
-            int mode = this->_model.getPreference().getRenderingMode();
+            int mode = this->_model.getPreferences().at(i).getRenderingMode();
             GLuint drawlist;
-            ShadingMode shading = this->_model.getPreference().getShadingMode();
+            ShadingMode shading = this->_model.getPreferences().at(i).getShadingMode();
             if( shading == FLAT ) drawlist = this->_drawMeshList[i].first;
             else drawlist = this->_drawMeshList[i].second;
 
@@ -103,7 +103,7 @@ View::render ( void )
                 glDisable(GL_CULL_FACE);
                 glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
                 ::glEnable ( GL_LIGHTING );
-                const Color3f fg = this->_model.getPreference().getSurfaceColor();
+                const Color3f fg = this->_model.getPreferences().at(i).getSurfaceColor();
 
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
                 GLfloat mat_ambient[4] = {fg.x(), fg.y(), fg.z(), 1.0};
@@ -131,7 +131,7 @@ View::render ( void )
                 glCullFace(GL_BACK);
                 ::glDisable ( GL_LIGHTING );
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
-                const Color3f fg = this->_model.getPreference().getWireColor();
+                const Color3f fg = this->_model.getPreferences().at(i).getWireColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
                 int width = this->_model.getWireWidth();
                 ::glLineWidth(width);
@@ -142,9 +142,9 @@ View::render ( void )
                 glCullFace(GL_BACK);
                 ::glDisable ( GL_LIGHTING );
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
-                const Color3f fg = this->_model.getPreference().getVertexColor();
+                const Color3f fg = this->_model.getPreferences().at(i).getVertexColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
-                int radius = this->_model.getPreference().getPointRadius();///edit after
+                int radius = this->_model.getPreferences().at(i).getPointRadius();///edit after
                 ::glLineWidth(radius);
                 //this->render_mesh();
                 ::glCallList(drawlist);

@@ -58,13 +58,13 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
 
 	int r,g,b;
-	this->_model.getSurfaceColor ( r,g,b );
+    this->_model.getSurfaceColor (0, r,g,b );
     QColor face(r,g,b);
-    this->_model.getBackgroundColor(r, g, b);
+    this->_model.getBackgroundColor(0,r, g, b);
     QColor background(r, g, b);
-    this->_model.getWireColor(r, g, b);
+    this->_model.getWireColor(0,r, g, b);
     QColor wire(r, g, b);
-    this->_model.getVertexColor(r, g, b);
+    this->_model.getVertexColor(0,r, g, b);
     QColor vertex(r, g, b);
     this->_model.getLightColor(r, g, b);
     QColor light(r, g, b);
@@ -445,6 +445,7 @@ MainWindow::open ( void )
             //this->_view.createDisplayList();
             this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
             this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+            this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
         }
         return;
 }
@@ -665,23 +666,23 @@ MainWindow::saveSnapshot( void ){
 void 
 MainWindow::update_surface_color(void) {
 	QColor color = this->_colorWidget->getSurfaceColor();
-	this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
+    this->_model.setSurfaceColor (this->_model.getActiveMeshIndex() , color.red(),color.green(),color.blue() );
 	emit updated();
 }
 
 void
 MainWindow::update_color(void) {
     QColor color = this->_colorWidget->getSurfaceColor();
-    this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
+    this->_model.setSurfaceColor (this->_model.getActiveMeshIndex(), color.red(),color.green(),color.blue() );
 
     color = this->_colorWidget->getBackgroundColor();
-    this->_model.setBackgroundColor(color.red(), color.green(), color.blue());
+    this->_model.setBackgroundColor(this->_model.getActiveMeshIndex() ,color.red(), color.green(), color.blue());
 
     color = this->_colorWidget->getWireColor();
-    this->_model.setWireColor(color.red(), color.green(), color.blue());
+    this->_model.setWireColor(this->_model.getActiveMeshIndex() ,color.red(), color.green(), color.blue());
 
     color = this->_colorWidget->getVertexColor();
-    this->_model.setVertexColor(color.red(), color.green(), color.blue());
+    this->_model.setVertexColor(this->_model.getActiveMeshIndex() ,color.red(), color.green(), color.blue());
 
     color = this->_colorWidget->getLightColor();
     this->_model.setLightColor(color.red(), color.green(), color.blue());
@@ -772,6 +773,7 @@ MainWindow::file_dropped(QString str){
                 //this->modelLayerWidget->addList(str.toStdString());
                 this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
                 this->get_ver_face();
+                this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
         }
 
         return;
@@ -851,5 +853,28 @@ MainWindow::change_active_mesh_index(void)
     int id = this->modelLayerWidget->getSelectedIndex();
     this->_model.setActiveMeshIndex(id);
     this->view_fit();
+    this->change_pallet_color_to_Id_mesh(id);
     emit updated();
+}
+
+void
+MainWindow::change_pallet_color_to_Id_mesh(int id)
+{
+    int r,g,b;
+    this->_model.getSurfaceColor (id, r,g,b );
+    QColor face(r,g,b);
+    this->_model.getBackgroundColor(id,r, g, b);
+    QColor background(r, g, b);
+    this->_model.getWireColor(id,r, g, b);
+    QColor wire(r, g, b);
+    this->_model.getVertexColor(id,r, g, b);
+    QColor vertex(r, g, b);
+    this->_model.getLightColor(r, g, b);
+    QColor light(r, g, b);
+    this->_colorWidget->setColorsToPallet(face,background,wire,vertex,light);
+
+    if( this->_model.getPreferences().at(id).getShadingMode() == SMOOTH ) this->_smoothRadioButton->setChecked(true);
+    else this->_flatRadioButton->setChecked(true);
+
+    //this->_dialog->setPreference( this->_model.getPreferences.at(id) );
 }

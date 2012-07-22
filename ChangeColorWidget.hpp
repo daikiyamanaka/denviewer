@@ -20,6 +20,8 @@ public:
     QColor getVertexColor(void);
     QColor getLightColor(void);
 
+    void setColorsToPallet( QColor faceColor, QColor backgroundColor, QColor wireColor, QColor pointColor, QColor lightColor );
+
 public slots : 
     void set_surface_color( void ) ;
     void setBackgroundColor( void);

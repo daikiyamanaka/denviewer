@@ -134,3 +134,20 @@ QColor ChangeColorWidget::getVertexColor(){
 QColor ChangeColorWidget::getLightColor(){
     return this->_lightColorLabel->palette().color(QPalette::Window);
 }
+
+void
+ChangeColorWidget::setColorsToPallet(QColor faceColor, QColor backgroundColor, QColor wireColor, QColor pointColor, QColor lightColor)
+{
+    this->_faceColorLabel->setPalette ( faceColor );
+    this->_faceColorLabel->setAutoFillBackground ( true );
+    this->_backgroundColorLabel->setPalette( backgroundColor);
+    this->_backgroundColorLabel->setAutoFillBackground(true);
+    this->_wireColorLabel->setPalette( wireColor);
+    this->_wireColorLabel->setAutoFillBackground(true);
+    this->_vertexColorLabel->setPalette( pointColor);
+    this->_vertexColorLabel->setAutoFillBackground(true);
+    this->_lightColorLabel->setPalette( lightColor);
+    this->_lightColorLabel->setAutoFillBackground(true);
+
+    return;
+}
