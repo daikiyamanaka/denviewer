@@ -17,7 +17,7 @@ private:
         Light _filllight;
         Light _backlight;
         //Camera _camera;
-        Preference _preference;
+        //Preference _preference;
         std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
         int _NowCameraId;
         int _activeMeshId;
@@ -33,7 +33,7 @@ public:
         const Light& getLight ( void );
         const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
-        const Preference& getPreference ( void );
+        //const Preference& getPreference ( void );
         const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
 
         bool initMesh ( void );

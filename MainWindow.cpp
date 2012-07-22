@@ -186,7 +186,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
 
     //Preference Dialog
-    _dialog = new PreferencesDialog(this, this->_model.getPreference());
+    _dialog = new PreferencesDialog(this, this->_model.getPreferences().at(0));
     return;
 }
 
@@ -509,7 +509,8 @@ MainWindow::polygon_wireframe ( bool checked)
         //std::cout << "wire: checked" << std::endl;
     }
     else{
-        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
+        //this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
+        this->_model.setRenderingMode ( (this->_model.getRenderingMode() | WIRE) ^ WIRE);
         //std::cout << "wire: unchecked" << std::endl;
     }
         QString  message ( tr ( "Wireframe mode" ) );
@@ -526,7 +527,8 @@ MainWindow::polygon_surface ( bool checked)
         //std::cout << "surface: checked" << std::endl;
     }
     else{
-        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
+        //this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
+        this->_model.setRenderingMode ( (this->_model.getRenderingMode() | SURFACE ) ^ SURFACE);
         //std::cout << "surface: unchecked" << std::endl;
     }
 
@@ -543,7 +545,8 @@ MainWindow::polygon_point( bool checked)
         this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
     }
     else{
-        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
+        //this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
+        this->_model.setRenderingMode ( (this->_model.getRenderingMode() | POINTCLOUD ) ^ POINTCLOUD);
     }
 
     //this->_model.setRenderingMode(this->_model.getRenderingMode() | POINTCLOUD);
@@ -875,6 +878,18 @@ MainWindow::change_pallet_color_to_Id_mesh(int id)
 
     if( this->_model.getPreferences().at(id).getShadingMode() == SMOOTH ) this->_smoothRadioButton->setChecked(true);
     else this->_flatRadioButton->setChecked(true);
+
+    this->get_ver_face();
+
+
+    int mode = this->_model.getPreferences().at(id).getRenderingMode();
+    //this->_pointCheckBox->setChecked(false);
+    //this->_surfaceCheckBox->setChecked(false);
+    //this->_wireCheckBox->setChecked(false);
+    this->_surfaceCheckBox->setChecked(mode & SURFACE);
+    this->_wireCheckBox->setChecked(mode & WIRE);
+    this->_pointCheckBox->setChecked(mode & POINTCLOUD);
+
 
     //this->_dialog->setPreference( this->_model.getPreferences.at(id) );
 }

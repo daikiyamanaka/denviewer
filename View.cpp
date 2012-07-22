@@ -9,6 +9,8 @@
 #endif
 */
 
+#include <iostream>
+
 View::View ( Model& model ) : _model ( model )
 {
         return;
@@ -95,7 +97,11 @@ View::render ( void )
             if( shading == FLAT ) drawlist = this->_drawMeshList[i].first;
             else drawlist = this->_drawMeshList[i].second;
 
+            //std::cerr<< i <<":";
+
             if ( mode & SURFACE ) {
+                //std::cerr<<"Surface";
+                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
                 glEnable(GL_POLYGON_OFFSET_FILL);
                 glPolygonOffset(1.0, 1.0);
                 glCallList(drawlist);
@@ -105,7 +111,7 @@ View::render ( void )
                 ::glEnable ( GL_LIGHTING );
                 const Color3f fg = this->_model.getPreferences().at(i).getSurfaceColor();
 
-                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+                //::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
                 GLfloat mat_ambient[4] = {fg.x(), fg.y(), fg.z(), 1.0};
                 GLfloat mat_diffuse[4] = {0.8,0.8, 0.8, 1.0};
                 GLfloat mat_specular[4] = {0.2, 0.2, 0.2, 1.0};
@@ -127,6 +133,7 @@ View::render ( void )
                 ::glCallList(drawlist);
             }
             if ( mode & WIRE ) {
+                //std::cerr<<"Wire";
                 glEnable(GL_CULL_FACE);
                 glCullFace(GL_BACK);
                 ::glDisable ( GL_LIGHTING );
@@ -138,6 +145,7 @@ View::render ( void )
                 ::glCallList(drawlist);
             }
             if( mode & POINTCLOUD ){
+                //std::cerr<<"Vertex";
                 glEnable(GL_CULL_FACE);
                 glCullFace(GL_BACK);
                 ::glDisable ( GL_LIGHTING );
@@ -149,6 +157,7 @@ View::render ( void )
                 //this->render_mesh();
                 ::glCallList(drawlist);
             }
+            //std::cerr<<std::endl;
         }
         /*
         int mode = this->_model.getPreference().getRenderingMode();
@@ -254,7 +263,7 @@ View::render_mesh ( void )
             ::glBegin ( GL_TRIANGLES );
             for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
 
-                ShadingMode shading = this->_model.getPreference().getShadingMode();
+                ShadingMode shading = this->_model.getPreferences().at(i).getShadingMode();
                 if(shading == FLAT){
                     const Eigen::Vector3f nrm = mesh.getNormal ( i );
                     ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );

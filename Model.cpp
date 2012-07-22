@@ -62,13 +62,13 @@ Model::getCamera ( void )
 {
     return this->_cameraList.at(this->_NowCameraId);
 }
-
+/*
 const Preference&
 Model::getPreference ( void )
 {
         return this->_preference;
 }
-
+*/
 const std::vector<Preference, Eigen::aligned_allocator<Preference> >&
 Model::getPreferences( void )
 {
