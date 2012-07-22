@@ -504,52 +504,30 @@ MainWindow::saveCamera ( void )
 void
 MainWindow::polygon_wireframe ( bool checked)
 {
-    if(checked){
-        this->_model.setRenderingMode (this->_model.getRenderingMode() | WIRE);
-        //std::cout << "wire: checked" << std::endl;
-    }
-    else{
-        //this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
-        this->_model.setRenderingMode ( (this->_model.getRenderingMode() | WIRE) ^ WIRE);
-        //std::cout << "wire: unchecked" << std::endl;
-    }
-        QString  message ( tr ( "Wireframe mode" ) );
-        statusBar()->showMessage ( message );
-        emit updated();
-        return;
+    this->_model.setRenderingMode(this->_model.getRenderingMode() | WIRE);
+    if(!checked) this->_model.setRenderingMode(this->_model.getRenderingMode() ^ WIRE);
+    QString  message ( tr ( "Wireframe mode" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
 }
 
 void
 MainWindow::polygon_surface ( bool checked)
 {
-    if(checked){
-        this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
-        //std::cout << "surface: checked" << std::endl;
-    }
-    else{
-        //this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
-        this->_model.setRenderingMode ( (this->_model.getRenderingMode() | SURFACE ) ^ SURFACE);
-        //std::cout << "surface: unchecked" << std::endl;
-    }
-
-        QString  message ( tr ( "Surface mode" ) );
-        statusBar()->showMessage ( message );
-        emit updated();
-        return;
+    this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
+    if(!checked) this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
+    QString  message ( tr ( "Surface mode" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
 }
 
 void
 MainWindow::polygon_point( bool checked)
 {
-    if(checked){
-        this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
-    }
-    else{
-        //this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
-        this->_model.setRenderingMode ( (this->_model.getRenderingMode() | POINTCLOUD ) ^ POINTCLOUD);
-    }
-
-    //this->_model.setRenderingMode(this->_model.getRenderingMode() | POINTCLOUD);
+    this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
+    if(!checked) this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
     QString  message ( tr ( "Point mode" ) );
     statusBar()->showMessage ( message );
     emit updated();
@@ -690,6 +668,8 @@ MainWindow::update_color(void) {
     color = this->_colorWidget->getLightColor();
     this->_model.setLightColor(color.red(), color.green(), color.blue());
 
+    delete this->_dialog;
+    this->_dialog = new PreferencesDialog(this , this->_model.getPreferences().at(this->_model.getActiveMeshIndex()));
     emit updated();
 }
 
@@ -883,13 +863,10 @@ MainWindow::change_pallet_color_to_Id_mesh(int id)
 
 
     int mode = this->_model.getPreferences().at(id).getRenderingMode();
-    //this->_pointCheckBox->setChecked(false);
-    //this->_surfaceCheckBox->setChecked(false);
-    //this->_wireCheckBox->setChecked(false);
     this->_surfaceCheckBox->setChecked(mode & SURFACE);
     this->_wireCheckBox->setChecked(mode & WIRE);
     this->_pointCheckBox->setChecked(mode & POINTCLOUD);
 
-
-    //this->_dialog->setPreference( this->_model.getPreferences.at(id) );
+    delete this->_dialog;
+    this->_dialog = new PreferencesDialog(this, this->_model.getPreferences().at(id));
 }
