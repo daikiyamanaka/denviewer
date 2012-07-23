@@ -221,6 +221,7 @@ View::render ( void )
         //::glCallList(this->_drawMesh);
         //this->render_mesh();
         */
+
       if(this->_carrow)
             this->render_arrow();
 
@@ -301,7 +302,7 @@ View::render_mesh ( void )
 
     }
 
-        return;
+    return;
 }
 
 
@@ -351,7 +352,6 @@ View::createDisplayList( void )
 }
 
 void
-
 View::render_arrow(void)
 {
     glDisable(GL_LIGHTING);

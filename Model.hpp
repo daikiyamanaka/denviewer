@@ -24,10 +24,6 @@ private:
 
         CenterArrow _carrow;
 
-
-        //Camera _camera;
-        //Preference _preference;
-
         std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
         int _NowCameraId;
         int _activeMeshId;
@@ -47,9 +43,7 @@ public:
         const Preference& getPreference ( void );
         const CenterArrow& getCenterArrow(void);
 
-        //const Preference& getPreference ( void );
         const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
-
 
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );

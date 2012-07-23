@@ -294,7 +294,9 @@ Model::setSurfaceColor ( const int id, const int r, const int g, const int b )
 
 void
 Model::getBackgroundColor (const int id , int &r, int &g, int &b )
+
 {
+
     //const Color3f c = this->getPreference().getBackgroundColor();
     const Color3f c = this->_Preferences.at(id).getBackgroundColor();
     r = static_cast<int> ( 255 * c.x() );
@@ -322,6 +324,7 @@ Model::getWireColor ( const int id, int &r, int &g, int &b )
     b = static_cast<int> ( 255 * c.z() );
 
 }
+
 void
 Model::setWireColor ( const int id, const int r, const int g, const int b )
 {
@@ -329,8 +332,10 @@ Model::setWireColor ( const int id, const int r, const int g, const int b )
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
+
     //this->_preference.setWireColor ( c );
     this->_Preferences.at(id).setWireColor(  c );
+
 }
 
 void
@@ -343,6 +348,29 @@ Model::getVertexColor ( const int id ,  int &r, int &g, int &b )
     b = static_cast<int> ( 255 * c.z() );
 
 }
+
+/*void
+Model::setWireColor ( const int id, const int r, const int g, const int b )
+{
+    Color3f c;
+    c.x() = r * 1.0 / 255;
+    c.y() = g * 1.0 / 255;
+    c.z() = b * 1.0 / 255;
+    //this->_preference.setWireColor ( c );
+    this->_Preferences.at(id).setWireColor(  c );
+}*/
+
+/*void
+Model::getVertexColor ( const int id ,  int &r, int &g, int &b )
+{
+    //const Color3f c = this->getPreference().getVertexColor();
+    const Color3f c = this->_Preferences.at(id).getVertexColor();
+    r = static_cast<int> ( 255 * c.x() );
+    g = static_cast<int> ( 255 * c.y() );
+    b = static_cast<int> ( 255 * c.z() );
+
+}*/
+
 void
 Model::setVertexColor ( const int id,  const int r, const int g, const int b )
 {
@@ -350,6 +378,7 @@ Model::setVertexColor ( const int id,  const int r, const int g, const int b )
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
+
     //this->_preference.setVertexColor ( c );
     this->_Preferences.at(id).setVertexColor( c );
 }

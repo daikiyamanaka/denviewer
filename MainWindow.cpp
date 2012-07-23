@@ -1,9 +1,7 @@
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
-
 #include <iostream>
-
 
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
@@ -81,6 +79,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_viewWidget = new ChangeViewAngle(angle);
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
+
     //windowsize
     /*int width = 800;
     int height = 600;
@@ -91,7 +90,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QCheckBox* _centerarrow = new QCheckBox(tr("Center Arrow"));
     connect(_centerarrow, SIGNAL(toggled(bool)), this, SLOT(set_carrow(bool)));
     _centerarrow->setChecked(true);
-
 
 	int alpha , beta , gamma;
     double xpos , ypos , zpos;
@@ -150,6 +148,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
+
     //boxLayout5->addWidget(this->_windowWidget);
     boxLayout5->addWidget(_centerarrow);
     //boxLayout5->addWidget(saveGroupBox);
@@ -174,7 +173,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     tabWidget1->addTab(lightwidget, tr("Light"));
     tabWidget1->setMinimumWidth ( 250 );
 
-
     QTabWidget* tabWidget2 = new QTabWidget;
     modelLayerWidget = new ModelLayerWidget;
     tabWidget2->addTab ( modelLayerWidget, tr ( "ModelLayer" ) );
@@ -182,8 +180,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     connect(this->modelLayerWidget, SIGNAL(updated()), this, SLOT(changeModelLayer()));
     connect(this->modelLayerWidget, SIGNAL(selectedItemChanged()) , this , SLOT(change_active_mesh_index()));
-
-
 
         //connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
         //std::cerr << "w =" << this->size().width() << " h = " <<this->size().height() << std::endl;
@@ -283,15 +279,25 @@ MainWindow::create_actions ( void )
         this->_backCameraAct->setStatusTip ( "Back Camera." );
         connect ( this->_backCameraAct, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
 
-        this->_backCamera = new QAction( tr("Back Camera") , this );
-        this->_backCamera->setShortcut(QKeySequence::Undo);
-        this->_backCamera->setStatusTip ( "Back Camera." );
-        connect ( this->_backCamera, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
+        this->_forwardCameraAct = new QAction( QIcon ( ":/resources/camera_forward.png" ), tr("Forward Camera") , this );
+        this->_forwardCameraAct->setShortcut(QKeySequence::Redo);
+        this->_forwardCameraAct->setStatusTip ( "Forward Camera." );
+        connect ( this->_forwardCameraAct, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
 
         this->_forwardCameraAct = new QAction( QIcon ( ":/resources/camera_forward.png" ), tr("Forward Camera") , this );
         this->_forwardCameraAct->setShortcut(QKeySequence::Redo);
         this->_forwardCameraAct->setStatusTip ( "Forward Camera." );
         connect ( this->_forwardCameraAct, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
+
+        this->_viewFitAct = new QAction( QIcon ( ":/resources/view_fit.png" ), tr("View Fit") , this );
+        this->_viewFitAct->setShortcut(QKeySequence::Redo);
+        this->_viewFitAct->setStatusTip ( "View Fit." );
+        connect ( this->_viewFitAct, SIGNAL ( triggered() ), this , SLOT(view_fit()) );
+
+        this->_viewInitAct = new QAction( QIcon ( ":/resources/view_init.png" ), tr("View Init") , this );
+        this->_viewInitAct->setShortcut(QKeySequence::Redo);
+        this->_viewInitAct->setStatusTip ( "View Init." );
+        connect ( this->_viewInitAct, SIGNAL ( triggered() ), this , SLOT(view_init()) );
 
 
         this->_viewFitAct = new QAction( QIcon ( ":/resources/view_fit.png" ), tr("View Fit") , this );
@@ -846,6 +852,7 @@ MainWindow::set_carrow(bool i)
     this->_view.carrow(i);
     emit updated();
 }
+
 void MainWindow::changePreference(void){
     //std::cout << "preference is pressed" << std::endl;
     /*
@@ -873,14 +880,6 @@ void MainWindow::changeModelLayer(void){
     //this->_view.createDisplayList();
 
     emit updated();
-}
-
-void
-
-MainWindow::save_mesh_binary(bool isBinary)
-{
-    this->_saveBinary = isBinary;
-    return;
 }
 
 void

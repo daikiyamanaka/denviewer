@@ -22,7 +22,6 @@ QT_END_NAMESPACE
 #include "PreferencesDialog.hpp"
 #include "ModelLayerWidget.hpp"
 
-
 class MainWindow : public QMainWindow
 {
         Q_OBJECT
@@ -36,10 +35,12 @@ private:
 		GetCameraParameterWidget* _cameraParameterWidget;
         GetLightParameterWidget* _lightParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
+
         //ChangeWindowSizeWidget* _windowWidget;
         //int oldw, oldh;
         PreferencesDialog *_dialog;
         ModelLayerWidget* modelLayerWidget;
+
 
 public:
         MainWindow ( Model& model, View& view ) ;
@@ -88,15 +89,14 @@ private slots:
         void set_width_height(int width, int height);
         void set_carrow(bool i);
 
-
         void changePreference(void);
         void changeModelLayer(void);
 
         void checkBinary(QString str);
-        void save_mesh_binary(bool isBinary);
+
+        //void save_mesh_binary(bool isBinary);
         void change_active_mesh_index( void );
         void change_pallet_color_to_Id_mesh( int id );
-
 
 private:
         void create_actions ( void );
@@ -124,9 +124,6 @@ private:
         QMenu* _light;
         QMenu* _camera;
 
-/*<<<<<<< HEAD
-        QMenu* _tool;
-=======*/
         QMenu* _viewMenu;
         QMenu* _renderingSubMenu;
         QMenu* _lightSubMenu;
@@ -151,9 +148,6 @@ private:
         QCheckBox* _lightCheckBox1;
         QCheckBox* _lightCheckBox2;
         QCheckBox* _lightCheckBox3;
-
-        QAction* _backCamera;
-        QAction* _forwardCamera;
 
         QAction* _backCameraAct;
         QAction* _forwardCameraAct;
