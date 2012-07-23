@@ -94,7 +94,7 @@ private slots:
 
         void checkBinary(QString str);
 
-        //void save_mesh_binary(bool isBinary);
+        void save_mesh_binary(bool isBinary);
         void change_active_mesh_index( void );
         void change_pallet_color_to_Id_mesh( int id );
 

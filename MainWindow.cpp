@@ -883,6 +883,13 @@ void MainWindow::changeModelLayer(void){
 }
 
 void
+MainWindow::save_mesh_binary(bool isBinary)
+{
+    this->_saveBinary = isBinary;
+    return;
+}
+
+void
 MainWindow::change_active_mesh_index(void)
 {
     int id = this->modelLayerWidget->getSelectedIndex();
