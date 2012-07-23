@@ -18,7 +18,10 @@ QT_END_NAMESPACE
 #include "GetCameraParameterWidget.hpp"
 #include "GetLightParameterWidget.hpp"
 #include "ShowVandFWidget.hpp"
-#include "ChangeWindowSizeWidget.hpp"//imamura
+//#include "ChangeWindowSizeWidget.hpp"//imamura
+#include "PreferencesDialog.hpp"
+#include "ModelLayerWidget.hpp"
+
 
 class MainWindow : public QMainWindow
 {
@@ -33,12 +36,15 @@ private:
 		GetCameraParameterWidget* _cameraParameterWidget;
         GetLightParameterWidget* _lightParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
-        ChangeWindowSizeWidget* _windowWidget;
-        int oldw, oldh;
+        //ChangeWindowSizeWidget* _windowWidget;
+        //int oldw, oldh;
+        PreferencesDialog *_dialog;
+        ModelLayerWidget* modelLayerWidget;
+
 public:
         MainWindow ( Model& model, View& view ) ;
 protected:
-        void contextMenuEvent ( QContextMenuEvent* event );
+        //void contextMenuEvent ( QContextMenuEvent* event );
 signals:
         void updated( void );
 		void cameraInitialized(void);//Yamauchi Add
@@ -69,7 +75,6 @@ private slots:
         void back_camera( void );
         void forward_camera( void );
         void add_now_camera_to_list( void );
-        void save_mesh_binary( bool isBinary );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
@@ -78,9 +83,20 @@ private slots:
         void lightswitch1(bool i);
         void lightswitch2(bool i);
         void lightset(void);
+
         void update_window_size(int width, int height);
         void set_width_height(int width, int height);
         void set_carrow(bool i);
+
+
+        void changePreference(void);
+        void changeModelLayer(void);
+
+        void checkBinary(QString str);
+        void save_mesh_binary(bool isBinary);
+        void change_active_mesh_index( void );
+        void change_pallet_color_to_Id_mesh( int id );
+
 
 private:
         void create_actions ( void );
@@ -136,13 +152,16 @@ private:
         QCheckBox* _lightCheckBox2;
         QCheckBox* _lightCheckBox3;
 
-        //QAction* _sizeChange;
-
         QAction* _backCamera;
         QAction* _forwardCamera;
 
-        QRadioButton* _saveMeshBinaryButton;
-        QRadioButton* _saveMeshAsciiButton;
+        QAction* _backCameraAct;
+        QAction* _forwardCameraAct;
+
+        QAction* _viewInitAct;
+        QAction* _viewFitAct;
+
+
         bool _saveBinary;
 
 };

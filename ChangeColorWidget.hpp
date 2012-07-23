@@ -13,12 +13,14 @@ private:
     QLabel* _lightColorLabel;
 
 public:
-    ChangeColorWidget( QColor faceColor, QColor backgroundColor, QColor wireColor,  QColor lightColor, QWidget *parent = 0);
+    ChangeColorWidget( QColor faceColor, QColor backgroundColor, QColor wireColor, QColor pointColor, QColor lightColor, QWidget *parent = 0);
     QColor getSurfaceColor( void ) const ;
     QColor getBackgroundColor(void);
     QColor getWireColor(void);
     QColor getVertexColor(void);
     QColor getLightColor(void);
+
+    void setColorsToPallet( QColor faceColor, QColor backgroundColor, QColor wireColor, QColor pointColor, QColor lightColor );
 
 public slots : 
     void set_surface_color( void ) ;

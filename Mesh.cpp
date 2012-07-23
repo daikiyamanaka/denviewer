@@ -2,7 +2,7 @@
 
 Mesh::Mesh ( void )
 {
-        return;
+    return;
 }
 
 Mesh::~Mesh ( void )
@@ -26,7 +26,7 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
         }
 
         //compute vertex normal
-        const int numVertexs = this->_vertex.size();
+        const int numVertexs = this->getNumVertex();
         Eigen::Vector3f vn(1,0,0);
         this->_vnormal.resize(numVertexs,vn);
         for ( int i = 0 ; i < numFaces ; i+=1 ) {
@@ -90,6 +90,24 @@ std::vector<int>
 Mesh::getIndex( const int id) const
 {
     return this->_index.at (id);
+}
+
+bool
+Mesh::NormalDataExists(void) const
+{
+    return !this->_normal.empty();
+}
+
+bool
+Mesh::VNormalDataExists(void) const
+{
+    return !this->_vnormal.empty();
+}
+
+bool
+Mesh::IndexDataExists(void) const
+{
+    return !this->_index.empty();
 }
 
 int

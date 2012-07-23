@@ -1,4 +1,5 @@
 #include "VirtualTrackball.hpp"
+#include <iostream>
 
 VirtualTrackball::VirtualTrackball ( Model& model, const float radius, const float epsilon ) : _model ( model ), _radius ( radius ), _eps ( epsilon )
 {
@@ -39,6 +40,7 @@ VirtualTrackball::mouseMoved ( const MouseEvent* event )
         //const float sint = std::sqrt ( 1 - cost * cost );
         const Eigen::Vector3f axis = p0.cross ( p1 ).normalized();
         const Eigen::Quaternionf q ( -cost, sint * axis.x(), sint * axis.y(), sint * axis.z() );
+        if( ( q.x()!=q.x() )|| ( q.y()!=q.y() )|| ( q.z()!=q.z() )|| ( q.w()!=q.w() ) ) return false;
 
         /*
         Eigen::Vector3f bmin , bmax;

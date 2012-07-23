@@ -36,7 +36,7 @@ public:
         void setBackgroundColor ( const Color3f c );
         void setWireColor ( const Color3f c );
         void setSurfaceColor ( const Color3f c );
-        void setPointColor ( const Color3f c );
+        void setVertexColor ( const Color3f c );
         void setWireWidth( const int width );
         void setPointRadius( const int radius );
         //void setRenderingMode ( const RenderingMode status );
@@ -46,7 +46,7 @@ public:
         Color3f getBackgroundColor ( void ) const;
         Color3f getWireColor ( void ) const;
         Color3f getSurfaceColor ( void ) const;
-        Color3f getPointColor ( void ) const;
+        Color3f getVertexColor ( void ) const;
         int getWireWidth( void ) const;
         int getPointRadius( void ) const;
         //RenderingMode getRenderingMode ( void ) const;

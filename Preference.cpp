@@ -5,7 +5,7 @@ Preference::Preference ( void )
         this->setBackgroundColor ( Color3f ( 1,1,1 ) );
         this->setWireColor ( Color3f ( 0,0,0 ) );
         this->setSurfaceColor ( Color3f ( 0.7f, 0, 0 ) );
-        this->setPointColor( Color3f(0 , 0 , 0.7f) );
+        this->setVertexColor( Color3f(0 , 0 , 0.7f) );
         this->setWireWidth(1);
         this->setPointRadius(1);
         this->setRenderingMode ( SURFACE );
@@ -39,7 +39,7 @@ Preference::setSurfaceColor ( const Color3f c )
 }
 
 void
-Preference::setPointColor(const Color3f c)
+Preference::setVertexColor(const Color3f c)
 {
     this->_point = c;
     return;
@@ -94,7 +94,7 @@ Preference::getSurfaceColor ( void ) const
 }
 
 Color3f
-Preference::getPointColor( void ) const
+Preference::getVertexColor( void ) const
 {
     return _point;
 }

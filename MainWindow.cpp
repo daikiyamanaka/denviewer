@@ -1,10 +1,15 @@
 #include "MainWindow.hpp"
 #include "GLWidget.hpp"
 #include <QtGui>
-#include "iostream"
+
+#include <iostream>
+
 
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
+
+
+
     QWidget* widget = new QWidget;
     widget->setContentsMargins ( 5,5,5,5 );
 
@@ -55,15 +60,17 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
 
 	int r,g,b;
-	this->_model.getSurfaceColor ( r,g,b );
+    this->_model.getSurfaceColor (0, r,g,b );
     QColor face(r,g,b);
-    this->_model.getBackgroundColor(r, g, b);
+    this->_model.getBackgroundColor(0,r, g, b);
     QColor background(r, g, b);
-    this->_model.getWireColor(r, g, b);
+    this->_model.getWireColor(0,r, g, b);
     QColor wire(r, g, b);
+    this->_model.getVertexColor(0,r, g, b);
+    QColor vertex(r, g, b);
     this->_model.getLightColor(r, g, b);
     QColor light(r, g, b);
-    this->_colorWidget = new ChangeColorWidget(face, background, wire, light);
+    this->_colorWidget = new ChangeColorWidget(face, background, wire, vertex, light);
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
     int wirewidth = this->_model.getWireWidth();
@@ -75,15 +82,16 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
 
     //windowsize
-    int width = 800;
+    /*int width = 800;
     int height = 600;
     this->_windowWidget = new ChangeWindowSizeWidget(width, height);
     connect(this->_windowWidget, SIGNAL(updated(int,int)), this, SLOT(update_window_size(int,  int)));
     connect (this->_windowWidget, SIGNAL(sizechanged(int,int)), this, SLOT(set_width_height(int,int)));
-
-    QRadioButton* _centerarrow = new QRadioButton(tr("Center Arrow"));
+*/
+    QCheckBox* _centerarrow = new QCheckBox(tr("Center Arrow"));
     connect(_centerarrow, SIGNAL(toggled(bool)), this, SLOT(set_carrow(bool)));
     _centerarrow->setChecked(true);
+
 
 	int alpha , beta , gamma;
     double xpos , ypos , zpos;
@@ -123,17 +131,6 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
-    this->_saveMeshAsciiButton = new QRadioButton( tr("Ascii") );
-    this->_saveMeshBinaryButton= new QRadioButton( tr("Binary") );
-    this->_saveMeshAsciiButton->setChecked(true);
-    QVBoxLayout *saveBoxLayout = new QVBoxLayout;
-    saveBoxLayout->addWidget(this->_saveMeshAsciiButton);
-    saveBoxLayout->addWidget(this->_saveMeshBinaryButton);
-    QGroupBox *saveGroupBox = new QGroupBox( tr("Save") );
-    saveGroupBox->setLayout(saveBoxLayout);
-
-    connect(this->_saveMeshBinaryButton , SIGNAL(toggled(bool)) ,this ,SLOT(save_mesh_binary(bool)) );
-
     //ViewTab—p
     QVBoxLayout *boxLayout3 = new QVBoxLayout;
     boxLayout3->addWidget ( groupBox1 );
@@ -153,11 +150,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
     boxLayout5->addWidget(this->_wireWidthWidget);
-
-    boxLayout5->addWidget(this->_windowWidget);
+    //boxLayout5->addWidget(this->_windowWidget);
     boxLayout5->addWidget(_centerarrow);
-
-    boxLayout5->addWidget(saveGroupBox);
+    //boxLayout5->addWidget(saveGroupBox);
 
     boxLayout5->addStretch( 1 );
 
@@ -177,32 +172,52 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     tabWidget1->addTab(widget2 ,tr("Camera") );
     tabWidget1->addTab(widget3 ,tr("MeshInfo") );
     tabWidget1->addTab(lightwidget, tr("Light"));
+    tabWidget1->setMinimumWidth ( 250 );
 
-        tabWidget1->setMinimumWidth ( 250 );
-        oldw = 250;
 
-        QHBoxLayout *layout = new QHBoxLayout;
-        layout->setMargin ( 5 );
-        layout->addWidget ( this->_glwidget );
-        layout->addWidget ( tabWidget1 );
-        //layout->addWidget ( tabWidget2 );
-        widget->setLayout ( layout );
+    QTabWidget* tabWidget2 = new QTabWidget;
+    modelLayerWidget = new ModelLayerWidget;
+    tabWidget2->addTab ( modelLayerWidget, tr ( "ModelLayer" ) );
+    tabWidget2->setMinimumWidth ( 200 );
 
-        QString message = tr ( "A context menu is available by right-clicking" );
-        this->statusBar()->showMessage ( message );
+    connect(this->modelLayerWidget, SIGNAL(updated()), this, SLOT(changeModelLayer()));
+    connect(this->modelLayerWidget, SIGNAL(selectedItemChanged()) , this , SLOT(change_active_mesh_index()));
 
-        this->create_actions();
-        this->create_menus();
-        this->create_toolbars();
-        this->setWindowTitle ( tr ( "Viewer" ) );
-        this->setMinimumSize ( 100, 100 );
-        //this->resize ( 800, 600 );
-        connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
-        std::cerr << "w =" << this->size().width() << " h = " <<this->size().height() << std::endl;
-        return;
+
+
+        //connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
+        //std::cerr << "w =" << this->size().width() << " h = " <<this->size().height() << std::endl;
+
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin ( 5 );
+    layout->addWidget ( tabWidget2 );
+    layout->addWidget ( this->_glwidget );
+    layout->addWidget ( tabWidget1 );
+
+    widget->setLayout ( layout );
+
+    QString message = tr ( "A context menu is not available by right-clicking" );
+
+    this->statusBar()->showMessage ( message );
+
+    this->create_actions();
+    this->create_menus();
+    this->create_toolbars();
+    this->setWindowTitle ( tr ( "Viewer" ) );
+    this->setMinimumSize ( 1000, 600 );
+    this->resize ( 1000, 600 );
+
+    connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
+
+    //Preference Dialog
+    _dialog = new PreferencesDialog(this, this->_model.getPreferences().at(0));
+    return;
+
 }
 
 //Pop-up menu
+/*
 void
 MainWindow::contextMenuEvent ( QContextMenuEvent* event )
 {
@@ -212,7 +227,7 @@ MainWindow::contextMenuEvent ( QContextMenuEvent* event )
         menu.addAction ( this->_saveAct );
         menu.exec ( event->globalPos() );
         return;
-}
+}*/
 
 void
 MainWindow::create_actions ( void )
@@ -261,17 +276,33 @@ MainWindow::create_actions ( void )
 
         //Preference
         this->preferenceAct = new QAction( QIcon ( ":/resources/preference.png" ), tr("&Preferences"), this);
+        connect(this->preferenceAct, SIGNAL(triggered()), this, SLOT( changePreference()));
 
+        this->_backCameraAct = new QAction( QIcon ( ":/resources/camera_back.png" ),tr("Back Camera") , this );
+        this->_backCameraAct->setShortcut(QKeySequence::Undo);
+        this->_backCameraAct->setStatusTip ( "Back Camera." );
+        connect ( this->_backCameraAct, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
 
         this->_backCamera = new QAction( tr("Back Camera") , this );
         this->_backCamera->setShortcut(QKeySequence::Undo);
         this->_backCamera->setStatusTip ( "Back Camera." );
         connect ( this->_backCamera, SIGNAL ( triggered() ), this , SLOT(back_camera()) );
 
-        this->_forwardCamera = new QAction( tr("Forward Camera") , this );
-        this->_forwardCamera->setShortcut(QKeySequence::Redo);
-        this->_forwardCamera->setStatusTip ( "Forward Camera." );
-        connect ( this->_forwardCamera, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
+        this->_forwardCameraAct = new QAction( QIcon ( ":/resources/camera_forward.png" ), tr("Forward Camera") , this );
+        this->_forwardCameraAct->setShortcut(QKeySequence::Redo);
+        this->_forwardCameraAct->setStatusTip ( "Forward Camera." );
+        connect ( this->_forwardCameraAct, SIGNAL ( triggered() ), this , SLOT(forward_camera()) );
+
+
+        this->_viewFitAct = new QAction( QIcon ( ":/resources/view_fit.png" ), tr("View Fit") , this );
+        this->_viewFitAct->setShortcut(QKeySequence::Redo);
+        this->_viewFitAct->setStatusTip ( "View Fit." );
+        connect ( this->_viewFitAct, SIGNAL ( triggered() ), this , SLOT(view_fit()) );
+
+        this->_viewInitAct = new QAction( QIcon ( ":/resources/view_init.png" ), tr("View Init") , this );
+        this->_viewInitAct->setShortcut(QKeySequence::Redo);
+        this->_viewInitAct->setStatusTip ( "View Init." );
+        connect ( this->_viewInitAct, SIGNAL ( triggered() ), this , SLOT(view_init()) );
 
         this->_renderPointAct = new QAction( tr("&Point") , this );
         this->_renderPointAct->setStatusTip("Rendering Points");
@@ -354,8 +385,8 @@ MainWindow::create_menus ( void )
     this->_lightSubMenu->addAction(this->_lightAct2);
     this->_lightSubMenu->addAction(this->_lightAct3);
     this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
-    this->_cameraSubMenu->addAction(this->_backCamera);
-    this->_cameraSubMenu->addAction(this->_forwardCamera);
+    this->_cameraSubMenu->addAction(this->_backCameraAct);
+    this->_cameraSubMenu->addAction(this->_forwardCameraAct);
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
 //>>>>>>> master
         return;
@@ -370,6 +401,14 @@ MainWindow::create_toolbars ( void )
         this->_fileToolBar->addAction ( this->_saveAct );
         this->_fileToolBar->addAction ( this->_openCameraAct );
         this->_fileToolBar->addAction ( this->_saveCameraAct );
+
+        this->_fileToolBar->addSeparator();
+        this->_fileToolBar->addAction ( this->_backCameraAct);
+        this->_fileToolBar->addAction ( this->_forwardCameraAct);
+        this->_fileToolBar->addAction( this->_viewFitAct);
+        this->_fileToolBar->addAction( this->_viewInitAct);
+
+        this->_fileToolBar->addSeparator();
         this->_fileToolBar->addAction( this->preferenceAct);
         return ;
 }
@@ -389,8 +428,11 @@ void
 MainWindow::open ( void )
 {
     QStringList fileFilterList;
+    fileFilterList += tr("Supported File(*.stl *.obj *.pcd)");
     fileFilterList += tr("STL File(*.stl)");
     fileFilterList += tr("OBJ File(*.obj)");
+    fileFilterList += tr("PCD File(*.pcd)");
+    fileFilterList += tr("All files(*.*)");
 
     QFileDialog *openDlg = new QFileDialog( this , tr("Open File"),".");
     openDlg->setNameFilters(fileFilterList);
@@ -408,9 +450,12 @@ MainWindow::open ( void )
         } else {
             emit updated();
             emit cameraInitialized();
-
+            this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
             this->get_ver_face();
-            this->_view.createDisplayList();
+            //this->_view.createDisplayList();
+            this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+            this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+            this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
         }
         return;
 }
@@ -419,19 +464,23 @@ void
 MainWindow::save ( void )
 {
     QStringList fileFilterList;
-    fileFilterList += tr("STL File(*.stl)");
+    fileFilterList += tr("STL File Ascii(*.stl)");
+    fileFilterList += tr("STL File Binary(*.stl)");
     fileFilterList += tr("OBJ File(*.obj)");
 
     QFileDialog *saveDlg = new QFileDialog( this , tr("Save File"),".");
     saveDlg->setNameFilters(fileFilterList);
     saveDlg->setAcceptMode(QFileDialog::AcceptSave);
     saveDlg->setConfirmOverwrite(true);
+    this->_saveBinary = false;
+
+    connect(saveDlg , SIGNAL(filterSelected(QString)) , this , SLOT(checkBinary(QString)) );
 
     QStringList fileNames;
     if(saveDlg->exec()){
         fileNames = saveDlg->selectedFiles();
     }
-    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary ) ) {
+    if ( fileNames.size()==0 || !this->_model.saveMesh ( fileNames.at(0).toStdString() , this->_saveBinary , this->modelLayerWidget->getSelectedIndex() ) ) {
             QString message ( tr ( "Save failed." ) );
             statusBar()->showMessage ( message );
             return;
@@ -465,49 +514,30 @@ MainWindow::saveCamera ( void )
 void
 MainWindow::polygon_wireframe ( bool checked)
 {
-    if(checked){
-        this->_model.setRenderingMode (this->_model.getRenderingMode() | WIRE);
-        //std::cout << "wire: checked" << std::endl;
-    }
-    else{
-        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ WIRE);
-        //std::cout << "wire: unchecked" << std::endl;
-    }
-        QString  message ( tr ( "Wireframe mode" ) );
-        statusBar()->showMessage ( message );
-        emit updated();
-        return;
+    this->_model.setRenderingMode(this->_model.getRenderingMode() | WIRE);
+    if(!checked) this->_model.setRenderingMode(this->_model.getRenderingMode() ^ WIRE);
+    QString  message ( tr ( "Wireframe mode" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
 }
 
 void
 MainWindow::polygon_surface ( bool checked)
 {
-    if(checked){
-        this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
-        //std::cout << "surface: checked" << std::endl;
-    }
-    else{
-        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
-        //std::cout << "surface: unchecked" << std::endl;
-    }
-
-        QString  message ( tr ( "Surface mode" ) );
-        statusBar()->showMessage ( message );
-        emit updated();
-        return;
+    this->_model.setRenderingMode (this->_model.getRenderingMode() | SURFACE);
+    if(!checked) this->_model.setRenderingMode (this->_model.getRenderingMode() ^ SURFACE);
+    QString  message ( tr ( "Surface mode" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    return;
 }
 
 void
 MainWindow::polygon_point( bool checked)
 {
-    if(checked){
-        this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
-    }
-    else{
-        this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
-    }
-
-    //this->_model.setRenderingMode(this->_model.getRenderingMode() | POINTCLOUD);
+    this->_model.setRenderingMode (this->_model.getRenderingMode() | POINTCLOUD);
+    if(!checked) this->_model.setRenderingMode (this->_model.getRenderingMode() ^ POINTCLOUD);
     QString  message ( tr ( "Point mode" ) );
     statusBar()->showMessage ( message );
     emit updated();
@@ -520,7 +550,7 @@ MainWindow::shading_flat( void )
     this->_model.setShadingMode(FLAT);
     QString  message ( tr ( "Flat shading" ) );
     statusBar()->showMessage ( message );
-    this->_view.createDisplayList();
+    //this->_view.createDisplayList();
     emit updated();
     return;
 }
@@ -531,7 +561,7 @@ MainWindow::shading_smooth( void )
     this->_model.setShadingMode(SMOOTH);
     QString  message ( tr ( "Smooth shading" ) );
     statusBar()->showMessage ( message );
-    this->_view.createDisplayList();
+    //this->_view.createDisplayList();
     emit updated();
     return;
 }
@@ -577,7 +607,7 @@ MainWindow::mouse_dragged ( float x, float y )
         message += stry;
         message += tr ( ") " );
 
-		int alpha , beta , gamma;
+        int alpha , beta , gamma;
         this->_model.getEulerAngle(alpha , beta , gamma);
         this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
 
@@ -632,24 +662,29 @@ MainWindow::saveSnapshot( void ){
 void 
 MainWindow::update_surface_color(void) {
 	QColor color = this->_colorWidget->getSurfaceColor();
-	this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
+    this->_model.setSurfaceColor (this->_model.getActiveMeshIndex() , color.red(),color.green(),color.blue() );
 	emit updated();
 }
 
 void
 MainWindow::update_color(void) {
     QColor color = this->_colorWidget->getSurfaceColor();
-    this->_model.setSurfaceColor ( color.red(),color.green(),color.blue() );
+    this->_model.setSurfaceColor (this->_model.getActiveMeshIndex(), color.red(),color.green(),color.blue() );
 
     color = this->_colorWidget->getBackgroundColor();
-    this->_model.setBackgroundColor(color.red(), color.green(), color.blue());
+    this->_model.setBackgroundColor(this->_model.getActiveMeshIndex() ,color.red(), color.green(), color.blue());
 
     color = this->_colorWidget->getWireColor();
-    this->_model.setWireColor(color.red(), color.green(), color.blue());
+    this->_model.setWireColor(this->_model.getActiveMeshIndex() ,color.red(), color.green(), color.blue());
+
+    color = this->_colorWidget->getVertexColor();
+    this->_model.setVertexColor(this->_model.getActiveMeshIndex() ,color.red(), color.green(), color.blue());
 
     color = this->_colorWidget->getLightColor();
     this->_model.setLightColor(color.red(), color.green(), color.blue());
 
+    delete this->_dialog;
+    this->_dialog = new PreferencesDialog(this , this->_model.getPreferences().at(this->_model.getActiveMeshIndex()));
     emit updated();
 }
 
@@ -741,11 +776,16 @@ MainWindow::file_dropped(QString str){
         } else {
         QString  message  = str +  QString( tr ( " reading  done." ) );
                 statusBar()->showMessage ( message );
-        this->_view.createDisplayList();
-        emit updated();
-        emit cameraInitialized();
-        this->get_ver_face();
-    }
+                //this->_view.createDisplayList();
+                this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+                this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+                emit updated();
+                emit cameraInitialized();
+                //this->modelLayerWidget->addList(str.toStdString());
+                this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
+                this->get_ver_face();
+                this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+        }
 
         return;
 }
@@ -794,8 +834,8 @@ void
 MainWindow::set_width_height(int width, int height)
 {
 
-    this->_windowWidget->setWindowHeight(height);
-    this->_windowWidget->setWindowWidth(width);
+   // this->_windowWidget->setWindowHeight(height);
+   // this->_windowWidget->setWindowWidth(width);
     emit updated();
     //return;
 }
@@ -806,11 +846,81 @@ MainWindow::set_carrow(bool i)
     this->_view.carrow(i);
     emit updated();
 }
+void MainWindow::changePreference(void){
+    //std::cout << "preference is pressed" << std::endl;
+    /*
+    if (!_dialog) {
+        _dialog = new PreferencesDialog(this);
+        //connect(findDialog, SIGNAL(findNext()), this, SLOT(findNext()));
+    }
+
+    _dialog->show();
+*/
+    _dialog->exec();
+    //_dialog->raise();
+   // _dialog->activateWindow();
+}
+
+void MainWindow::checkBinary(QString str){
+    if( str.contains("binary" , Qt::CaseInsensitive ) ) this->_saveBinary = true;
+    else this->_saveBinary = false;
+	return;
+}
+
+void MainWindow::changeModelLayer(void){
+    //std::cout << "changeModelLayer" << std::endl;
+    this->_model.setMeshCheckState(this->modelLayerWidget->getCheckState());
+    //this->_view.createDisplayList();
+
+    emit updated();
+}
 
 void
+
 MainWindow::save_mesh_binary(bool isBinary)
 {
     this->_saveBinary = isBinary;
     return;
+}
+
+void
+MainWindow::change_active_mesh_index(void)
+{
+    int id = this->modelLayerWidget->getSelectedIndex();
+    this->_model.setActiveMeshIndex(id);
+    this->view_fit();
+    this->change_pallet_color_to_Id_mesh(id);
+    emit updated();
+}
+
+void
+MainWindow::change_pallet_color_to_Id_mesh(int id)
+{
+    int r,g,b;
+    this->_model.getSurfaceColor (id, r,g,b );
+    QColor face(r,g,b);
+    this->_model.getBackgroundColor(id,r, g, b);
+    QColor background(r, g, b);
+    this->_model.getWireColor(id,r, g, b);
+    QColor wire(r, g, b);
+    this->_model.getVertexColor(id,r, g, b);
+    QColor vertex(r, g, b);
+    this->_model.getLightColor(r, g, b);
+    QColor light(r, g, b);
+    this->_colorWidget->setColorsToPallet(face,background,wire,vertex,light);
+
+    if( this->_model.getPreferences().at(id).getShadingMode() == SMOOTH ) this->_smoothRadioButton->setChecked(true);
+    else this->_flatRadioButton->setChecked(true);
+
+    this->get_ver_face();
+
+
+    int mode = this->_model.getPreferences().at(id).getRenderingMode();
+    this->_surfaceCheckBox->setChecked(mode & SURFACE);
+    this->_wireCheckBox->setChecked(mode & WIRE);
+    this->_pointCheckBox->setChecked(mode & POINTCLOUD);
+
+    delete this->_dialog;
+    this->_dialog = new PreferencesDialog(this, this->_model.getPreferences().at(id));
 
 }

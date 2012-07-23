@@ -10,6 +10,8 @@
 #endif
 */
 
+#include <iostream>
+
 View::View ( Model& model ) : _model ( model )
 {
         return;
@@ -30,7 +32,7 @@ View::init ( void )
     ::glEnable( GL_LIGHT2 );
         ::glShadeModel ( GL_FLAT );
         ::glShadeModel ( GL_SMOOTH );
-        const Color3f bg = this->_model.getPreference().getBackgroundColor();
+        const Color3f bg = this->_model.getPreferences().at(0).getBackgroundColor();
         ::glClearColor ( bg.x(), bg.y(), bg.z(), 1 );
         this->createDisplayList();
         return;
@@ -38,7 +40,7 @@ View::init ( void )
 void
 View::render ( void )
 {
-        const Color3f bg = this->_model.getPreference().getBackgroundColor();
+        const Color3f bg = this->_model.getPreferences().at(0).getBackgroundColor();
         ::glClearColor(bg.x(), bg.y(), bg.z(), 1);
         ::glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         ::glLoadIdentity();
@@ -87,6 +89,78 @@ View::render ( void )
         //draw mesh
 
         //RenderingMode mode = this->_model.getPreference().getRenderingMode() ;
+        for( int i = 0 ; i < this->_drawMeshList.size() ; i++){
+            if( !this->_model.getMeshCheckState().at(i) ) continue;
+
+            int mode = this->_model.getPreferences().at(i).getRenderingMode();
+            GLuint drawlist;
+            ShadingMode shading = this->_model.getPreferences().at(i).getShadingMode();
+            if( shading == FLAT ) drawlist = this->_drawMeshList[i].first;
+            else drawlist = this->_drawMeshList[i].second;
+
+            //std::cerr<< i <<":";
+
+            if ( mode & SURFACE ) {
+                //std::cerr<<"Surface";
+                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+                glEnable(GL_POLYGON_OFFSET_FILL);
+                glPolygonOffset(1.0, 1.0);
+                glCallList(drawlist);
+                glDisable(GL_POLYGON_OFFSET_FILL);
+                glDisable(GL_CULL_FACE);
+                glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+                ::glEnable ( GL_LIGHTING );
+                const Color3f fg = this->_model.getPreferences().at(i).getSurfaceColor();
+
+                //::glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+                GLfloat mat_ambient[4] = {fg.x(), fg.y(), fg.z(), 1.0};
+                GLfloat mat_diffuse[4] = {0.8,0.8, 0.8, 1.0};
+                GLfloat mat_specular[4] = {0.2, 0.2, 0.2, 1.0};
+                GLfloat mat_shininess[1] = {100.0f};
+
+                ::glMaterialfv ( GL_FRONT, GL_AMBIENT,  mat_ambient );
+                ::glMaterialfv ( GL_FRONT, GL_DIFFUSE,  mat_diffuse );
+                ::glMaterialfv ( GL_FRONT, GL_SPECULAR, mat_specular );
+                ::glMaterialfv ( GL_FRONT, GL_SHININESS,mat_shininess );
+
+                GLfloat mat2_ambient[4] = {1-fg.x(), 1-fg.y(), 1-fg.z(), 1.0};
+                GLfloat mat2_diffuse[4] = {0.8,0.8, 0.8, 1.0};
+                GLfloat mat2_specular[4] = {0.2, 0.2, 0.2, 1.0};
+                GLfloat mat2_shininess[1] = {100.0f};
+                ::glMaterialfv ( GL_BACK, GL_AMBIENT,  mat2_ambient );
+                ::glMaterialfv ( GL_BACK, GL_DIFFUSE,  mat2_diffuse );
+                ::glMaterialfv ( GL_BACK, GL_SPECULAR, mat2_specular );
+                ::glMaterialfv ( GL_BACK, GL_SHININESS,mat2_shininess );
+                ::glCallList(drawlist);
+            }
+            if ( mode & WIRE ) {
+                //std::cerr<<"Wire";
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+                ::glDisable ( GL_LIGHTING );
+                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
+                const Color3f fg = this->_model.getPreferences().at(i).getWireColor();
+                ::glColor3f ( fg.x(), fg.y(), fg.z() );
+                int width = this->_model.getWireWidth();
+                ::glLineWidth(width);
+                ::glCallList(drawlist);
+            }
+            if( mode & POINTCLOUD ){
+                //std::cerr<<"Vertex";
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+                ::glDisable ( GL_LIGHTING );
+                ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
+                const Color3f fg = this->_model.getPreferences().at(i).getVertexColor();
+                ::glColor3f ( fg.x(), fg.y(), fg.z() );
+                int radius = this->_model.getPreferences().at(i).getPointRadius();///edit after
+                ::glLineWidth(radius);
+                //this->render_mesh();
+                ::glCallList(drawlist);
+            }
+            //std::cerr<<std::endl;
+        }
+        /*
         int mode = this->_model.getPreference().getRenderingMode();
         if ( mode & SURFACE ) {
                    glEnable(GL_POLYGON_OFFSET_FILL);
@@ -136,7 +210,7 @@ View::render ( void )
             glCullFace(GL_BACK);
             ::glDisable ( GL_LIGHTING );
             ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
-            const Color3f fg = this->_model.getPreference().getPointColor();
+            const Color3f fg = this->_model.getPreference().getVertexColor();
             ::glColor3f ( fg.x(), fg.y(), fg.z() );
             int radius = this->_model.getPreference().getPointRadius();///edit after
             ::glLineWidth(radius);
@@ -146,8 +220,10 @@ View::render ( void )
         }
         //::glCallList(this->_drawMesh);
         //this->render_mesh();
-        if(this->_carrow)
+        */
+      if(this->_carrow)
             this->render_arrow();
+
         return;
 }
 void
@@ -173,27 +249,57 @@ View::resize ( const int width, const int height )
 void
 View::render_mesh ( void )
 {
-        const Mesh& mesh = this->_model.getMesh();
-        ::glBegin ( GL_TRIANGLES );
-        for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
+    const std::vector<Mesh>& meshes = this->_model.getMesh();
+    std::vector<bool> checkState= this->_model.getMeshCheckState();
+   // std::cout << checkState.size() <<std::endl;
 
-            ShadingMode shading = this->_model.getPreference().getShadingMode();
-            if(shading == FLAT){
-                const Eigen::Vector3f nrm = mesh.getNormal ( i );
-                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-            }
+    for(int k=0; k<meshes.size(); k++){
 
-                const std::vector<int> index = mesh.getIndex(i);
-                for( int j = 0; j < 3; j++){
-                    if(shading == SMOOTH){
-                        const Eigen::Vector3f n = mesh.getVNormal( index[j] );
-                        ::glNormal3f ( n.x(),n.y(),n.z() );
-                    }
-                    const Eigen::Vector3f p = mesh.getPosition ( index[j] );
-                    ::glVertex3f ( p.x(), p.y(), p.z() );
+    //for(int k=0; k<checkState.size(); k++){
+        if(!checkState[k]){
+            continue;
+        }
+        const Mesh& mesh = meshes[k];
+        bool index_data = mesh.IndexDataExists();
+        bool vnormal_data = mesh.VNormalDataExists();
+
+        if( index_data ){
+            ::glBegin ( GL_TRIANGLES );
+            for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
+
+                ShadingMode shading = this->_model.getPreferences().at(i).getShadingMode();
+                if(shading == FLAT){
+                    const Eigen::Vector3f nrm = mesh.getNormal ( i );
+                    ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
                 }
+
+                    const std::vector<int> index = mesh.getIndex(i);
+                    for( int j = 0; j < 3; j++){
+                        if(shading == SMOOTH){
+                            const Eigen::Vector3f n = mesh.getVNormal( index[j] );
+                            ::glNormal3f ( n.x(),n.y(),n.z() );
+                        }
+                        const Eigen::Vector3f p = mesh.getPosition ( index[j] );
+                        ::glVertex3f ( p.x(), p.y(), p.z() );
+                    }
+            }
+            ::glEnd();
+        }else{
+            ::glBegin ( GL_POINTS );
+            for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+                if( vnormal_data ){
+                    const Eigen::Vector3f nrm = mesh.getVNormal(i);
+                    ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+                }
+                const Eigen::Vector3f p = mesh.getPosition(i);
+                ::glVertex3f ( p.x(), p.y(), p.z() );
+            }
+             ::glEnd();
         }
         ::glEnd();
+
+
+    }
 
         return;
 }
@@ -245,6 +351,7 @@ View::createDisplayList( void )
 }
 
 void
+
 View::render_arrow(void)
 {
     glDisable(GL_LIGHTING);
@@ -281,4 +388,108 @@ View::carrow(bool arrow)
 {
     this->_carrow = arrow;
     return;
+}
+
+void
+View::flatRendering(const Mesh &mesh)
+{
+    bool index_data = mesh.IndexDataExists();
+    bool vnormal_data = mesh.VNormalDataExists();
+
+    if( index_data ){
+        ::glBegin ( GL_TRIANGLES );
+        for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
+
+            const Eigen::Vector3f nrm = mesh.getNormal ( i );
+            ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            const std::vector<int> index = mesh.getIndex(i);
+            for( int j = 0; j < 3; j++){
+                const Eigen::Vector3f p = mesh.getPosition ( index[j] );
+                ::glVertex3f ( p.x(), p.y(), p.z() );
+            }
+        }
+        ::glEnd();
+    }else{
+        ::glBegin ( GL_POINTS );
+        for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+            if( vnormal_data ){
+                const Eigen::Vector3f nrm = mesh.getVNormal(i);
+                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            }
+            const Eigen::Vector3f p = mesh.getPosition(i);
+            ::glVertex3f ( p.x(), p.y(), p.z() );
+        }
+         ::glEnd();
+    }
+
+    return;
+}
+
+void
+View::smoothRendering(const Mesh &mesh)
+{
+    bool index_data = mesh.IndexDataExists();
+    bool vnormal_data = mesh.VNormalDataExists();
+
+    if( index_data ){
+        ::glBegin ( GL_TRIANGLES );
+        for ( int i = 0 ; i < mesh.getNumFaces() ; i++ ) {
+
+            const std::vector<int> index = mesh.getIndex(i);
+            for( int j = 0; j < 3; j++){
+                const Eigen::Vector3f n = mesh.getVNormal( index[j] );
+                ::glNormal3f ( n.x(),n.y(),n.z() );
+                const Eigen::Vector3f p = mesh.getPosition ( index[j] );
+                ::glVertex3f ( p.x(), p.y(), p.z() );
+            }
+        }
+        ::glEnd();
+    }else{
+        ::glBegin ( GL_POINTS );
+        for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+            if( vnormal_data ){
+                const Eigen::Vector3f nrm = mesh.getVNormal(i);
+                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            }
+            const Eigen::Vector3f p = mesh.getPosition(i);
+            ::glVertex3f ( p.x(), p.y(), p.z() );
+        }
+         ::glEnd();
+    }
+    return;
+}
+
+RenderPair
+View::createRenderPair(const Mesh &mesh)
+{
+    GLuint flat;
+    flat = ::glGenLists(1);
+    ::glNewList(flat , GL_COMPILE);
+    this->flatRendering(mesh);
+    ::glEndList();
+
+    GLuint smooth;
+    smooth = ::glGenLists(1);
+    ::glNewList(smooth , GL_COMPILE);
+    this->smoothRendering(mesh);
+    ::glEndList();
+    RenderPair pair = std::make_pair<GLuint,GLuint>(flat,smooth);
+    return pair;
+}
+
+bool
+View::addDrawMeshList(int k)
+{
+    if( k >= this->_model.getMesh().size() ) return false;
+    const Mesh& mesh = this->_model.getMesh().at(k);
+    this->_drawMeshList.push_back( this->createRenderPair( mesh ) );
+    return true;
+}
+
+bool
+View::deleteDrawMeshList(int k)
+{
+    if( k >= this->_model.getMesh().size() ) return false;
+    this->_drawMeshList.erase( this->_drawMeshList.begin() + k);
+    return true;
 }

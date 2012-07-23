@@ -7,6 +7,7 @@
 #include "ImporterMeshStlBinary.hpp"
 #include "ImporterMeshObj.hpp"
 #include "ImporterStlAscii.hpp"
+#include "ImporterPointsCloudPcdAscii.hpp"
 
 #include "ExporterStlBinary.hpp"
 #include "ExporterStlAscii.hpp"
@@ -19,7 +20,10 @@
 Model::Model ( void )
 {
     this->_NowCameraId = 0;
+    this->_activeMeshId = 0;
     this->_cameraList.assign(1 , Camera() );
+    //std::cout << "model" << std::endl;
+    this->_Preferences.assign(1 , Preference() );
         return;
 }
 
@@ -28,10 +32,10 @@ Model::~Model ( void )
         return;
 }
 
-const Mesh&
-Model::getMesh ( void )
+const std::vector<Mesh>&
+Model::getMesh ( void)
 {
-        return this->_mesh;
+    return this->_mesh;
 }
 
 const Light&
@@ -58,11 +62,17 @@ Model::getCamera ( void )
 {
     return this->_cameraList.at(this->_NowCameraId);
 }
-
+/*
 const Preference&
 Model::getPreference ( void )
 {
         return this->_preference;
+}
+*/
+const std::vector<Preference, Eigen::aligned_allocator<Preference> >&
+Model::getPreferences( void )
+{
+    return this->_Preferences;
 }
 
 const CenterArrow&
@@ -84,45 +94,61 @@ Model::openMesh ( const std::string& filename )
     ImporterMesh *importer = NULL;
     Tokenizer tok(filename, ".");
     std::string ext = tok.get( tok.size() - 1);
+    Mesh mesh;
     if( ext == std::string("stl") ){
-        importer = new ImporterMeshStlBinary(this->_mesh);
-        ImporterMeshStlBinary impb(this->_mesh);
-        if(!impb.check(filename) ) importer = new ImporterStlAscii(this->_mesh);
+        importer = new ImporterMeshStlBinary(mesh);
+        ImporterMeshStlBinary impb(mesh);
+        if(!impb.check(filename) ) importer = new ImporterStlAscii(mesh);
     }
     else if ( ext == std::string("obj") ){
-        importer = new ImporterMeshObj(this->_mesh);
+        importer = new ImporterMeshObj(mesh);
+    }
+    else if(ext == std::string("pcd") ){
+        importer = new ImporterPointsCloudPcdAscii(mesh);
     }
     else {
         return false;
     }
-    this->initMesh();
-        bool result = importer->read ( filename );
-        Eigen::Vector3f bmin, bmax;
-        this->_mesh.getBoundingBox ( bmin, bmax );
 
-        const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
-        const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
-        const Eigen::Quaternionf q ( 1,0,0,0 );
-        Camera camera;
-        camera.fitPosition(center , radius , q);
-        this->_cameraList.assign(1, camera );
-        this->_NowCameraId = 0;
-        this->viewInit();
+    mesh.clear();
+
+    //this->initMesh();
+    bool result = importer->read ( filename );
+    this->_mesh.push_back(mesh);
+    this->_checked.push_back(true);
+    if( this->_mesh.size() > 1 ) this->_Preferences.push_back( Preference() );
+
+    Eigen::Vector3f bmin, bmax;
+    //this->_mesh.getBoundingBox ( bmin, bmax );
+    mesh.getBoundingBox ( bmin, bmax );
+
+    const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
+    const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
+    const Eigen::Quaternionf q ( 1,0,0,0 );
+    Camera camera;
+    camera.fitPosition(center , radius , q);
+    this->_cameraList.assign(1, camera );
+    this->_NowCameraId = 0;
+    this->_activeMeshId = this->_mesh.size() - 1;
+    this->viewInit();
     delete importer;
-        return result;
+
+    return result;
 }
 bool
-Model::saveMesh ( const std::string& filename, bool isBinary )
+Model::saveMesh ( const std::string& filename, bool isBinary, size_t id )
 {
     ExporterMesh *exporter = NULL;
     Tokenizer tok(filename, ".");
     std::string ext = tok.get( tok.size() - 1);
+    if( id > this->_mesh.size() - 1 ) return false;
+    Mesh mesh = this->_mesh[id];
     if( ext == std::string("stl") ){
-        if( isBinary ) exporter = new ExporterStlBinary(this->_mesh);
-        else exporter = new ExporterStlAscii(this->_mesh);
+        if( isBinary ) exporter = new ExporterStlBinary(mesh);
+        else exporter = new ExporterStlAscii(mesh);
     }
     else if ( ext == std::string("obj") ){
-        exporter = new ExporterObj(this->_mesh);
+        exporter = new ExporterObj(mesh);
     }
     else {
         return false;
@@ -158,18 +184,18 @@ Model::setRenderingMode ( const RenderingMode mode )
 */
 
 void Model::setRenderingMode(const int mode){
-    this->_preference.setRenderingMode(mode);
+    this->_Preferences.at(this->_activeMeshId).setRenderingMode(mode);
 }
 
 int
 Model::getRenderingMode(){
-    return this->_preference.getRenderingMode();
+    return this->_Preferences.at(this->_activeMeshId).getRenderingMode();
 }
 
 void
 Model::setShadingMode(const ShadingMode shading)
 {
-    this->_preference.setShadingMode(shading);
+    this->_Preferences.at(this->_activeMeshId).setShadingMode(shading);
     return;
 }
 
@@ -178,7 +204,9 @@ void
 Model::viewFit ( void )
 {
         Eigen::Vector3f bmin, bmax;
-        this->_mesh.getBoundingBox ( bmin, bmax );
+
+
+        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
         Eigen::Vector3f center;
         center = ( bmax+bmin )/2;
@@ -195,7 +223,7 @@ void
 Model::viewInit ( void )
 {
         Eigen::Vector3f bmin, bmax;
-        this->_mesh.getBoundingBox ( bmin, bmax );
+        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
         const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
         const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
@@ -221,6 +249,20 @@ Model::viewInit ( void )
         return;
 }
 
+int
+Model::getActiveMeshIndex(){
+   return this->_activeMeshId;
+}
+
+void
+Model::setActiveMeshIndex(int id)
+{
+    if(id >= this->_mesh.size() ) this->_activeMeshId = 0;
+    else this->_activeMeshId = id;
+    //std::cerr<< this->_activeMeshId <<std::endl;
+    return;
+}
+
 void
 Model::addRotation ( const Eigen::Quaternionf& q )
 {
@@ -230,59 +272,86 @@ Model::addRotation ( const Eigen::Quaternionf& q )
 }
 
 void
-Model::getSurfaceColor ( int &r, int &g, int &b )
+Model::getSurfaceColor (const int id, int &r, int &g, int &b )
 {
-	const Color3f c = this->getPreference().getSurfaceColor();
+    //const Color3f c = this->getPreference().getSurfaceColor();
+    const Color3f c = this->_Preferences.at(id).getSurfaceColor();
 	r = static_cast<int> ( 255 * c.x() );
 	g = static_cast<int> ( 255 * c.y() );
 	b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setSurfaceColor ( const int r, const int g, const int b )
+Model::setSurfaceColor ( const int id, const int r, const int g, const int b )
 {
 	Color3f c;
 	c.x() = r * 1.0 / 255;
 	c.y() = g * 1.0 / 255;
 	c.z() = b * 1.0 / 255;
-	this->_preference.setSurfaceColor ( c );
+    //this->_preference.setSurfaceColor ( c );
+    this->_Preferences.at(id).setSurfaceColor( c );
 }
 
 void
-Model::getBackgroundColor ( int &r, int &g, int &b )
+Model::getBackgroundColor (const int id , int &r, int &g, int &b )
 {
-    const Color3f c = this->getPreference().getBackgroundColor();
+    //const Color3f c = this->getPreference().getBackgroundColor();
+    const Color3f c = this->_Preferences.at(id).getBackgroundColor();
     r = static_cast<int> ( 255 * c.x() );
     g = static_cast<int> ( 255 * c.y() );
     b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setBackgroundColor ( const int r, const int g, const int b )
+Model::setBackgroundColor ( const int id ,  const int r, const int g, const int b )
 {
     Color3f c;
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
-    this->_preference.setBackgroundColor ( c );
+    //this->_preference.setBackgroundColor ( c );
+    this->_Preferences.at(id).setBackgroundColor( c );
 }
 void
-Model::getWireColor ( int &r, int &g, int &b )
+Model::getWireColor ( const int id, int &r, int &g, int &b )
 {
-    const Color3f c = this->getPreference().getWireColor();
+    //const Color3f c = this->getPreference().getWireColor();
+    const Color3f c = this->_Preferences.at(id).getWireColor();
     r = static_cast<int> ( 255 * c.x() );
     g = static_cast<int> ( 255 * c.y() );
     b = static_cast<int> ( 255 * c.z() );
 
 }
 void
-Model::setWireColor ( const int r, const int g, const int b )
+Model::setWireColor ( const int id, const int r, const int g, const int b )
 {
     Color3f c;
     c.x() = r * 1.0 / 255;
     c.y() = g * 1.0 / 255;
     c.z() = b * 1.0 / 255;
-    this->_preference.setWireColor ( c );
+    //this->_preference.setWireColor ( c );
+    this->_Preferences.at(id).setWireColor(  c );
+}
+
+void
+Model::getVertexColor ( const int id ,  int &r, int &g, int &b )
+{
+    //const Color3f c = this->getPreference().getVertexColor();
+    const Color3f c = this->_Preferences.at(id).getVertexColor();
+    r = static_cast<int> ( 255 * c.x() );
+    g = static_cast<int> ( 255 * c.y() );
+    b = static_cast<int> ( 255 * c.z() );
+
+}
+void
+Model::setVertexColor ( const int id,  const int r, const int g, const int b )
+{
+    Color3f c;
+    c.x() = r * 1.0 / 255;
+    c.y() = g * 1.0 / 255;
+    c.z() = b * 1.0 / 255;
+    //this->_preference.setVertexColor ( c );
+    this->_Preferences.at(id).setVertexColor( c );
 }
 
 void
@@ -308,13 +377,13 @@ Model::setLightColor ( const int r, const int g, const int b )
 int
 Model::getWireWidth( void )
 {
-    return this->getPreference().getWireWidth();
+    return this->getPreferences().at(this->_activeMeshId).getWireWidth();
 }
 
 void
 Model::setWireWidth(const int width)
 {
-    this->_preference.setWireWidth(width);
+    this->_Preferences.at(this->_activeMeshId).setWireWidth(width);
 }
 
 void Model::setViewAngle(float _angle){
@@ -322,6 +391,15 @@ void Model::setViewAngle(float _angle){
 }
 float Model::getViewAngle(void){
     return this->getCamera().getFieldOfViewAngle();
+}
+
+void Model::setMeshCheckState(std::vector<bool> checked){
+    this->_checked = checked;
+
+}
+
+std::vector<bool> Model::getMeshCheckState(void){
+    return this->_checked;
 }
 
 void
@@ -403,13 +481,40 @@ Model::setDistanceToCenter(const float d)
 void
 Model::getDisplayRange(double &near, double &far)
 {
-    if( this->_mesh.getNumFaces() == 0 ){
+    if(this->_mesh.size() == 0){
         near = 0.001;
         far = 100000.0;
         return;
     }
+
+    if( this->_mesh[getActiveMeshIndex()].getNumFaces() == 0 ){
+        near = 0.001;
+        far = 100000.0;
+        return;
+    }
+
     Eigen::Vector3f bmin , bmax , bcenter;
-    this->_mesh.getBoundingBox(bmin , bmax);
+    this->_mesh[getActiveMeshIndex()].getBoundingBox(bmin , bmax);
+    float minx = bmin.x();
+    float miny = bmin.y();
+    float minz = bmin.z();
+    float maxx = bmax.x();
+    float maxy = bmax.y();
+    float maxz = bmax.z();
+
+    for( int i = 0 ; i < this->_mesh.size() ; i++ ){
+        if( !this->_checked.at(i) ) continue;
+        Eigen::Vector3f tmin, tmax;
+        this->_mesh[i].getBoundingBox(tmin,tmax);
+        minx = std::min(minx , tmin.x() );
+        miny = std::min(miny , tmin.y() );
+        minz = std::min(minz , tmin.z() );
+        maxx = std::max(maxx , tmax.x() );
+        maxy = std::max(maxy , tmax.y() );
+        maxz = std::max(maxz , tmax.z() );
+    }
+    bmin = Eigen::Vector3f(minx,miny,minz);
+    bmax = Eigen::Vector3f(maxx,maxy,maxz);
     bcenter = (bmin+bmax)*0.5;
     float r = (bmax - bmin).norm()*0.5;
     Eigen::Vector3f eyeLine = ( this->getCamera().getCenter() - this->getCamera().getEye() ).normalized();
@@ -422,16 +527,35 @@ Model::getDisplayRange(double &near, double &far)
 void
 Model::getVertexandFace(int &ver, int &face){
 
-    face = this->_mesh.getNumFaces();
-    ver = this->_mesh.getNumVertex();
+    face = this->_mesh[getActiveMeshIndex()].getNumFaces();
+    ver = this->_mesh[getActiveMeshIndex()].getNumVertex();
 }
 
 void
 Model::setLightPosition(void){
 
-    Eigen::Vector3f bmin, bmax;
-    this->_mesh.getBoundingBox ( bmin, bmax );
+    Eigen::Vector3f bmin , bmax , bcenter;
+    this->_mesh[getActiveMeshIndex()].getBoundingBox(bmin , bmax);
+    float minx = bmin.x();
+    float miny = bmin.y();
+    float minz = bmin.z();
+    float maxx = bmax.x();
+    float maxy = bmax.y();
+    float maxz = bmax.z();
 
+    for( int i = 0 ; i < this->_mesh.size() ; i++ ){
+        if( !this->_checked.at(i) ) continue;
+        Eigen::Vector3f tmin, tmax;
+        this->_mesh[i].getBoundingBox(tmin,tmax);
+        minx = std::min(minx , tmin.x() );
+        miny = std::min(miny , tmin.y() );
+        minz = std::min(minz , tmin.z() );
+        maxx = std::max(maxx , tmax.x() );
+        maxy = std::max(maxy , tmax.y() );
+        maxz = std::max(maxz , tmax.z() );
+    }
+    bmin = Eigen::Vector3f(minx,miny,minz);
+    bmax = Eigen::Vector3f(maxx,maxy,maxz);
     float x = 0.5*(bmin[0]+bmax[0]);
     float y = 1.0*(bmin[1]+bmax[1]);
 
@@ -524,11 +648,11 @@ void
 Model::setCenterArrowPos()
 {
     Eigen::Vector3f bmin  , bmax;
-    this->_mesh.getBoundingBox(bmin , bmax);
+    this->_mesh[getActiveMeshIndex()].getBoundingBox(bmin , bmax);
     Eigen::Vector3f modelCenter = (bmin + bmax)*0.5;
     float size = fabs(bmin[1]-bmax[1]);
     //this->_camera.getCenter();
-    this->_carrow.setCenterVec(modelCenter, size*0.5);
+    this->_carrow.setCenterVec(modelCenter, size*4.0);
 }
 
 void

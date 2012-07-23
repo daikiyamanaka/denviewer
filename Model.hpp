@@ -11,34 +11,49 @@
 class Model
 {
 private:
-        Mesh _mesh;
+        std::vector<Mesh> _mesh;
+        //std::vector<bool> _selected;
+        std::vector<bool> _checked;
         Light _light;
         Light _keylight;
         Light _filllight;
         Light _backlight;
+
         Camera _camera;
         Preference _preference;
 
         CenterArrow _carrow;
 
+
+        //Camera _camera;
+        //Preference _preference;
+
         std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
         int _NowCameraId;
+        int _activeMeshId;
+
+        std::vector<Preference, Eigen::aligned_allocator<Preference> > _Preferences;
 
 
 public:
         Model ( void ) ;
         virtual ~Model ( void ) ;
 
-        const Mesh& getMesh ( void );
+        const std::vector<Mesh>& getMesh ( void );
         const Light& getLight ( void );
         const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
+
         const Preference& getPreference ( void );
         const CenterArrow& getCenterArrow(void);
 
+        //const Preference& getPreference ( void );
+        const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
+
+
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
-        bool saveMesh ( const std::string& filename , bool isBinary = false );
+        bool saveMesh ( const std::string& filename , bool isBinary = false , size_t id = 0 );
         bool openCamera ( const std::string& filename );
         bool saveCamera ( const std::string& filename );
         //void setRenderingMode ( const RenderingMode mode );
@@ -48,15 +63,20 @@ public:
         void viewFit ( void );
         void viewInit ( void );
 
+        int getActiveMeshIndex();
+        void setActiveMeshIndex( int id );
+
         void addRotation ( const Eigen::Quaternionf& q );
 
         // for changing color
-        void getSurfaceColor ( int &r, int &g, int &b );
-        void setSurfaceColor ( const int r, const int g, const int b );
-        void getBackgroundColor ( int &r, int &g, int &b );
-        void setBackgroundColor ( const int r, const int g, const int b );
-        void getWireColor ( int &r, int &g, int &b );
-        void setWireColor ( const int r, const int g, const int b );
+        void getSurfaceColor ( const int id , int &r, int &g, int &b );
+        void setSurfaceColor ( const int id, const int r, const int g, const int b );
+        void getBackgroundColor ( const int id, int &r, int &g, int &b );
+        void setBackgroundColor ( const int id, const int r, const int g, const int b );
+        void getWireColor ( const int id, int &r, int &g, int &b );
+        void setWireColor ( const int id, const int r, const int g, const int b );
+        void getVertexColor( const int id, int &r, int &g, int &b );
+        void setVertexColor( const int id, const int r, const int g, const int b );
 
         void getLightColor( int &r, int &g, int &b );
         void setLightColor(const int r, const int g, const int b);
@@ -66,6 +86,9 @@ public:
 
         void setViewAngle(float _angle);
         float getViewAngle(void);
+
+        void setMeshCheckState(std::vector<bool> checked);
+        std::vector<bool> getMeshCheckState();
 
 		//Yamauchi
 		void getEulerAngle( int &alpha , int &beta , int &gamma);

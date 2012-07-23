@@ -1,5 +1,5 @@
 #include "ChangeWindowSizeWidget.hpp"
-#include "iostream"
+
 
 ChangeWindowSizeWidget::ChangeWindowSizeWidget(int width, int height, QWidget *parent) :
     QWidget(parent)
