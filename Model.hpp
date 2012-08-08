@@ -20,8 +20,6 @@ private:
         Light _backlight;
 
         Camera _camera;
-        Preference _preference;
-
         CenterArrow _carrow;
 
         std::deque<Camera, Eigen::aligned_allocator<Camera> > _cameraList;
@@ -40,9 +38,7 @@ public:
         const Light& getLight (const unsigned int number);
         const Camera& getCamera ( void );
 
-        const Preference& getPreference ( void );
         const CenterArrow& getCenterArrow(void);
-
         const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
 
         bool initMesh ( void );

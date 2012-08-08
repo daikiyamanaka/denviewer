@@ -1,5 +1,5 @@
 #ifndef GETCAMERAPARAMETERWIDGET_HPP
-#define GETCAMERAPARAMETERWIDGET_HPP
+#define GETCAMERAPARAMETERWIDGET_HPP 1
 
 #include <QWidget>
 #include <QtGui>
@@ -19,26 +19,26 @@ private:
     QSpinBox *_gammaspin;
 
     int _alpha , _beta , _gamma;
-    double _xpos , _ypos , _zpos;
+    double _xpos , _ypos , _zpos;//posX
 
     bool _angleSliderChanged;
-    bool _parameterChangedByThisWidget;
-    bool _parameterChangedByOtherWidget;
+    bool _parameterChangedByThisWidget;//aimaimemine
+    bool _parameterChangedByOtherWidget;//
 
 public:
     explicit GetCameraParameterWidget(int alpha , int beta , int gamma, double xpos , double ypos , double zpos , QWidget *parent = 0);
     void setEulerAngle( int alpha , int beta , int gamma  );
     void setCameraPosition( double xpos , double ypos , double zpos );
 signals:
-    void CameraPositionUpdated(double xPos , double yPos , double zPos  );
+    void CameraPositionUpdated(double xPos , double yPos , double zPos  );//
     void EulerAngleUpdated( int alpha , int beta , int gamma  );
     void ParameterChanged( void );
 
 public slots:
-    void updateAlpha( int alpha );
+    void updateAlpha( int alpha );//updateEulerAngleAlpha
     void updateBeta( int beta );
     void updateGamma( int gamma );
-    void updateXPos( double xPos );
+    void updateXPos( double xPos );//updatePosition
     void updateYPos( double yPos );
     void updateZPos( double zPos );
 

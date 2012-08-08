@@ -158,7 +158,7 @@ GetCameraParameterWidget::updateAlpha(int alpha)
     this->_alpha = alpha;
 }
 
-void
+void//logic kaku
 GetCameraParameterWidget::updateBeta(int beta)
 {
     if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
@@ -183,12 +183,12 @@ GetCameraParameterWidget::updateGamma(int gamma)
 }
 
 void
-GetCameraParameterWidget::updateXPos(double xPos)
+GetCameraParameterWidget::updateXPos(double xPos)//(const double xPos)
 {
     if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
         this->_parameterChangedByThisWidget = true;
         emit this->ParameterChanged();
-    }
+    }//copy paste
     this->_xpos = xPos;
     emit this->CameraPositionUpdated(this->_xpos,this->_ypos,this->_zpos);
 }
@@ -199,7 +199,7 @@ GetCameraParameterWidget::updateYPos(double yPos)
     if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
         this->_parameterChangedByThisWidget = true;
         emit this->ParameterChanged();
-    }
+    }//copy paste
     this->_ypos = yPos;
     emit this->CameraPositionUpdated(this->_xpos,this->_ypos,this->_zpos);
 }
@@ -210,7 +210,7 @@ GetCameraParameterWidget::updateZPos(double zPos)
     if( !this->_parameterChangedByThisWidget && !this->_parameterChangedByOtherWidget ) {
         this->_parameterChangedByThisWidget = true;
         emit this->ParameterChanged();
-    }
+    }//copy paste
     this->_zpos = zPos;
     emit this->CameraPositionUpdated(this->_xpos,this->_ypos,this->_zpos);
 }
