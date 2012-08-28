@@ -78,6 +78,8 @@ public:
 
         int getWireWidth(void);
         void setWireWidth( const int width );
+        int getPointSize(void);
+        void setPointSize( const int size);
 
         void setViewAngle(float _angle);
         float getViewAngle(void);

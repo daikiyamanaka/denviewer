@@ -423,6 +423,18 @@ Model::setWireWidth(const int width)
     this->_Preferences.at(this->_activeMeshId).setWireWidth(width);
 }
 
+int
+Model::getPointSize( void )
+{
+    return this->getPreferences().at(this->_activeMeshId).getPointSize();
+}
+
+void
+Model::setPointSize(const int size)
+{
+    this->_Preferences.at(this->_activeMeshId).setPointSize(size);
+}
+
 void Model::setViewAngle(float _angle){
     this->_cameraList.at(this->_NowCameraId).setFieldOfViewAngle(_angle);
 }

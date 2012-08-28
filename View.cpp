@@ -155,8 +155,9 @@ View::render ( void )
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_POINT );
                 const Color3f fg = this->_model.getPreferences().at(i).getVertexColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
-                int radius = this->_model.getPreferences().at(i).getPointRadius();///edit after
-                ::glLineWidth(radius);
+                int radius = this->_model.getPreferences().at(i).getPointSize();///edit after
+                //::glLineWidth(radius);
+                ::glPointSize(radius);
                 //this->render_mesh();
                 ::glCallList(drawlist);
             }

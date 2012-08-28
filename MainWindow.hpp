@@ -14,6 +14,7 @@ QT_END_NAMESPACE
 #include "View.hpp"
 #include "ChangeColorWidget.hpp"
 #include "ChangeWireWidthWidget.h"
+#include "ChangePointSizeWidget.hpp"
 #include "ChangeViewAngle.h"
 #include "GetCameraParameterWidget.hpp"
 #include "GetLightParameterWidget.hpp"
@@ -31,6 +32,7 @@ private:
         GLWidget* _glwidget;
         ChangeColorWidget* _colorWidget;
         ChangeWireWidthWidget* _wireWidthWidget;
+        ChangePointSizeWidget* _pointSizeWidget;
         ChangeViewAngle* _viewWidget;
 		GetCameraParameterWidget* _cameraParameterWidget;
         GetLightParameterWidget* _lightParameterWidget;
@@ -67,6 +69,7 @@ private slots:
         void update_surface_color(void);
         void update_color(void);
         void update_wire_width(void);
+        void update_point_size(void);
         void update_perspective_angle(void);
 		//Yamauchi
 		void update_camera_position(double xpos , double ypos , double zpos);

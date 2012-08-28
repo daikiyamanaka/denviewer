@@ -28,13 +28,17 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     int wirewidth = this->_model.getWireWidth();
     this->_wireWidthWidget = new ChangeWireWidthWidget(wirewidth);
     connect( this->_wireWidthWidget, SIGNAL(updated()), this, SLOT(update_wire_width()));
+    this->_pointSizeWidget = new ChangePointSizeWidget(1);
+    connect( this->_pointSizeWidget, SIGNAL(updated()), this, SLOT(update_point_size()));
 
     QGridLayout *renderModeGridLayout = new QGridLayout;
 
     renderModeGridLayout->addWidget(this->_pointCheckBox,0,0,Qt::AlignLeft);
     renderModeGridLayout->addWidget(this->_wireCheckBox,1,0,Qt::AlignLeft);
     renderModeGridLayout->addWidget(this->_surfaceCheckBox,2,0,Qt::AlignLeft);
+    renderModeGridLayout->addWidget(this->_pointSizeWidget,0,1,Qt::AlignRight);
     renderModeGridLayout->addWidget(this->_wireWidthWidget,1,1,Qt::AlignRight);
+
 
     QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
     groupBox1->setLayout ( renderModeGridLayout );
@@ -705,6 +709,14 @@ MainWindow::update_wire_width( void )
 {
     int width = this->_wireWidthWidget->getWireWidth();
     this->_model.setWireWidth(width);
+    emit updated();
+}
+
+void
+MainWindow::update_point_size( void )
+{
+    int size = this->_pointSizeWidget->getPointSize();
+    this->_model.setPointSize(size);
     emit updated();
 }
 

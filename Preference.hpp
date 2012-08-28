@@ -23,7 +23,7 @@ private:
         Color3f _point;
 
         int _wire_width;
-        int _point_radius;
+        int _point_size;
 
         //RenderingMode _status;
         int renderingMode;
@@ -38,7 +38,7 @@ public:
         void setSurfaceColor ( const Color3f c );
         void setVertexColor ( const Color3f c );
         void setWireWidth( const int width );
-        void setPointRadius( const int radius );
+        void setPointSize( const int radius );
         //void setRenderingMode ( const RenderingMode status );
         void setRenderingMode(const int status);
         void setShadingMode( const ShadingMode shading);
@@ -48,7 +48,7 @@ public:
         Color3f getSurfaceColor ( void ) const;
         Color3f getVertexColor ( void ) const;
         int getWireWidth( void ) const;
-        int getPointRadius( void ) const;
+        int getPointSize( void ) const;
         //RenderingMode getRenderingMode ( void ) const;
         int getRenderingMode(void) const;
         ShadingMode getShadingMode( void ) const;
