@@ -7,7 +7,7 @@ ChangeWireWidthWidget::ChangeWireWidthWidget(const int wireWidth, QWidget *paren
     this->spinBox1 = new QSpinBox;
     this->spinBox1->setMinimum(1);
     this->spinBox1->setValue(wireWidth);
-    QLabel *label1 = new QLabel(tr("Wire width"));
+    QLabel *label1 = new QLabel(tr("Width"));
 
     connect(this->spinBox1, SIGNAL(valueChanged(int)),this, SLOT(set_wire_width(int)));
 

@@ -495,3 +495,14 @@ View::deleteDrawMeshList(int k)
     this->_drawMeshList.erase( this->_drawMeshList.begin() + k);
     return true;
 }
+
+void
+View::deleteAllDrawMeshList( void )
+{
+    for(int k = 0; k < this->_model.getMesh().size(); k++)
+    {
+        this->deleteDrawMeshList(k);
+    }
+
+    return;
+}

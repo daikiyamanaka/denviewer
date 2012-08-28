@@ -34,6 +34,7 @@ public:
         void createDisplayList(void);
         bool addDrawMeshList( int k );
         bool deleteDrawMeshList( int k);
+        void deleteAllDrawMeshList( void );
 private:
         //void render_mesh ( void );
         void setLight ( const Light& light , const unsigned int number, const Eigen::Vector3f eye);

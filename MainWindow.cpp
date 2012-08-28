@@ -25,15 +25,19 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_surfaceCheckBox = new QCheckBox(tr("Surface"));
     this->_surfaceCheckBox->setChecked(true);
 
-    QVBoxLayout *boxLayout1 = new QVBoxLayout;
+    int wirewidth = this->_model.getWireWidth();
+    this->_wireWidthWidget = new ChangeWireWidthWidget(wirewidth);
+    connect( this->_wireWidthWidget, SIGNAL(updated()), this, SLOT(update_wire_width()));
 
-    boxLayout1->addWidget(this->_pointCheckBox);
-    boxLayout1->addWidget(this->_wireCheckBox);
-    boxLayout1->addWidget(this->_surfaceCheckBox);
-    boxLayout1->addStretch ( 1 );
+    QGridLayout *renderModeGridLayout = new QGridLayout;
+
+    renderModeGridLayout->addWidget(this->_pointCheckBox,0,0,Qt::AlignLeft);
+    renderModeGridLayout->addWidget(this->_wireCheckBox,1,0,Qt::AlignLeft);
+    renderModeGridLayout->addWidget(this->_surfaceCheckBox,2,0,Qt::AlignLeft);
+    renderModeGridLayout->addWidget(this->_wireWidthWidget,1,1,Qt::AlignRight);
 
     QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
-    groupBox1->setLayout ( boxLayout1 );
+    groupBox1->setLayout ( renderModeGridLayout );
 
     //Shading Mode
     this->_flatRadioButton = new QRadioButton( tr("Flat") );
@@ -71,9 +75,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_colorWidget = new ChangeColorWidget(face, background, wire, vertex, light);
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
-    int wirewidth = this->_model.getWireWidth();
-    this->_wireWidthWidget = new ChangeWireWidthWidget(wirewidth);
-    connect( this->_wireWidthWidget, SIGNAL(updated()), this, SLOT(update_wire_width()));
+
 	
     float angle = this->_model.getViewAngle();
     this->_viewWidget = new ChangeViewAngle(angle);
@@ -147,7 +149,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     QVBoxLayout *boxLayout5 = new QVBoxLayout;
 	boxLayout5->addWidget ( this->_VandFWidget);//imamura
-    boxLayout5->addWidget(this->_wireWidthWidget);
+    //boxLayout5->addWidget(this->_wireWidthWidget);
 
     //boxLayout5->addWidget(this->_windowWidget);
     boxLayout5->addWidget(_centerarrow);
@@ -423,6 +425,7 @@ void
 MainWindow::new_file ( void )
 {
         this->_model.initMesh();
+        this->_view.deleteAllDrawMeshList();
         this->_view.init();
         this->modelLayerWidget->deleteAll();
         QString message = tr ( "Initialized." );
