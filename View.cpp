@@ -25,16 +25,18 @@ View::~View ( void )
 void
 View::init ( void )
 {
+        this->_drawMeshList.clear();
         ::glEnable( GL_CULL_FACE );
         ::glEnable ( GL_DEPTH_TEST );
         ::glEnable ( GL_LIGHT0 );
-    ::glEnable( GL_LIGHT1 );
-    ::glEnable( GL_LIGHT2 );
+        ::glEnable( GL_LIGHT1 );
+        ::glEnable( GL_LIGHT2 );
         ::glShadeModel ( GL_FLAT );
         ::glShadeModel ( GL_SMOOTH );
         const Color3f bg = this->_model.getPreferences().at(0).getBackgroundColor();
         ::glClearColor ( bg.x(), bg.y(), bg.z(), 1 );
-        this->createDisplayList();
+        //::glDeleteLists();
+        //this->createDisplayList();
         return;
 }
 void
@@ -247,7 +249,7 @@ View::resize ( const int width, const int height )
         return;
 }
 
-void
+/*void
 View::render_mesh ( void )
 {
     const std::vector<Mesh>& meshes = this->_model.getMesh();
@@ -304,7 +306,7 @@ View::render_mesh ( void )
 
     return;
 }
-
+*/
 
 void
 View::setLight ( const Light& light , const unsigned int number, const Eigen::Vector3f eye)
@@ -342,14 +344,14 @@ View::offLight(const unsigned int number){
     ::glDisable(number);
 }
 
-void
+/*void
 View::createDisplayList( void )
 {
     this->_drawMesh = ::glGenLists(1);
     ::glNewList(this->_drawMesh , GL_COMPILE);
     this->render_mesh();
     ::glEndList();
-}
+}*/
 
 void
 View::render_arrow(void)

@@ -45,6 +45,7 @@ public:
 
         const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
 
+        void init( void );
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
         bool saveMesh ( const std::string& filename , bool isBinary = false , size_t id = 0 );

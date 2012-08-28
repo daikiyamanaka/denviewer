@@ -423,6 +423,8 @@ void
 MainWindow::new_file ( void )
 {
         this->_model.initMesh();
+        this->_view.init();
+        this->modelLayerWidget->deleteAll();
         QString message = tr ( "Initialized." );
         statusBar()->showMessage ( message );
         emit updated();

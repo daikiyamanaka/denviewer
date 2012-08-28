@@ -47,7 +47,7 @@ void ModelLayerWidget::deleteItem(int index){
 }
 
 void ModelLayerWidget::deleteAll(){
-
+    modelList->clear();
 }
 
 void ModelLayerWidget::changeItemsState(QListWidgetItem* item){

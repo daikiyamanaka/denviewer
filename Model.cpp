@@ -19,17 +19,22 @@
 
 Model::Model ( void )
 {
-    this->_NowCameraId = 0;
-    this->_activeMeshId = 0;
-    this->_cameraList.assign(1 , Camera() );
-    //std::cout << "model" << std::endl;
-    this->_Preferences.assign(1 , Preference() );
+    this->init();
         return;
 }
 
 Model::~Model ( void )
 {
         return;
+}
+
+void Model::init( void )
+{
+    this->_NowCameraId = 0;
+    this->_activeMeshId = 0;
+    this->_cameraList.assign(1 , Camera() );
+    this->_Preferences.assign(1 , Preference() );
+    return;
 }
 
 const std::vector<Mesh>&
@@ -84,8 +89,11 @@ Model::getCenterArrow(void)
 bool
 Model::initMesh ( void )
 {
-        this->_mesh.clear();
-        return true;
+    this->_mesh.clear();
+    this->_Preferences.clear();
+    this->_cameraList.clear();
+    this->init();
+    return true;
 }
 
 bool
