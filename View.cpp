@@ -490,6 +490,21 @@ View::addDrawMeshList(int k)
 }
 
 bool
+View::updateDrawMeshList(int k)
+{
+    if( k >= this->_model.getMesh().size() ) return false;
+
+    GLuint list1 =  this->_drawMeshList[k].first;
+    GLuint list2 =  this->_drawMeshList[k].second;
+    ::glDeleteLists(list1,1);
+    ::glDeleteLists(list2,1);
+
+    const Mesh& mesh = this->_model.getMesh().at(k);
+    this->_drawMeshList.at(k) = this->createRenderPair(mesh);
+    return true;
+}
+
+bool
 View::deleteDrawMeshList(int k)
 {
     if( k >= this->_model.getMesh().size() ) return false;
@@ -497,13 +512,18 @@ View::deleteDrawMeshList(int k)
     return true;
 }
 
+
 void
 View::deleteAllDrawMeshList( void )
 {
-    for(int k = 0; k < this->_model.getMesh().size(); k++)
+    for(int k = 0; k < this->_drawMeshList.size(); k++)
     {
-        this->deleteDrawMeshList(k);
+        GLuint list1 =  this->_drawMeshList[k].first;
+        GLuint list2 =  this->_drawMeshList[k].second;
+        ::glDeleteLists(list1,1);
+        ::glDeleteLists(list2,1);
     }
+    this->_drawMeshList.clear();
 
     return;
 }

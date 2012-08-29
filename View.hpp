@@ -33,6 +33,7 @@ public:
 
         void createDisplayList(void);
         bool addDrawMeshList( int k );
+        bool updateDrawMeshList( int k );
         bool deleteDrawMeshList( int k);
         void deleteAllDrawMeshList( void );
 private:

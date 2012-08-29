@@ -34,5 +34,9 @@ public:
         int getNumFaces ( void ) const;
         int getNumVertex ( void ) const;
         void getBoundingBox ( Eigen::Vector3f& bmin, Eigen::Vector3f& bmax );
+
+        //tool
+        bool swapAxis(const int axisA, const int axisB);
+
 };
 #endif //  __MESH_HPP__

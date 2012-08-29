@@ -363,6 +363,14 @@ MainWindow::create_actions ( void )
         connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
 
+        this->_swapXYAct = new QAction ( tr("Swap XY Axis"), this );
+        connect(this->_swapXYAct, SIGNAL( triggered()), this, SLOT(swap_xy()) );
+        this->_swapYZAct = new QAction ( tr("Swap YZ Axis"), this );
+        connect(this->_swapYZAct, SIGNAL( triggered()), this, SLOT(swap_yz()) );
+        this->_swapZXAct = new QAction ( tr("Swap ZX Axis"), this );
+        connect(this->_swapZXAct, SIGNAL( triggered()), this, SLOT(swap_zx()) );
+
+
         return;
 }
 void
@@ -400,6 +408,9 @@ MainWindow::create_menus ( void )
     this->_cameraSubMenu->addAction(this->_backCameraAct);
     this->_cameraSubMenu->addAction(this->_forwardCameraAct);
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
+    this->_toolMenu->addAction(this->_swapXYAct);
+    this->_toolMenu->addAction(this->_swapYZAct);
+    this->_toolMenu->addAction(this->_swapZXAct);
 //>>>>>>> master
         return;
 }
@@ -952,4 +963,35 @@ MainWindow::change_pallet_color_to_Id_mesh(int id)
     delete this->_dialog;
     this->_dialog = new PreferencesDialog(this, this->_model.getPreferences().at(id));
 
+}
+
+void
+MainWindow::swap_xy( void )
+{
+    if(!this->_model.swapAxis(0,1)){
+        return;
+    }
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+    emit updated();
+    return;
+}
+void
+MainWindow::swap_yz( void )
+{
+    if(!this->_model.swapAxis(1,2)){
+        return;
+    }
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+    emit updated();
+    return;
+}
+void
+MainWindow::swap_zx( void )
+{
+    if(!this->_model.swapAxis(2,0)){
+        return;
+    }
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+    emit updated();
+    return;
 }

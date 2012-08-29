@@ -107,5 +107,8 @@ public:
         void getCenterArrowPos(double &xpos , double &ypos , double &zpos);
         void setCenterArrowPos();
         void ChangeCenterArrow(double xpos, double ypos, double zpos);
+
+        //tool
+        bool swapAxis(const int axisA, const int axisB);
 };
 #endif // __MODEL_HPP__

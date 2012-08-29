@@ -101,6 +101,10 @@ private slots:
         void change_active_mesh_index( void );
         void change_pallet_color_to_Id_mesh( int id );
 
+        void swap_xy( void );
+        void swap_yz( void );
+        void swap_zx( void );
+
 private:
         void create_actions ( void );
         void create_menus ( void );
@@ -157,6 +161,10 @@ private:
 
         QAction* _viewInitAct;
         QAction* _viewFitAct;
+
+        QAction* _swapXYAct;
+        QAction* _swapYZAct;
+        QAction* _swapZXAct;
 
 
         bool _saveBinary;

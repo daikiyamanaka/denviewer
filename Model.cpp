@@ -732,3 +732,13 @@ Model::forwardCamera( void )
 
     return;
 }
+
+bool
+Model::swapAxis(const int axisA, const int axisB)
+{
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+    return this->_mesh.at(this->_activeMeshId).swapAxis(axisA,axisB);
+}

@@ -1,4 +1,5 @@
 #include "Mesh.hpp"
+#include "iostream"
 
 Mesh::Mesh ( void )
 {
@@ -131,3 +132,42 @@ Mesh::getBoundingBox ( Eigen::Vector3f& _bmin, Eigen::Vector3f& _bmax )
         return;
 }
 
+bool
+Mesh::swapAxis( const int axisA, const int axisB )
+{
+    if(axisA*axisB < 0 || axisA > 2 || axisB > 2){
+        return false;
+    }
+
+    float x;
+    int vnum = this->getNumVertex();
+    for(int i = 0; i < vnum; i++)
+    {
+        x = this->_vertex[i][axisA];
+        this->_vertex[i][axisA] = this->_vertex[i][axisB];
+        this->_vertex[i][axisB] = x;
+        x = this->_normal[i].x();
+        this->_normal[i][axisA] = this->_vertex[i][axisB];
+        this->_normal[i][axisB] = x;
+        x = this->_vnormal[i].x();
+        this->_vnormal[i][axisA] = this->_vnormal[i][axisB];
+        this->_vnormal[i][axisB] = x;
+    }
+
+    int fnum = this->getNumFaces();
+    for(int i = 0; i < fnum; i++)
+    {
+        int i0 = this->_index[i][0];
+        int i2 = this->_index[i][2];
+
+        this->_index[i][0] = i2;
+        this->_index[i][2] = i0;
+    }
+    x = this->bmax[axisA];
+    this->bmax[axisA] =  this->bmax[axisB];
+    this->bmax[axisB] = x;
+    x = this->bmin[axisA];
+    this->bmin[axisA] =  this->bmin[axisB];
+    this->bmin[axisB] = x;
+    return true;
+}
