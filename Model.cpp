@@ -208,53 +208,62 @@ Model::setShadingMode(const ShadingMode shading)
 }
 
 
-void
+bool
 Model::viewFit ( void )
 {
-        Eigen::Vector3f bmin, bmax;
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+
+    Eigen::Vector3f bmin, bmax;
 
 
-        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
+    this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
-        Eigen::Vector3f center;
-        center = ( bmax+bmin )/2;
+    Eigen::Vector3f center;
+    center = ( bmax+bmin )/2;
 
-        //const Eigen::Vector3f center = this->_camera.getCenter();
-        const float radius = 1.25 * std::min ( ( bmax - center ).norm(), ( bmin - center ).norm() );
-        const Eigen::Quaternionf q = this->getCamera().getRotation();
-        this->addNowCameraToList();
-        this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
-        this->_light.setPosition ( this->getCamera().getEye() );
-        return;
+    //const Eigen::Vector3f center = this->_camera.getCenter();
+    const float radius = 1.25 * std::min ( ( bmax - center ).norm(), ( bmin - center ).norm() );
+    const Eigen::Quaternionf q = this->getCamera().getRotation();
+    this->addNowCameraToList();
+    this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
+    this->_light.setPosition ( this->getCamera().getEye() );
+    return true;
 }
-void
+bool
 Model::viewInit ( void )
 {
-        Eigen::Vector3f bmin, bmax;
-        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+    Eigen::Vector3f bmin, bmax;
+    this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
-        const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
-        const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
-        const Eigen::Quaternionf q ( 1,0,0,0 );
-        this->addNowCameraToList();
-        this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
+    const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
+    const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
+    const Eigen::Quaternionf q ( 1,0,0,0 );
+    this->addNowCameraToList();
+    this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
 
-        this->setLightPosition();
+    this->setLightPosition();
 
-        Eigen::Vector3f keyamb(0.1, 0.1, 0.1);
-        Eigen::Vector3f keydif = 8.0*keyamb;
-        this->_keylight.setAmbient(keyamb);
-        this->_keylight.setDiffuse(keydif);
-        this->_keylight.setSpecular(keyamb);
+    Eigen::Vector3f keyamb(0.1, 0.1, 0.1);
+    Eigen::Vector3f keydif = 8.0*keyamb;
+    this->_keylight.setAmbient(keyamb);
+    this->_keylight.setDiffuse(keydif);
+    this->_keylight.setSpecular(keyamb);
 
-        this->_filllight.setAmbient( 0.5*keyamb);
-        this->_filllight.setDiffuse(0.5*keydif);
-        this->_filllight.setSpecular(0.0*keyamb);
+    this->_filllight.setAmbient( 0.5*keyamb);
+    this->_filllight.setDiffuse(0.5*keydif);
+    this->_filllight.setSpecular(0.0*keyamb);
 
-        this->_backlight.setAmbient(0.50*keyamb);
-        this->_backlight.setDiffuse(0.50*keydif);
-        this->_backlight.setSpecular(0.0*keyamb);
-        return;
+    this->_backlight.setAmbient(0.50*keyamb);
+    this->_backlight.setDiffuse(0.50*keydif);
+    this->_backlight.setSpecular(0.0*keyamb);
+    return true;
 }
 
 int

@@ -584,18 +584,24 @@ MainWindow::shading_smooth( void )
 void
 MainWindow::view_fit ( void )
 {
-        this->_model.viewFit();
+
+        if(!this->_model.viewFit()){
+            return;
+        }
+
         QString  message ( tr ( "View fit" ) );
         statusBar()->showMessage ( message );
         emit updated();
-		emit cameraInitialized();
+        emit cameraInitialized();
         return;
 }
 
 void
 MainWindow::view_init ( void )
 {
-        this->_model.viewInit();
+        if(!this->_model.viewInit()){
+            return;
+        }
         QString  message ( tr ( "View init" ) );
         statusBar()->showMessage ( message );
 

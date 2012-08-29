@@ -55,8 +55,8 @@ public:
         void setRenderingMode(const int mode);
         int getRenderingMode();
         void setShadingMode (const ShadingMode shading);
-        void viewFit ( void );
-        void viewInit ( void );
+        bool viewFit ( void );
+        bool viewInit ( void );
 
         int getActiveMeshIndex();
         void setActiveMeshIndex( int id );
