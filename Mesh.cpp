@@ -146,23 +146,29 @@ Mesh::swapAxis( const int axisA, const int axisB )
         x = this->_vertex[i][axisA];
         this->_vertex[i][axisA] = this->_vertex[i][axisB];
         this->_vertex[i][axisB] = x;
-        x = this->_normal[i].x();
-        this->_normal[i][axisA] = this->_vertex[i][axisB];
-        this->_normal[i][axisB] = x;
-        x = this->_vnormal[i].x();
-        this->_vnormal[i][axisA] = this->_vnormal[i][axisB];
-        this->_vnormal[i][axisB] = x;
+
+        if(this->VNormalDataExists()){
+            x = this->_vnormal[i][axisA];
+            this->_vnormal[i][axisA] = this->_vnormal[i][axisB];
+            this->_vnormal[i][axisB] = x;
+        }
     }
 
-    int fnum = this->getNumFaces();
-    for(int i = 0; i < fnum; i++)
-    {
-        int i0 = this->_index[i][0];
-        int i2 = this->_index[i][2];
+    if(this->NormalDataExists() && this->IndexDataExists()){
+        int fnum = this->getNumFaces();
+        for(int i = 0; i < fnum; i++)
+        {
+            x = this->_normal[i][axisA];
+            this->_normal[i][axisA] = this->_normal[i][axisB];
+            this->_normal[i][axisB] = x;
 
-        this->_index[i][0] = i2;
-        this->_index[i][2] = i0;
+            int i0 = this->_index[i][0];
+            int i2 = this->_index[i][2];
+            this->_index[i][0] = i2;
+            this->_index[i][2] = i0;
+        }
     }
+
     x = this->bmax[axisA];
     this->bmax[axisA] =  this->bmax[axisB];
     this->bmax[axisB] = x;
