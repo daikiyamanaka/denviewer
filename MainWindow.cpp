@@ -363,38 +363,35 @@ MainWindow::create_actions ( void )
         connect(this->_lightAct3 , SIGNAL(triggered(bool)), this->_lightCheckBox3 , SLOT(setChecked(bool)));
         connect(this->_lightCheckBox3 , SIGNAL(toggled(bool)) , this->_lightAct3 , SLOT(setChecked(bool)));
 
+        //Tool
         this->_swapXYAct = new QAction ( tr("Swap XY Axis"), this );
         connect(this->_swapXYAct, SIGNAL( triggered()), this, SLOT(swap_xy()) );
         this->_swapYZAct = new QAction ( tr("Swap YZ Axis"), this );
         connect(this->_swapYZAct, SIGNAL( triggered()), this, SLOT(swap_yz()) );
         this->_swapZXAct = new QAction ( tr("Swap ZX Axis"), this );
         connect(this->_swapZXAct, SIGNAL( triggered()), this, SLOT(swap_zx()) );
-
+        this->_flipXAct = new QAction ( tr("Flip X Axis"), this );
+        connect(this->_flipXAct, SIGNAL(triggered()), this, SLOT(flip_x()) );
+        this->_flipYAct = new QAction ( tr("Flip Y Axis"), this );
+        connect(this->_flipYAct, SIGNAL(triggered()), this, SLOT(flip_y()) );
+        this->_flipZAct = new QAction ( tr("Flip Z Axis"), this );
+        connect(this->_flipZAct, SIGNAL(triggered()), this, SLOT(flip_z()) );
 
         return;
 }
 void
 MainWindow::create_menus ( void )
 {
-        this->_fileMenu = menuBar()->addMenu ( tr ( "&File" ) );
-        this->_fileMenu->addAction ( this->_newAct );
-        this->_fileMenu->addAction ( this->_openAct );
-        this->_fileMenu->addAction ( this->_saveAct );
-        this->_fileMenu->addAction ( this->_openCameraAct );
-        this->_fileMenu->addAction ( this->_saveCameraAct );
-        this->_fileMenu->addAction ( this->_snapshotAct );
-        this->_fileMenu->addSeparator();
-        this->_fileMenu->addAction ( this->_exitAct );
+    this->_fileMenu = menuBar()->addMenu ( tr ( "&File" ) );
+    this->_fileMenu->addAction ( this->_newAct );
+    this->_fileMenu->addAction ( this->_openAct );
+    this->_fileMenu->addAction ( this->_saveAct );
+    this->_fileMenu->addAction ( this->_openCameraAct );
+    this->_fileMenu->addAction ( this->_saveCameraAct );
+    this->_fileMenu->addAction ( this->_snapshotAct );
+    this->_fileMenu->addSeparator();
+    this->_fileMenu->addAction ( this->_exitAct );
 
-/*<<<<<<< HEAD
-    this->_showmenu = menuBar()->addMenu( tr ( "&Show" ) );
-    this->_showmenu->addMenu(this->_rendering);
-    this->_showmenu->addMenu(this->_light);
-    this->_showmenu->addMenu(this->_camera);
-
-    this->_tool = menuBar()->addMenu( tr ( "&Tools" ) );
-
-=======*/
     this->_viewMenu = menuBar()->addMenu( tr("&View")  );
     this->_renderingSubMenu = this->_viewMenu->addMenu(tr("&Rendering Mode"));
     this->_renderingSubMenu->addAction(this->_renderPointAct);
@@ -407,47 +404,54 @@ MainWindow::create_menus ( void )
     this->_cameraSubMenu = this->_viewMenu->addMenu(tr("camera"));
     this->_cameraSubMenu->addAction(this->_backCameraAct);
     this->_cameraSubMenu->addAction(this->_forwardCameraAct);
+
     this->_toolMenu = menuBar()->addMenu(tr("&Tools"));
-    this->_toolMenu->addAction(this->_swapXYAct);
-    this->_toolMenu->addAction(this->_swapYZAct);
-    this->_toolMenu->addAction(this->_swapZXAct);
-//>>>>>>> master
-        return;
+    this->_flipToolSubMenu = this->_toolMenu->addMenu(tr("Flip"));
+    this->_flipToolSubMenu->addAction(this->_flipXAct);
+    this->_flipToolSubMenu->addAction(this->_flipYAct);
+    this->_flipToolSubMenu->addAction(this->_flipZAct);
+    this->_swapToolSubMenu = this->_toolMenu->addMenu(tr("Swap"));
+    this->_swapToolSubMenu->addAction(this->_swapXYAct);
+    this->_swapToolSubMenu->addAction(this->_swapYZAct);
+    this->_swapToolSubMenu->addAction(this->_swapZXAct);
+
+
+     return;
 }
 
 void
 MainWindow::create_toolbars ( void )
 {
-        this->_fileToolBar = addToolBar ( tr ( "File" ) );
-        this->_fileToolBar->addAction ( this->_newAct );
-        this->_fileToolBar->addAction ( this->_openAct );
-        this->_fileToolBar->addAction ( this->_saveAct );
-        this->_fileToolBar->addAction ( this->_openCameraAct );
-        this->_fileToolBar->addAction ( this->_saveCameraAct );
+    this->_fileToolBar = addToolBar ( tr ( "File" ) );
+    this->_fileToolBar->addAction ( this->_newAct );
+    this->_fileToolBar->addAction ( this->_openAct );
+    this->_fileToolBar->addAction ( this->_saveAct );
+    this->_fileToolBar->addAction ( this->_openCameraAct );
+    this->_fileToolBar->addAction ( this->_saveCameraAct );
 
-        this->_fileToolBar->addSeparator();
-        this->_fileToolBar->addAction ( this->_backCameraAct);
-        this->_fileToolBar->addAction ( this->_forwardCameraAct);
-        this->_fileToolBar->addAction( this->_viewFitAct);
-        this->_fileToolBar->addAction( this->_viewInitAct);
+    this->_fileToolBar->addSeparator();
+    this->_fileToolBar->addAction ( this->_backCameraAct);
+    this->_fileToolBar->addAction ( this->_forwardCameraAct);
+    this->_fileToolBar->addAction( this->_viewFitAct);
+    this->_fileToolBar->addAction( this->_viewInitAct);
 
-        this->_fileToolBar->addSeparator();
-        this->_fileToolBar->addAction( this->preferenceAct);
-        return ;
+    this->_fileToolBar->addSeparator();
+    this->_fileToolBar->addAction( this->preferenceAct);
+    return ;
 }
 
 void
 MainWindow::new_file ( void )
 {
-        this->_model.initMesh();
-        this->_view.deleteAllDrawMeshList();
-        this->_view.init();
-        this->modelLayerWidget->deleteAll();
-        QString message = tr ( "Initialized." );
-        statusBar()->showMessage ( message );
-        emit updated();
-		emit cameraInitialized();
-        return;
+    this->_model.initMesh();
+    this->_view.deleteAllDrawMeshList();
+    this->_view.init();
+    this->modelLayerWidget->deleteAll();
+    QString message = tr ( "Initialized." );
+    statusBar()->showMessage ( message );
+    emit updated();
+    emit cameraInitialized();
+    return;
 }
 
 void
@@ -468,22 +472,22 @@ MainWindow::open ( void )
         fileNames = openDlg->selectedFiles();
     }
 
-        //QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
-        if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
-                QString message ( tr ( "Open failed." ) );
-                statusBar()->showMessage ( message );
-                return;
-        } else {
-            emit updated();
-            emit cameraInitialized();
-            this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
-            this->get_ver_face();
-            //this->_view.createDisplayList();
-            this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
-            this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
-            this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
-        }
-        return;
+    //QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
+    if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
+            QString message ( tr ( "Open failed." ) );
+            statusBar()->showMessage ( message );
+            return;
+    } else {
+        emit updated();
+        emit cameraInitialized();
+        this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
+        this->get_ver_face();
+        //this->_view.createDisplayList();
+        this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+        this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+        this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+    }
+    return;
 }
 
 void
@@ -518,23 +522,23 @@ MainWindow::save ( void )
 void
 MainWindow::openCamera ( void )
 {
-        QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open camera file from" ), ".", tr ( "CAM File (*.cam)" ) );
-        if ( !this->_model.openCamera ( filename.toStdString() ) ) {
-                QString message ( tr ( "Open failed." ) );
-                statusBar()->showMessage ( message );
-        } else emit updated(); emit cameraInitialized();
-        return;
+    QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open camera file from" ), ".", tr ( "CAM File (*.cam)" ) );
+    if ( !this->_model.openCamera ( filename.toStdString() ) ) {
+            QString message ( tr ( "Open failed." ) );
+            statusBar()->showMessage ( message );
+    } else emit updated(); emit cameraInitialized();
+    return;
 }
 
 void
 MainWindow::saveCamera ( void )
 {
-        QString filename = QFileDialog::getSaveFileName ( this, tr ( "Save camera file to" ), ".", tr ( "CAM File (*.cam)" ) );
-        if ( !this->_model.saveCamera ( filename.toStdString() ) ) {
-                QString  message ( tr ( "Save failed." ) );
-                statusBar()->showMessage ( message );
-        }
-        return;
+    QString filename = QFileDialog::getSaveFileName ( this, tr ( "Save camera file to" ), ".", tr ( "CAM File (*.cam)" ) );
+    if ( !this->_model.saveCamera ( filename.toStdString() ) ) {
+            QString  message ( tr ( "Save failed." ) );
+            statusBar()->showMessage ( message );
+    }
+    return;
 }
 
 void
@@ -596,64 +600,64 @@ void
 MainWindow::view_fit ( void )
 {
 
-        if(!this->_model.viewFit()){
-            return;
-        }
-
-        QString  message ( tr ( "View fit" ) );
-        statusBar()->showMessage ( message );
-        emit updated();
-        emit cameraInitialized();
+    if(!this->_model.viewFit()){
         return;
+    }
+
+    QString  message ( tr ( "View fit" ) );
+    statusBar()->showMessage ( message );
+    emit updated();
+    emit cameraInitialized();
+    return;
 }
 
 void
 MainWindow::view_init ( void )
 {
-        if(!this->_model.viewInit()){
-            return;
-        }
-        QString  message ( tr ( "View init" ) );
-        statusBar()->showMessage ( message );
-
-		this->_cameraParameterWidget->setCameraPosition(this->_model.getCamera().getCenter().x(),
-                                                           this->_model.getCamera().getCenter().y(),
-                                                           this->_model.getCamera().getCenter().z());
-
-        emit updated();
-		emit cameraInitialized();
+    if(!this->_model.viewInit()){
         return;
+    }
+    QString  message ( tr ( "View init" ) );
+    statusBar()->showMessage ( message );
+
+    this->_cameraParameterWidget->setCameraPosition(this->_model.getCamera().getCenter().x(),
+                                                       this->_model.getCamera().getCenter().y(),
+                                                       this->_model.getCamera().getCenter().z());
+
+    emit updated();
+    emit cameraInitialized();
+    return;
 }
 
 void
 MainWindow::mouse_dragged ( float x, float y )
 {
 
-        QString  message ( tr ( "MouseDragging (" ) );
-        QString strx;
-        strx.setNum ( x );
-        message += strx;
-        message += tr ( ", " );
-        QString stry;
-        stry.setNum ( y );
-        message += stry;
-        message += tr ( ") " );
+    QString  message ( tr ( "MouseDragging (" ) );
+    QString strx;
+    strx.setNum ( x );
+    message += strx;
+    message += tr ( ", " );
+    QString stry;
+    stry.setNum ( y );
+    message += stry;
+    message += tr ( ") " );
 
-        int alpha , beta , gamma;
-        this->_model.getEulerAngle(alpha , beta , gamma);
-        this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
+    int alpha , beta , gamma;
+    this->_model.getEulerAngle(alpha , beta , gamma);
+    this->_cameraParameterWidget->setEulerAngle(alpha,beta,gamma);
 
-        double xpos , ypos , zpos;
-        this->_model.getCameraPosition(xpos,ypos,zpos);
-        this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
-        //double cx, cy, cz;
-        //this->_model.getCenterArrowPos(cx, cy, cz);
-        this->_model.ChangeCenterArrow(xpos, ypos, zpos);
-        double cx , cy , cz;
-        this->_model.getCenterArrowPos(cx, cy, cz);
+    double xpos , ypos , zpos;
+    this->_model.getCameraPosition(xpos,ypos,zpos);
+    this->_cameraParameterWidget->setCameraPosition(xpos,ypos,zpos);
+    //double cx, cy, cz;
+    //this->_model.getCenterArrowPos(cx, cy, cz);
+    this->_model.ChangeCenterArrow(xpos, ypos, zpos);
+    double cx , cy , cz;
+    this->_model.getCenterArrowPos(cx, cy, cz);
 
-        statusBar()->showMessage ( message );
-        return;
+    statusBar()->showMessage ( message );
+    return;
 
 }
 
@@ -989,6 +993,37 @@ void
 MainWindow::swap_zx( void )
 {
     if(!this->_model.swapAxis(2,0)){
+        return;
+    }
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+    emit updated();
+    return;
+}
+
+void
+MainWindow::flip_x(void)
+{
+    if(!this->_model.flipAxis(0)){
+        return;
+    }
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+    emit updated();
+    return;
+}
+void
+MainWindow::flip_y(void)
+{
+    if(!this->_model.flipAxis(1)){
+        return;
+    }
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+    emit updated();
+    return;
+}
+void
+MainWindow::flip_z(void)
+{
+    if(!this->_model.flipAxis(2)){
         return;
     }
     this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());

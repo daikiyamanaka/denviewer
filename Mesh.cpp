@@ -177,3 +177,38 @@ Mesh::swapAxis( const int axisA, const int axisB )
     this->bmin[axisB] = x;
     return true;
 }
+
+bool
+Mesh::flipAxis(const int axis)
+{
+    if(axis < 0 || axis > 2 ){
+        return false;
+    }
+
+    int vnum = this->getNumVertex();
+    for(int i = 0; i < vnum; i++)
+    {
+        this->_vertex[i][axis] *= (-1);
+
+        if(this->VNormalDataExists()){
+            this->_vnormal[i][axis] *= (-1);
+        }
+    }
+
+    if(this->NormalDataExists() && this->IndexDataExists()){
+        int fnum = this->getNumFaces();
+        for(int i = 0; i < fnum; i++)
+        {
+            this->_normal[i][axis] *= (-1);
+
+            int i0 = this->_index[i][0];
+            int i2 = this->_index[i][2];
+            this->_index[i][0] = i2;
+            this->_index[i][2] = i0;
+        }
+    }
+
+    this->bmax[axis] *= (-1);
+    this->bmin[axis]*= (-1);
+    return true;
+}

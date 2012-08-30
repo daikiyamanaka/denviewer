@@ -37,6 +37,7 @@ public:
 
         //tool
         bool swapAxis(const int axisA, const int axisB);
+        bool flipAxis(const int axis);
 
 };
 #endif //  __MESH_HPP__

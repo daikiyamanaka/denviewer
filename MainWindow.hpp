@@ -104,6 +104,9 @@ private slots:
         void swap_xy( void );
         void swap_yz( void );
         void swap_zx( void );
+        void flip_x(void);
+        void flip_y(void);
+        void flip_z(void);
 
 private:
         void create_actions ( void );
@@ -136,6 +139,9 @@ private:
         QMenu* _lightSubMenu;
         QMenu* _cameraSubMenu;
         QMenu* _toolMenu;
+        QMenu* _swapToolSubMenu;
+        QMenu* _flipToolSubMenu;
+
         QAction* _renderPointAct;
         QAction* _renderWireAct;
         QAction* _renderMeshAct;
@@ -165,6 +171,9 @@ private:
         QAction* _swapXYAct;
         QAction* _swapYZAct;
         QAction* _swapZXAct;
+        QAction* _flipXAct;
+        QAction* _flipYAct;
+        QAction* _flipZAct;
 
 
         bool _saveBinary;

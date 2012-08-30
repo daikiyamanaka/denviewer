@@ -742,3 +742,13 @@ Model::swapAxis(const int axisA, const int axisB)
     }
     return this->_mesh.at(this->_activeMeshId).swapAxis(axisA,axisB);
 }
+
+bool
+Model::flipAxis(const int axis)
+{
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+    return this->_mesh.at(this->_activeMeshId).flipAxis(axis);
+}
