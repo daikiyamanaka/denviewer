@@ -54,6 +54,19 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
         }
         return true;
 }
+
+bool
+Mesh::read( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor)
+{
+    if(v.size() != vcolor.size()){
+        return false;
+    }
+
+    this->read(v,id);
+    this->_vcolor.insert(this->_vcolor.end(),vcolor.begin(),vcolor.end());
+
+}
+
 void
 Mesh::clear ( void )
 {
@@ -87,6 +100,12 @@ Mesh::getVNormal ( const int id ) const
         return this->_vnormal.at ( id );
 }
 
+Eigen::Vector3f
+Mesh::getVColor ( const int id ) const
+{
+        return this->_vcolor.at ( id );
+}
+
 std::vector<int>
 Mesh::getIndex( const int id) const
 {
@@ -103,6 +122,12 @@ bool
 Mesh::VNormalDataExists(void) const
 {
     return !this->_vnormal.empty();
+}
+
+bool
+Mesh::VColorDataExists(void) const
+{
+    return !this->_vcolor.empty();
 }
 
 bool

@@ -31,7 +31,7 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
     std::deque<Eigen::Vector3f> normal;//future work, ignored
     std::deque<std::vector<int> > index;//empty
 
-    enum type{X,Y,Z,RGB,NX,NY,NZ};
+    enum type{X,Y,Z,R,G,B,NX,NY,NZ};
 
     std::vector<int> type_line;
 
@@ -59,9 +59,9 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
                     }else if(token.get(j)=="z"){
                         type_line.push_back(Z);
                     }else if(token.get(j)=="rgb"){
-                        type_line.push_back(RGB);
-                        type_line.push_back(RGB);
-                        type_line.push_back(RGB);
+                        type_line.push_back(R);
+                        type_line.push_back(G);
+                        type_line.push_back(B);
                     }else if(token.get(j)=="normal_x"){
                         type_line.push_back(NX);
                     }else if(token.get(j)=="normal_y"){
@@ -74,7 +74,7 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
 
         }
     }
-
+    // if no header
     if(type_line.empty()){
         //return false;
 
@@ -93,9 +93,9 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
             type_line.push_back(X);
             type_line.push_back(Y);
             type_line.push_back(Z);
-            type_line.push_back(RGB);
-            type_line.push_back(RGB);
-            type_line.push_back(RGB);
+            type_line.push_back(R);
+            type_line.push_back(G);
+            type_line.push_back(B);
         }
         fin.clear();
         fin.seekg(0,std::ios::beg);
@@ -104,7 +104,8 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
 
     while(!fin.eof())
     {
-        Eigen::Vector3f p;
+        Eigen::Vector3f p,c;
+        c << -1,-1,-1;
         for(int i = 0; i < type_line.size(); i++){
             fin >> buf;
             switch (type_line[i]){
@@ -117,7 +118,14 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
             case Z:
                 p[2] = atof(buf.c_str());
                 break;
-            case RGB:
+            case R:
+                c[0] = atof(buf.c_str());
+                break;
+            case G:
+                c[1] = atof(buf.c_str());
+                break;
+            case B:
+                c[2] = atof(buf.c_str());
                 break;
             case NX:
                   break;
@@ -132,10 +140,19 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
         }
 
         pos.push_back(p);
+        if(c[0] != (-1)){
+            color.push_back(c);
+        }
     }
 
-    if ( ! this->getMesh().read ( pos, index ) ) {
-            return false;
+    if(pos.size() == color.size()){
+        if ( ! this->getMesh().read ( pos, index ,color) ) {
+                return false;
+        }
+    }else{
+        if ( ! this->getMesh().read ( pos, index) ) {
+                return false;
+        }
     }
 
     return true;

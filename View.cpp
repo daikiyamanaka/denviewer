@@ -398,6 +398,7 @@ View::flatRendering(const Mesh &mesh)
 {
     bool index_data = mesh.IndexDataExists();
     bool vnormal_data = mesh.VNormalDataExists();
+    bool vcolor_data = mesh.VColorDataExists();
 
     if( index_data ){
         ::glBegin ( GL_TRIANGLES );
@@ -407,6 +408,10 @@ View::flatRendering(const Mesh &mesh)
             ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
             const std::vector<int> index = mesh.getIndex(i);
             for( int j = 0; j < 3; j++){
+                if(vcolor_data){
+                    const Eigen::Vector3f c = mesh.getVColor(index[j]);
+                    ::glColor3f(c[0],c[1],c[2]);
+                }
                 const Eigen::Vector3f p = mesh.getPosition ( index[j] );
                 ::glVertex3f ( p.x(), p.y(), p.z() );
             }
@@ -418,6 +423,10 @@ View::flatRendering(const Mesh &mesh)
             if( vnormal_data ){
                 const Eigen::Vector3f nrm = mesh.getVNormal(i);
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            }
+            if(vcolor_data){
+                const Eigen::Vector3f c = mesh.getVColor(i);
+                ::glColor3f(c[0],c[1],c[2]);
             }
             const Eigen::Vector3f p = mesh.getPosition(i);
             ::glVertex3f ( p.x(), p.y(), p.z() );
@@ -433,6 +442,7 @@ View::smoothRendering(const Mesh &mesh)
 {
     bool index_data = mesh.IndexDataExists();
     bool vnormal_data = mesh.VNormalDataExists();
+    bool vcolor_data = mesh.VColorDataExists();
 
     if( index_data ){
         ::glBegin ( GL_TRIANGLES );
@@ -442,6 +452,10 @@ View::smoothRendering(const Mesh &mesh)
             for( int j = 0; j < 3; j++){
                 const Eigen::Vector3f n = mesh.getVNormal( index[j] );
                 ::glNormal3f ( n.x(),n.y(),n.z() );
+                if(vcolor_data){
+                    const Eigen::Vector3f c = mesh.getVColor(index[j]);
+                    ::glColor3f(c[0],c[1],c[2]);
+                }
                 const Eigen::Vector3f p = mesh.getPosition ( index[j] );
                 ::glVertex3f ( p.x(), p.y(), p.z() );
             }
@@ -453,6 +467,10 @@ View::smoothRendering(const Mesh &mesh)
             if( vnormal_data ){
                 const Eigen::Vector3f nrm = mesh.getVNormal(i);
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
+            }
+            if(vcolor_data){
+                const Eigen::Vector3f c = mesh.getVColor(i);
+                ::glColor3f(c[0],c[1],c[2]);
             }
             const Eigen::Vector3f p = mesh.getPosition(i);
             ::glVertex3f ( p.x(), p.y(), p.z() );
