@@ -41,6 +41,7 @@ public:
         const CenterArrow& getCenterArrow(void);
         const std::vector< Preference, Eigen::aligned_allocator<Preference> > &getPreferences( void );
 
+        void init( void );
         bool initMesh ( void );
         bool openMesh ( const std::string& filename );
         bool saveMesh ( const std::string& filename , bool isBinary = false , size_t id = 0 );
@@ -50,8 +51,8 @@ public:
         void setRenderingMode(const int mode);
         int getRenderingMode();
         void setShadingMode (const ShadingMode shading);
-        void viewFit ( void );
-        void viewInit ( void );
+        bool viewFit ( void );
+        bool viewInit ( void );
 
         int getActiveMeshIndex();
         void setActiveMeshIndex( int id );
@@ -73,6 +74,8 @@ public:
 
         int getWireWidth(void);
         void setWireWidth( const int width );
+        int getPointSize(void);
+        void setPointSize( const int size);
 
         void setViewAngle(float _angle);
         float getViewAngle(void);
@@ -100,5 +103,9 @@ public:
         void getCenterArrowPos(double &xpos , double &ypos , double &zpos);
         void setCenterArrowPos();
         void ChangeCenterArrow(double xpos, double ypos, double zpos);
+
+        //tool
+        bool swapAxis(const int axisA, const int axisB);
+        bool flipAxis(const int axis);
 };
 #endif // __MODEL_HPP__

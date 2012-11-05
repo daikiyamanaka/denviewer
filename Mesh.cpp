@@ -1,4 +1,5 @@
 #include "Mesh.hpp"
+#include "iostream"
 
 Mesh::Mesh ( void )
 {
@@ -53,6 +54,19 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
         }
         return true;
 }
+
+bool
+Mesh::read( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor)
+{
+    if(v.size() != vcolor.size()){
+        return false;
+    }
+
+    this->read(v,id);
+    this->_vcolor.insert(this->_vcolor.end(),vcolor.begin(),vcolor.end());
+
+}
+
 void
 Mesh::clear ( void )
 {
@@ -86,6 +100,12 @@ Mesh::getVNormal ( const int id ) const
         return this->_vnormal.at ( id );
 }
 
+Eigen::Vector3f
+Mesh::getVColor ( const int id ) const
+{
+        return this->_vcolor.at ( id );
+}
+
 std::vector<int>
 Mesh::getIndex( const int id) const
 {
@@ -102,6 +122,12 @@ bool
 Mesh::VNormalDataExists(void) const
 {
     return !this->_vnormal.empty();
+}
+
+bool
+Mesh::VColorDataExists(void) const
+{
+    return !this->_vcolor.empty();
 }
 
 bool
@@ -131,3 +157,83 @@ Mesh::getBoundingBox ( Eigen::Vector3f& _bmin, Eigen::Vector3f& _bmax )
         return;
 }
 
+bool
+Mesh::swapAxis( const int axisA, const int axisB )
+{
+    if(axisA*axisB < 0 || axisA > 2 || axisB > 2){
+        return false;
+    }
+
+    float x;
+    int vnum = this->getNumVertex();
+    for(int i = 0; i < vnum; i++)
+    {
+        x = this->_vertex[i][axisA];
+        this->_vertex[i][axisA] = this->_vertex[i][axisB];
+        this->_vertex[i][axisB] = x;
+
+        if(this->VNormalDataExists()){
+            x = this->_vnormal[i][axisA];
+            this->_vnormal[i][axisA] = this->_vnormal[i][axisB];
+            this->_vnormal[i][axisB] = x;
+        }
+    }
+
+    if(this->NormalDataExists() && this->IndexDataExists()){
+        int fnum = this->getNumFaces();
+        for(int i = 0; i < fnum; i++)
+        {
+            x = this->_normal[i][axisA];
+            this->_normal[i][axisA] = this->_normal[i][axisB];
+            this->_normal[i][axisB] = x;
+
+            int i0 = this->_index[i][0];
+            int i2 = this->_index[i][2];
+            this->_index[i][0] = i2;
+            this->_index[i][2] = i0;
+        }
+    }
+
+    x = this->bmax[axisA];
+    this->bmax[axisA] =  this->bmax[axisB];
+    this->bmax[axisB] = x;
+    x = this->bmin[axisA];
+    this->bmin[axisA] =  this->bmin[axisB];
+    this->bmin[axisB] = x;
+    return true;
+}
+
+bool
+Mesh::flipAxis(const int axis)
+{
+    if(axis < 0 || axis > 2 ){
+        return false;
+    }
+
+    int vnum = this->getNumVertex();
+    for(int i = 0; i < vnum; i++)
+    {
+        this->_vertex[i][axis] *= (-1);
+
+        if(this->VNormalDataExists()){
+            this->_vnormal[i][axis] *= (-1);
+        }
+    }
+
+    if(this->NormalDataExists() && this->IndexDataExists()){
+        int fnum = this->getNumFaces();
+        for(int i = 0; i < fnum; i++)
+        {
+            this->_normal[i][axis] *= (-1);
+
+            int i0 = this->_index[i][0];
+            int i2 = this->_index[i][2];
+            this->_index[i][0] = i2;
+            this->_index[i][2] = i0;
+        }
+    }
+
+    this->bmax[axis] *= (-1);
+    this->bmin[axis]*= (-1);
+    return true;
+}

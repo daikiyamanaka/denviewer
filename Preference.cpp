@@ -7,7 +7,7 @@ Preference::Preference ( void )
         this->setSurfaceColor ( Color3f ( 0.7f, 0, 0 ) );
         this->setVertexColor( Color3f(0 , 0 , 0.7f) );
         this->setWireWidth(1);
-        this->setPointRadius(1);
+        this->setPointSize(1);
         this->setRenderingMode ( SURFACE );
         this->setShadingMode( SMOOTH );
         return;
@@ -53,9 +53,9 @@ Preference::setWireWidth( const int width )
 }
 
 void
-Preference::setPointRadius(const int radius)
+Preference::setPointSize(const int size)
 {
-    this->_point_radius = radius;
+    this->_point_size = size;
     return;
 }
 
@@ -106,9 +106,9 @@ Preference::getWireWidth( void ) const//<-add
 }
 
 int
-Preference::getPointRadius( void ) const
+Preference::getPointSize( void ) const
 {
-    return _point_radius;
+    return _point_size;
 }
 
 /*

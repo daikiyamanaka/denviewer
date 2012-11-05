@@ -19,17 +19,22 @@
 
 Model::Model ( void )
 {
-    this->_NowCameraId = 0;
-    this->_activeMeshId = 0;
-    this->_cameraList.assign(1 , Camera() );
-    //std::cout << "model" << std::endl;
-    this->_Preferences.assign(1 , Preference() );
+    this->init();
         return;
 }
 
 Model::~Model ( void )
 {
         return;
+}
+
+void Model::init( void )
+{
+    this->_NowCameraId = 0;
+    this->_activeMeshId = 0;
+    this->_cameraList.assign(1 , Camera() );
+    this->_Preferences.assign(1 , Preference() );
+    return;
 }
 
 const std::vector<Mesh>&
@@ -84,8 +89,11 @@ Model::getCenterArrow(void)
 bool
 Model::initMesh ( void )
 {
-        this->_mesh.clear();
-        return true;
+    this->_mesh.clear();
+    this->_Preferences.clear();
+    this->_cameraList.clear();
+    this->init();
+    return true;
 }
 
 bool
@@ -200,53 +208,62 @@ Model::setShadingMode(const ShadingMode shading)
 }
 
 
-void
+bool
 Model::viewFit ( void )
 {
-        Eigen::Vector3f bmin, bmax;
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+
+    Eigen::Vector3f bmin, bmax;
 
 
-        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
+    this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
-        Eigen::Vector3f center;
-        center = ( bmax+bmin )/2;
+    Eigen::Vector3f center;
+    center = ( bmax+bmin )/2;
 
-        //const Eigen::Vector3f center = this->_camera.getCenter();
-        const float radius = 1.25 * std::min ( ( bmax - center ).norm(), ( bmin - center ).norm() );
-        const Eigen::Quaternionf q = this->getCamera().getRotation();
-        this->addNowCameraToList();
-        this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
-        this->_light.setPosition ( this->getCamera().getEye() );
-        return;
+    //const Eigen::Vector3f center = this->_camera.getCenter();
+    const float radius = 1.25 * std::min ( ( bmax - center ).norm(), ( bmin - center ).norm() );
+    const Eigen::Quaternionf q = this->getCamera().getRotation();
+    this->addNowCameraToList();
+    this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
+    this->_light.setPosition ( this->getCamera().getEye() );
+    return true;
 }
-void
+bool
 Model::viewInit ( void )
 {
-        Eigen::Vector3f bmin, bmax;
-        this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+    Eigen::Vector3f bmin, bmax;
+    this->_mesh[getActiveMeshIndex()].getBoundingBox ( bmin, bmax );
 
-        const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
-        const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
-        const Eigen::Quaternionf q ( 1,0,0,0 );
-        this->addNowCameraToList();
-        this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
+    const Eigen::Vector3f center = 0.5 * ( bmin + bmax );
+    const float radius = 1.25 * 0.5 * ( bmax - bmin ).norm();
+    const Eigen::Quaternionf q ( 1,0,0,0 );
+    this->addNowCameraToList();
+    this->_cameraList.at(this->_NowCameraId).fitPosition ( center, radius, q );
 
-        this->setLightPosition();
+    this->setLightPosition();
 
-        Eigen::Vector3f keyamb(0.1, 0.1, 0.1);
-        Eigen::Vector3f keydif = 8.0*keyamb;
-        this->_keylight.setAmbient(keyamb);
-        this->_keylight.setDiffuse(keydif);
-        this->_keylight.setSpecular(keyamb);
+    Eigen::Vector3f keyamb(0.1, 0.1, 0.1);
+    Eigen::Vector3f keydif = 8.0*keyamb;
+    this->_keylight.setAmbient(keyamb);
+    this->_keylight.setDiffuse(keydif);
+    this->_keylight.setSpecular(keyamb);
 
-        this->_filllight.setAmbient( 0.5*keyamb);
-        this->_filllight.setDiffuse(0.5*keydif);
-        this->_filllight.setSpecular(0.0*keyamb);
+    this->_filllight.setAmbient( 0.5*keyamb);
+    this->_filllight.setDiffuse(0.5*keydif);
+    this->_filllight.setSpecular(0.0*keyamb);
 
-        this->_backlight.setAmbient(0.50*keyamb);
-        this->_backlight.setDiffuse(0.50*keydif);
-        this->_backlight.setSpecular(0.0*keyamb);
-        return;
+    this->_backlight.setAmbient(0.50*keyamb);
+    this->_backlight.setDiffuse(0.50*keydif);
+    this->_backlight.setSpecular(0.0*keyamb);
+    return true;
 }
 
 int
@@ -413,6 +430,18 @@ void
 Model::setWireWidth(const int width)
 {
     this->_Preferences.at(this->_activeMeshId).setWireWidth(width);
+}
+
+int
+Model::getPointSize( void )
+{
+    return this->getPreferences().at(this->_activeMeshId).getPointSize();
+}
+
+void
+Model::setPointSize(const int size)
+{
+    this->_Preferences.at(this->_activeMeshId).setPointSize(size);
 }
 
 void Model::setViewAngle(float _angle){
@@ -702,4 +731,24 @@ Model::forwardCamera( void )
     if( this->_NowCameraId > 0 ) this->_NowCameraId--;
 
     return;
+}
+
+bool
+Model::swapAxis(const int axisA, const int axisB)
+{
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+    return this->_mesh.at(this->_activeMeshId).swapAxis(axisA,axisB);
+}
+
+bool
+Model::flipAxis(const int axis)
+{
+    if(this->_mesh.empty())
+    {
+        return false;
+    }
+    return this->_mesh.at(this->_activeMeshId).flipAxis(axis);
 }
