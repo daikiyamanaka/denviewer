@@ -27,8 +27,8 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
             return false;
     }
     std::deque<Eigen::Vector3f> pos;
-    std::deque<Eigen::Vector3f> color;//future work, ignored
-    std::deque<Eigen::Vector3f> normal;//future work, ignored
+    std::deque<Eigen::Vector3f> color;
+    std::deque<Eigen::Vector3f> normal;
     std::deque<std::vector<int> > index;//empty
 
     enum type{X,Y,Z,R,G,B,NX,NY,NZ};
@@ -104,8 +104,9 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
 
     while(!fin.eof())
     {
-        Eigen::Vector3f p,c;
+        Eigen::Vector3f p,c,n;
         c << -1,-1,-1;
+        n << -1,-1,-1;
         for(int i = 0; i < type_line.size(); i++){
             fin >> buf;
             switch (type_line[i]){
@@ -128,10 +129,13 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
                 c[2] = atof(buf.c_str());
                 break;
             case NX:
-                  break;
+                n[0] = atof(buf.c_str());
+                break;
             case NY:
+                n[1] = atof(buf.c_str());
                 break;
             case NZ:
+                n[2] = atof(buf.c_str());
                 break;
             default:
                 break;
@@ -143,10 +147,17 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
         if(c[0] != (-1)){
             color.push_back(c);
         }
+        if(n[0] != (-1) && n[1] != (-1)){
+            normal.push_back(n);
+        }
     }
 
     if(pos.size() == color.size()){
-        if ( ! this->getMesh().read ( pos, index ,color) ) {
+        if ( ! this->getMesh().read_withVcolor( pos, index ,color) ) {
+                return false;
+        }
+    }else if(pos.size() == normal.size()){
+        if ( ! this->getMesh().read_withVnormal( pos, index ,normal) ) {
                 return false;
         }
     }else{
