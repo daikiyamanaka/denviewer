@@ -88,6 +88,18 @@ Mesh::read_withVnormal( const std::deque<Eigen::Vector3f>& v , const std::deque<
     return true;
 }
 
+bool
+Mesh::read_withVcolorandVnormal(const std::deque<Eigen::Vector3f>& v, const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor, const std::deque<Eigen::Vector3f>& vnormal)
+{
+    if( v.size() != vnormal.size() ) return false;
+    if( v.size() != vcolor.size()  ) return false;
+    if( !this->read(v,id) ) return false;
+    this->_vcolor.insert(this->_vcolor.end(),vcolor.begin(),vcolor.end());
+    this->_vnormal.insert(this->_vnormal.end(),vnormal.begin(),vnormal.end());
+
+    return true;
+}
+
 void
 Mesh::clear ( void )
 {

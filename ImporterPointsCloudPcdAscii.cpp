@@ -96,6 +96,16 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
             type_line.push_back(R);
             type_line.push_back(G);
             type_line.push_back(B);
+        }else if(token.size() == 9){
+            type_line.push_back(X);
+            type_line.push_back(Y);
+            type_line.push_back(Z);
+            type_line.push_back(R);
+            type_line.push_back(G);
+            type_line.push_back(B);
+            type_line.push_back(NX);
+            type_line.push_back(NY);
+            type_line.push_back(NZ);
         }
         fin.clear();
         fin.seekg(0,std::ios::beg);
@@ -151,8 +161,10 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
             normal.push_back(n);
         }
     }
+    if( (pos.size() == color.size() )&&(pos.size()==normal.size() ) ){
+        if( !this->getMesh().read_withVcolorandVnormal(pos,index,color,normal) ) return false;
 
-    if(pos.size() == color.size()){
+    }else if(pos.size() == color.size()){
         if ( ! this->getMesh().read_withVcolor( pos, index ,color) ) {
                 return false;
         }

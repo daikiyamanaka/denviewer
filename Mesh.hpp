@@ -23,6 +23,7 @@ public:
         bool read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id);
         bool read_withVcolor ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor);
         bool read_withVnormal( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vnormal);
+        bool read_withVcolorandVnormal( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor, const std::deque<Eigen::Vector3f>& vnormal );
         void clear ( void );
         Eigen::Vector3f getPosition ( const int fid, const int vid ) const ;
         Eigen::Vector3f getPosition ( const int id) const ;

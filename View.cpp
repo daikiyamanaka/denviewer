@@ -437,6 +437,10 @@ View::flatRendering(const Mesh &mesh)
                 const Eigen::Vector3f p = mesh.getPosition(i);
                 const Eigen::Vector3f n = mesh.getVNormal(i);
 
+                if(vcolor_data){
+                    const Eigen::Vector3f c = mesh.getVColor(i);
+                    ::glColor3f(c[0],c[1],c[2]);
+                }
                 ::glBegin ( GL_POINTS );
                 ::glVertex3f ( p.x(), p.y(), p.z() );
                 ::glVertex3f ( p.x()+n.x()/5, p.y()+n.y()/5, p.z()+n.z()/5 );
@@ -492,6 +496,10 @@ View::smoothRendering(const Mesh &mesh)
                 const Eigen::Vector3f p = mesh.getPosition(i);
                 const Eigen::Vector3f n = mesh.getVNormal(i);
 
+                if(vcolor_data){
+                    const Eigen::Vector3f c = mesh.getVColor(i);
+                    ::glColor3f(c[0],c[1],c[2]);
+                }
                 ::glBegin ( GL_LINES );
                 ::glVertex3f ( p.x(), p.y(), p.z() );
                 ::glVertex3f ( p.x()+n.x()/5, p.y()+n.y()/5, p.z()+n.z()/5 );
