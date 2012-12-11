@@ -18,25 +18,27 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
         this->_vertex.insert ( this->_vertex.end(), v.begin(), v.end() );
         this->_index.insert( this->_index.end(), id.begin(), id.end());
 
-        // compute face normal
         const int numFaces = this->getNumFaces();
-        for ( int i = 0 ; i < numFaces ; i+=1 ) {
-                const Eigen::Vector3f v1 = this->getPosition ( this->_index[i][1] ) - this->getPosition ( this->_index[i][0] ) ;
-                const Eigen::Vector3f v2 = this->getPosition ( this->_index[i][2] ) - this->getPosition ( this->_index[i][0] ) ;
-                this->_normal.push_back ( v1.cross ( v2 ).normalized() );
-        }
-
-        //compute vertex normal
         const int numVertexs = this->getNumVertex();
-        Eigen::Vector3f vn(1,0,0);
-        this->_vnormal.resize(numVertexs,vn);
-        for ( int i = 0 ; i < numFaces ; i+=1 ) {
-            for ( int j = 0 ; j < 3 ; j+=1 ) {
-                this->_vnormal[this->_index[i][j]] += this->_normal[i];
+        if(numFaces != 0){
+            // compute face normal
+            for ( int i = 0 ; i < numFaces ; i+=1 ) {
+                    const Eigen::Vector3f v1 = this->getPosition ( this->_index[i][1] ) - this->getPosition ( this->_index[i][0] ) ;
+                    const Eigen::Vector3f v2 = this->getPosition ( this->_index[i][2] ) - this->getPosition ( this->_index[i][0] ) ;
+                    this->_normal.push_back ( v1.cross ( v2 ).normalized() );
             }
-        }
-        for ( int i = 0 ; i < this->_vnormal.size() ; i+=1 ) {
-            this->_vnormal[i].normalize();
+
+            //compute vertex normal
+            Eigen::Vector3f vn(1,0,0);
+            this->_vnormal.resize(numVertexs,vn);
+            for ( int i = 0 ; i < numFaces ; i+=1 ) {
+                for ( int j = 0 ; j < 3 ; j+=1 ) {
+                    this->_vnormal[this->_index[i][j]] += this->_normal[i];
+                }
+            }
+            for ( int i = 0 ; i < this->_vnormal.size() ; i+=1 ) {
+                this->_vnormal[i].normalize();
+            }
         }
 
         //compute bounding box;
@@ -56,15 +58,34 @@ Mesh::read ( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector
 }
 
 bool
-Mesh::read( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor)
+Mesh::read_withVcolor( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vcolor)
 {
     if(v.size() != vcolor.size()){
         return false;
     }
 
-    this->read(v,id);
+    if(!this->read(v,id)){
+        return false;
+    }
     this->_vcolor.insert(this->_vcolor.end(),vcolor.begin(),vcolor.end());
+    return true;
+}
 
+bool
+Mesh::read_withVnormal( const std::deque<Eigen::Vector3f>& v , const std::deque<std::vector<int> >& id, const std::deque<Eigen::Vector3f>& vnormal)
+{
+    if( v.size() != vnormal.size() ){
+        return false;
+    }
+
+    if( !this->read(v,id) ){
+        return false;
+    }
+    //Point Cloud
+    if( id.empty() ){
+        this->_vnormal.insert(this->_vnormal.end(),vnormal.begin(),vnormal.end());
+    }
+    return true;
 }
 
 void

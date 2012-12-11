@@ -420,10 +420,10 @@ View::flatRendering(const Mesh &mesh)
     }else{
         ::glBegin ( GL_POINTS );
         for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
-            if( vnormal_data ){
+            /*if( vnormal_data ){
                 const Eigen::Vector3f nrm = mesh.getVNormal(i);
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-            }
+            }*/
             if(vcolor_data){
                 const Eigen::Vector3f c = mesh.getVColor(i);
                 ::glColor3f(c[0],c[1],c[2]);
@@ -431,7 +431,18 @@ View::flatRendering(const Mesh &mesh)
             const Eigen::Vector3f p = mesh.getPosition(i);
             ::glVertex3f ( p.x(), p.y(), p.z() );
         }
-         ::glEnd();
+        ::glEnd();
+        if( vnormal_data ){
+            for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+                const Eigen::Vector3f p = mesh.getPosition(i);
+                const Eigen::Vector3f n = mesh.getVNormal(i);
+
+                ::glBegin ( GL_POINTS );
+                ::glVertex3f ( p.x(), p.y(), p.z() );
+                ::glVertex3f ( p.x()+n.x()/5, p.y()+n.y()/5, p.z()+n.z()/5 );
+                ::glEnd();
+            }
+        }
     }
 
     return;
@@ -464,10 +475,10 @@ View::smoothRendering(const Mesh &mesh)
     }else{
         ::glBegin ( GL_POINTS );
         for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
-            if( vnormal_data ){
+            /*if( vnormal_data ){
                 const Eigen::Vector3f nrm = mesh.getVNormal(i);
                 ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-            }
+            }*/
             if(vcolor_data){
                 const Eigen::Vector3f c = mesh.getVColor(i);
                 ::glColor3f(c[0],c[1],c[2]);
@@ -475,7 +486,18 @@ View::smoothRendering(const Mesh &mesh)
             const Eigen::Vector3f p = mesh.getPosition(i);
             ::glVertex3f ( p.x(), p.y(), p.z() );
         }
-         ::glEnd();
+        ::glEnd();
+        if( vnormal_data ){
+            for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+                const Eigen::Vector3f p = mesh.getPosition(i);
+                const Eigen::Vector3f n = mesh.getVNormal(i);
+
+                ::glBegin ( GL_LINES );
+                ::glVertex3f ( p.x(), p.y(), p.z() );
+                ::glVertex3f ( p.x()+n.x()/5, p.y()+n.y()/5, p.z()+n.z()/5 );
+                ::glEnd();
+            }
+        }
     }
     return;
 }

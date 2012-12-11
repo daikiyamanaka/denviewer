@@ -126,6 +126,10 @@ Model::openMesh ( const std::string& filename )
     this->_checked.push_back(true);
     if( this->_mesh.size() > 1 ) this->_Preferences.push_back( Preference() );
 
+    if(!mesh.IndexDataExists()){
+        this->_Preferences.at(this->_Preferences.size()-1).setRenderingMode(POINTCLOUD);
+    }
+
     Eigen::Vector3f bmin, bmax;
     //this->_mesh.getBoundingBox ( bmin, bmax );
     mesh.getBoundingBox ( bmin, bmax );
