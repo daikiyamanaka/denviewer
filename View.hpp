@@ -46,6 +46,7 @@ private:
 
         void flatRendering( const Mesh& mesh );
         void smoothRendering( const Mesh& mesh);
+        void render_NomalVector( const Mesh& mesh );
         RenderPair createRenderPair( const Mesh& mesh );
 
 };

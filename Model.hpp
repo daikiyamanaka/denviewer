@@ -77,6 +77,14 @@ public:
         int getPointSize(void);
         void setPointSize( const int size);
 
+        float getVectorLength( void );
+        void setVectorLength( const float length );
+
+        bool getRenderAtCenter( void );
+        void setRenderAtCenter( const bool center );
+        bool getViewNormal( void );
+        void setViewNormal( const bool viewNormal );
+
         void setViewAngle(float _angle);
         float getViewAngle(void);
 

@@ -22,6 +22,7 @@ QT_END_NAMESPACE
 //#include "ChangeWindowSizeWidget.hpp"//imamura
 #include "PreferencesDialog.hpp"
 #include "ModelLayerWidget.hpp"
+#include "NormalDisplayWidget.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -37,6 +38,8 @@ private:
 		GetCameraParameterWidget* _cameraParameterWidget;
         GetLightParameterWidget* _lightParameterWidget;
         ShowVandFWidget* _VandFWidget;//imamura
+
+        NormalDisplayWidget* _normalDisplayWidget;
 
         //ChangeWindowSizeWidget* _windowWidget;
         //int oldw, oldh;
@@ -79,6 +82,7 @@ private slots:
         void back_camera( void );
         void forward_camera( void );
         void add_now_camera_to_list( void );
+        void update_normal_display( void );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura

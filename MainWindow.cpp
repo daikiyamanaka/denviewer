@@ -31,6 +31,10 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_pointSizeWidget = new ChangePointSizeWidget(1);
     connect( this->_pointSizeWidget, SIGNAL(updated()), this, SLOT(update_point_size()));
 
+    float nLength = this->_model.getVectorLength();
+    this->_normalDisplayWidget = new NormalDisplayWidget(nLength);
+    connect(this->_normalDisplayWidget, SIGNAL(updated()), this, SLOT(update_normal_display()));
+
     QGridLayout *renderModeGridLayout = new QGridLayout;
 
     renderModeGridLayout->addWidget(this->_pointCheckBox,0,0,Qt::AlignLeft);
@@ -157,6 +161,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     //boxLayout5->addWidget(this->_windowWidget);
     boxLayout5->addWidget(_centerarrow);
+    boxLayout5->addWidget(this->_normalDisplayWidget);
     //boxLayout5->addWidget(saveGroupBox);
 
     boxLayout5->addStretch( 1 );
@@ -770,6 +775,20 @@ MainWindow::update_window_size(int width, int height)
     //oldh = height;
     //this->_view.resize(width, height);
     this->_glwidget->resize(width, height);
+    emit updated();
+}
+
+void
+MainWindow::update_normal_display( void )
+{
+    float l = this->_normalDisplayWidget->getNormalLength();
+    bool  rac = this->_normalDisplayWidget->RenderAtCenter();
+    bool  rv  = this->_normalDisplayWidget->RenderNormal();
+    this->_model.setVectorLength(l);
+    this->_model.setRenderAtCenter(rac);
+    this->_model.setViewNormal(rv);
+    this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+
     emit updated();
 }
 

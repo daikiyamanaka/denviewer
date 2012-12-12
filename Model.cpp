@@ -448,6 +448,41 @@ Model::setPointSize(const int size)
     this->_Preferences.at(this->_activeMeshId).setPointSize(size);
 }
 
+
+float
+Model::getVectorLength( void )
+{
+    return this->getPreferences().at(this->_activeMeshId).getVectorLength();
+}
+
+void
+Model::setVectorLength(const float length)
+{
+    this->_Preferences.at(this->_activeMeshId).setVectorLength(length);
+}
+
+bool
+Model::getRenderAtCenter( void )
+{
+    return this->getPreferences().at(this->_activeMeshId).getRenderAtCenter();
+}
+void
+Model::setRenderAtCenter(const bool center)
+{
+    this->_Preferences.at(this->_activeMeshId).setRenderAtCenter(center);
+}
+
+bool
+Model::getViewNormal( void )
+{
+    return this->_Preferences.at(this->_activeMeshId).getViewNormal();
+}
+void
+Model::setViewNormal(const bool viewNormal)
+{
+    this->_Preferences.at(this->_activeMeshId).setViewNormal(viewNormal);
+}
+
 void Model::setViewAngle(float _angle){
     this->_cameraList.at(this->_NowCameraId).setFieldOfViewAngle(_angle);
 }

@@ -90,6 +90,8 @@ View::render ( void )
 
         //draw mesh
 
+        if(this->_carrow) this->render_arrow();
+
         //RenderingMode mode = this->_model.getPreference().getRenderingMode() ;
         for( int i = 0 ; i < this->_drawMeshList.size() ; i++){
             if( !this->_model.getMeshCheckState().at(i) ) continue;
@@ -225,8 +227,7 @@ View::render ( void )
         //this->render_mesh();
         */
 
-      if(this->_carrow)
-            this->render_arrow();
+
 
         return;
 }
@@ -364,6 +365,8 @@ View::render_arrow(void)
     float scale = carrow.GetScale()/5.0;
     Eigen::Vector3f center = carrow.GetCenter();
 
+    ::glLineWidth(1);
+
     glColor3f(1.0, 0.0, 0.0);
     glBegin(GL_LINES);
     Eigen::Vector3f up = center + scale*carrow.GetYvec();
@@ -397,7 +400,6 @@ void
 View::flatRendering(const Mesh &mesh)
 {
     bool index_data = mesh.IndexDataExists();
-    bool vnormal_data = mesh.VNormalDataExists();
     bool vcolor_data = mesh.VColorDataExists();
 
     if( index_data ){
@@ -417,37 +419,7 @@ View::flatRendering(const Mesh &mesh)
             }
         }
         ::glEnd();
-    }else{
-        ::glBegin ( GL_POINTS );
-        for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
-            /*if( vnormal_data ){
-                const Eigen::Vector3f nrm = mesh.getVNormal(i);
-                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-            }*/
-            if(vcolor_data){
-                const Eigen::Vector3f c = mesh.getVColor(i);
-                ::glColor3f(c[0],c[1],c[2]);
-            }
-            const Eigen::Vector3f p = mesh.getPosition(i);
-            ::glVertex3f ( p.x(), p.y(), p.z() );
-        }
-        ::glEnd();
-        if( vnormal_data ){
-            for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
-                const Eigen::Vector3f p = mesh.getPosition(i);
-                const Eigen::Vector3f n = mesh.getVNormal(i);
-
-                if(vcolor_data){
-                    const Eigen::Vector3f c = mesh.getVColor(i);
-                    ::glColor3f(c[0],c[1],c[2]);
-                }
-                ::glBegin ( GL_POINTS );
-                ::glVertex3f ( p.x(), p.y(), p.z() );
-                ::glVertex3f ( p.x()+n.x()/5, p.y()+n.y()/5, p.z()+n.z()/5 );
-                ::glEnd();
-            }
-        }
-    }
+    }else this->render_NomalVector(mesh);
 
     return;
 }
@@ -456,7 +428,6 @@ void
 View::smoothRendering(const Mesh &mesh)
 {
     bool index_data = mesh.IndexDataExists();
-    bool vnormal_data = mesh.VNormalDataExists();
     bool vcolor_data = mesh.VColorDataExists();
 
     if( index_data ){
@@ -476,35 +447,45 @@ View::smoothRendering(const Mesh &mesh)
             }
         }
         ::glEnd();
-    }else{
-        ::glBegin ( GL_POINTS );
+    }else this->render_NomalVector(mesh);
+    return;
+}
+
+void
+View::render_NomalVector(const Mesh &mesh)
+{
+    bool vnormal_data = mesh.VNormalDataExists();
+    bool vcolor_data = mesh.VColorDataExists();
+
+    float vecLength = this->_model.getVectorLength();
+    ::glBegin ( GL_POINTS );
+    for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
+        if(vcolor_data){
+            const Eigen::Vector3f c = mesh.getVColor(i);
+            ::glColor3f(c[0],c[1],c[2]);
+        }
+        const Eigen::Vector3f p = mesh.getPosition(i);
+        ::glVertex3f ( p.x(), p.y(), p.z() );
+    }
+    ::glEnd();
+    if( vnormal_data && this->_model.getViewNormal() ){
         for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
-            /*if( vnormal_data ){
-                const Eigen::Vector3f nrm = mesh.getVNormal(i);
-                ::glNormal3f ( nrm.x(),nrm.y(),nrm.z() );
-            }*/
+            const Eigen::Vector3f p = mesh.getPosition(i);
+            const Eigen::Vector3f n = mesh.getVNormal(i);
+
             if(vcolor_data){
                 const Eigen::Vector3f c = mesh.getVColor(i);
                 ::glColor3f(c[0],c[1],c[2]);
             }
-            const Eigen::Vector3f p = mesh.getPosition(i);
-            ::glVertex3f ( p.x(), p.y(), p.z() );
-        }
-        ::glEnd();
-        if( vnormal_data ){
-            for ( int i = 0 ; i < mesh.getNumVertex() ; i++ ) {
-                const Eigen::Vector3f p = mesh.getPosition(i);
-                const Eigen::Vector3f n = mesh.getVNormal(i);
-
-                if(vcolor_data){
-                    const Eigen::Vector3f c = mesh.getVColor(i);
-                    ::glColor3f(c[0],c[1],c[2]);
-                }
-                ::glBegin ( GL_LINES );
+            ::glBegin ( GL_LINES );
+            if( this->_model.getRenderAtCenter() ){
+                ::glVertex3f ( p.x()-n.x()*vecLength*0.5f, p.y()-n.y()*vecLength*0.5f, p.z()-n.z()*vecLength*0.5f );
+                ::glVertex3f ( p.x()+n.x()*vecLength*0.5f, p.y()+n.y()*vecLength*0.5f, p.z()+n.z()*vecLength*0.5f );
+            }else{
                 ::glVertex3f ( p.x(), p.y(), p.z() );
-                ::glVertex3f ( p.x()+n.x()/5, p.y()+n.y()/5, p.z()+n.z()/5 );
-                ::glEnd();
+                ::glVertex3f ( p.x()+n.x()*vecLength, p.y()+n.y()*vecLength, p.z()+n.z()*vecLength );
             }
+            ::glEnd();
         }
     }
     return;

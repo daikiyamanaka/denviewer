@@ -8,6 +8,9 @@ Preference::Preference ( void )
         this->setVertexColor( Color3f(0 , 0 , 0.7f) );
         this->setWireWidth(1);
         this->setPointSize(1);
+        this->setVectorLength(1.0f);
+        this->_viewNormal = true;
+        this->_vecAtCenter = false;
         this->setRenderingMode ( SURFACE );
         this->setShadingMode( SMOOTH );
         return;
@@ -53,10 +56,29 @@ Preference::setWireWidth( const int width )
 }
 
 void
+Preference::setVectorLength(const float length)
+{
+    this->_vectorLength = length;
+    return;
+}
+
+void
 Preference::setPointSize(const int size)
 {
     this->_point_size = size;
     return;
+}
+
+void
+Preference::setRenderAtCenter(const bool center)
+{
+    this->_vecAtCenter = center;
+}
+
+void
+Preference::setViewNormal(const bool view)
+{
+    this->_viewNormal = view;
 }
 
 void
@@ -109,6 +131,24 @@ int
 Preference::getPointSize( void ) const
 {
     return _point_size;
+}
+
+float
+Preference::getVectorLength( void ) const
+{
+    return this->_vectorLength;
+}
+
+bool
+Preference::getRenderAtCenter( void ) const
+{
+    return this->_vecAtCenter;
+}
+
+bool
+Preference::getViewNormal( void ) const
+{
+    return this->_viewNormal;
 }
 
 /*

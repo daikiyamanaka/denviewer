@@ -24,6 +24,10 @@ private:
 
         int _wire_width;
         int _point_size;
+        float _vectorLength;
+
+        bool _vecAtCenter;
+        bool _viewNormal;
 
         //RenderingMode _status;
         int renderingMode;
@@ -39,6 +43,9 @@ public:
         void setVertexColor ( const Color3f c );
         void setWireWidth( const int width );
         void setPointSize( const int radius );
+        void setVectorLength( const float length );
+        void setRenderAtCenter( const bool center );
+        void setViewNormal( const bool view);
         //void setRenderingMode ( const RenderingMode status );
         void setRenderingMode(const int status);
         void setShadingMode( const ShadingMode shading);
@@ -49,6 +56,9 @@ public:
         Color3f getVertexColor ( void ) const;
         int getWireWidth( void ) const;
         int getPointSize( void ) const;
+        float getVectorLength( void ) const;
+        bool getRenderAtCenter( void ) const;
+        bool getViewNormal( void ) const;
         //RenderingMode getRenderingMode ( void ) const;
         int getRenderingMode(void) const;
         ShadingMode getShadingMode( void ) const;
