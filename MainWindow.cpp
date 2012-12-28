@@ -5,9 +5,6 @@
 
 MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
 {
-
-
-
     QWidget* widget = new QWidget;
     widget->setContentsMargins ( 5,5,5,5 );
 
@@ -44,8 +41,8 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     renderModeGridLayout->addWidget(this->_wireWidthWidget,1,1,Qt::AlignRight);
 
 
-    QGroupBox *groupBox1 = new QGroupBox ( tr ( "Rendering Mode" ) );
-    groupBox1->setLayout ( renderModeGridLayout );
+    QGroupBox *groupBox_renderingMode = new QGroupBox ( tr ( "Rendering Mode" ) );
+    groupBox_renderingMode->setLayout ( renderModeGridLayout );
 
     //Shading Mode
     this->_flatRadioButton = new QRadioButton( tr("Flat") );
@@ -68,7 +65,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect ( button1, SIGNAL ( pressed() ), this, SLOT ( view_fit() ) );
     connect ( button2, SIGNAL ( pressed() ), this, SLOT ( view_init() ) );
 
-
+    //color
 	int r,g,b;
     this->_model.getSurfaceColor (0, r,g,b );
     QColor face(r,g,b);
@@ -84,7 +81,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
 
 
-	
+    //view angle
     float angle = this->_model.getViewAngle();
     this->_viewWidget = new ChangeViewAngle(angle);
     connect(this->_viewWidget, SIGNAL(updated()), this, SLOT(update_perspective_angle()));
@@ -101,6 +98,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     connect(_centerarrow, SIGNAL(toggled(bool)), this, SLOT(set_carrow(bool)));
     _centerarrow->setChecked(true);
 
+    //camera
 	int alpha , beta , gamma;
     double xpos , ypos , zpos;
     this->_model.getEulerAngle(alpha , beta , gamma);
@@ -114,6 +112,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     connect(this->_cameraParameterWidget, SIGNAL(ParameterChanged()) , this , SLOT(add_now_camera_to_list()));
 
+    //light
     this->_lightCheckBox1 = new QCheckBox(tr ( "Key Light" ));
     this->_lightCheckBox2 = new QCheckBox(tr ( "Fill Light" ));
     this->_lightCheckBox3 = new QCheckBox(tr ( "Back Light" ));
@@ -127,67 +126,66 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QPushButton *lightbutton = new QPushButton ( tr ( "Light Fit" ) ) ;
     connect ( lightbutton, SIGNAL ( pressed() ), this, SLOT ( lightset() ) );
 
-    QVBoxLayout *boxLayout2 = new QVBoxLayout;
-    boxLayout2->addWidget ( this->_lightCheckBox1 );
-    boxLayout2->addWidget ( this->_lightCheckBox2 );
-    boxLayout2->addWidget ( this->_lightCheckBox3 );
-    boxLayout2->addWidget ( lightbutton );
-    boxLayout2->addStretch ( 1 );
+    QVBoxLayout *boxLayout_lightCheckBox = new QVBoxLayout;
+    boxLayout_lightCheckBox->addWidget ( this->_lightCheckBox1 );
+    boxLayout_lightCheckBox->addWidget ( this->_lightCheckBox2 );
+    boxLayout_lightCheckBox->addWidget ( this->_lightCheckBox3 );
+    boxLayout_lightCheckBox->addWidget ( lightbutton );
+    boxLayout_lightCheckBox->addStretch ( 1 );
 
-    QGroupBox *groupBox2 = new QGroupBox ( tr ( "Light" ) );
-    groupBox2->setLayout ( boxLayout2 );
+    QGroupBox *groupBox_light = new QGroupBox ( tr ( "Light" ) );
+    groupBox_light->setLayout ( boxLayout_lightCheckBox );
 
     this->_VandFWidget = new ShowVandFWidget();//imamura
 
     //ViewTab用
-    QVBoxLayout *boxLayout3 = new QVBoxLayout;
-    boxLayout3->addWidget ( groupBox1 );
-    boxLayout3->addWidget ( groupBox_shading );
-    boxLayout3->addWidget ( button1 );
-    boxLayout3->addWidget ( button2 );
-    boxLayout3->addWidget ( this->_colorWidget);
-    boxLayout3->addStretch ( 1 );
+    QVBoxLayout *boxLayout_viewTab = new QVBoxLayout;
+    boxLayout_viewTab->addWidget ( groupBox_renderingMode );
+    boxLayout_viewTab->addWidget ( groupBox_shading );
+    boxLayout_viewTab->addWidget ( button1 );
+    boxLayout_viewTab->addWidget ( button2 );
+    boxLayout_viewTab->addWidget ( this->_colorWidget);
+    boxLayout_viewTab->addStretch ( 1 );
 
-    QVBoxLayout *boxLayout4 = new QVBoxLayout;
-    //boxLayout4->addWidget(groupBox2);
-    boxLayout4->addWidget(this->_cameraParameterWidget);
-    boxLayout4->addWidget(this->_viewWidget);
+    //cameraTab用
+    QVBoxLayout *boxLayout_cameraTab = new QVBoxLayout;
+    boxLayout_cameraTab->addWidget(this->_cameraParameterWidget);
+    boxLayout_cameraTab->addWidget(this->_viewWidget);
+    boxLayout_cameraTab->addStretch( 1 );
 
-    boxLayout4->addStretch( 1 );
+    //MeshInfoTab用
+    QVBoxLayout *boxLayout_infoTab = new QVBoxLayout;
+    boxLayout_infoTab->addWidget ( this->_VandFWidget);//imamura
+    boxLayout_infoTab->addWidget(_centerarrow);
+    boxLayout_infoTab->addWidget(this->_normalDisplayWidget);
+    boxLayout_infoTab->addStretch( 1 );
 
-    QVBoxLayout *boxLayout5 = new QVBoxLayout;
-	boxLayout5->addWidget ( this->_VandFWidget);//imamura
-    //boxLayout5->addWidget(this->_wireWidthWidget);
+    //LightTab用
 
-    //boxLayout5->addWidget(this->_windowWidget);
-    boxLayout5->addWidget(_centerarrow);
-    boxLayout5->addWidget(this->_normalDisplayWidget);
-    //boxLayout5->addWidget(saveGroupBox);
+    //
+    QWidget* widget_vewTab = new QWidget;
+    widget_vewTab->setLayout(boxLayout_viewTab);
 
-    boxLayout5->addStretch( 1 );
+    QWidget* widget_cameraTab = new QWidget;
+    widget_cameraTab->setLayout(boxLayout_cameraTab);
 
-    QWidget* widget1 = new QWidget;
-    widget1->setLayout(boxLayout3);
+    QWidget* widget_infoTab = new QWidget;
+    widget_infoTab->setLayout(boxLayout_infoTab);
 
-    QWidget* widget2 = new QWidget;
-    widget2->setLayout(boxLayout4);
-    QWidget* widget3 = new QWidget;
-    widget3->setLayout(boxLayout5);
+    QWidget* widget_lightTab = new QWidget;
+    widget_lightTab->setLayout(boxLayout_lightCheckBox);
 
-    QWidget* lightwidget = new QWidget;
-    lightwidget->setLayout(boxLayout2);
+    QTabWidget* tabwidget_propaties = new QTabWidget;
+    tabwidget_propaties->addTab ( widget_vewTab, tr ( "Views" ) );
+    tabwidget_propaties->addTab(widget_cameraTab ,tr("Camera") );
+    tabwidget_propaties->addTab(widget_infoTab ,tr("MeshInfo") );
+    tabwidget_propaties->addTab(widget_lightTab, tr("Light"));
+    tabwidget_propaties->setMinimumWidth ( 250 );
 
-    QTabWidget* tabWidget1 = new QTabWidget;
-    tabWidget1->addTab ( widget1, tr ( "Views" ) );
-    tabWidget1->addTab(widget2 ,tr("Camera") );
-    tabWidget1->addTab(widget3 ,tr("MeshInfo") );
-    tabWidget1->addTab(lightwidget, tr("Light"));
-    tabWidget1->setMinimumWidth ( 250 );
-
-    QTabWidget* tabWidget2 = new QTabWidget;
+    QTabWidget* tabwidget_model = new QTabWidget;
     modelLayerWidget = new ModelLayerWidget;
-    tabWidget2->addTab ( modelLayerWidget, tr ( "ModelLayer" ) );
-    tabWidget2->setMinimumWidth ( 200 );
+    tabwidget_model->addTab ( modelLayerWidget, tr ( "ModelLayer" ) );
+    tabwidget_model->setMinimumWidth ( 200 );
 
     connect(this->modelLayerWidget, SIGNAL(updated()), this, SLOT(changeModelLayer()));
     connect(this->modelLayerWidget, SIGNAL(selectedItemChanged()) , this , SLOT(change_active_mesh_index()));
@@ -198,9 +196,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin ( 5 );
-    layout->addWidget ( tabWidget2 );
+    layout->addWidget ( tabwidget_model );
     layout->addWidget ( this->_glwidget );
-    layout->addWidget ( tabWidget1 );
+    layout->addWidget ( tabwidget_propaties );
 
     widget->setLayout ( layout );
 
