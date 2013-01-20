@@ -115,8 +115,11 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
     while(!fin.eof())
     {
         Eigen::Vector3f p,c,n;
-        c << -1,-1,-1;
-        n << -1,-1,-1;
+        p = Eigen::Vector3f(0,0,0);
+        c = Eigen::Vector3f(-1,-1,-1);
+        n = Eigen::Vector3f(0,0,0);
+        //c << -1,-1,-1;
+        //n << -1,-1,-1;
         for(int i = 0; i < type_line.size(); i++){
             fin >> buf;
             switch (type_line[i]){
@@ -152,12 +155,12 @@ ImporterPointsCloudPcdAscii::read ( const std::string& filename )
 
             }
         }
-
+        if( fin.eof() ) break;
         pos.push_back(p);
         if(c[0] != (-1)){
             color.push_back(c);
         }
-        if(n[0] != (-1) && n[1] != (-1)){
+        if(n.norm() > 1.0e-5){
             normal.push_back(n);
         }
     }
