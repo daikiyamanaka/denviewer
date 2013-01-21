@@ -62,10 +62,10 @@ View::render ( void )
         ::glLoadIdentity();
         int viewport[4];
         ::glGetIntegerv ( GL_VIEWPORT, viewport );
-        //::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
         double length = this->_model.getCamera().getDistanceToCenter();
         double tanLength = length*std::tan(fov)*2.0;
-        ::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
+        //::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
         ::gluLookAt ( eye.x(), eye.y(), eye.z(),
                       center.x(), center.y(), center.z(),
                       up.x(), up.y(), up.z() );
@@ -251,10 +251,10 @@ View::resize ( const int width, const int height )
         ::glLoadIdentity();
         int viewport[4];
         ::glGetIntegerv ( GL_VIEWPORT, viewport );
-        //::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
         double length = this->_model.getCamera().getDistanceToCenter();
         double tanLength = length*std::tan(fov)*2.0;
-        ::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
+        //::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
         ::glMatrixMode ( GL_MODELVIEW );
         return;
 }
