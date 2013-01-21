@@ -59,6 +59,12 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QGroupBox *groupBox_shading = new QGroupBox(tr("Shading Mode"));
     groupBox_shading->setLayout(boxLayout_shading);
 
+    //Normal display
+    QGroupBox *groupBox_normal = new QGroupBox(tr("Normal"));
+    QVBoxLayout *boxLayout_normal = new QVBoxLayout;
+    boxLayout_normal->addWidget(this->_normalDisplayWidget);
+    groupBox_normal->setLayout(boxLayout_normal);
+
     //view
     QPushButton *button1 = new QPushButton ( tr ( "View Fit" ) ) ;
     QPushButton *button2 = new QPushButton ( tr ( "View Init" ) ) ;
@@ -142,6 +148,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout_viewTab = new QVBoxLayout;
     boxLayout_viewTab->addWidget ( groupBox_renderingMode );
     boxLayout_viewTab->addWidget ( groupBox_shading );
+    boxLayout_viewTab->addWidget(groupBox_normal);
     boxLayout_viewTab->addWidget ( button1 );
     boxLayout_viewTab->addWidget ( button2 );
     boxLayout_viewTab->addWidget ( this->_colorWidget);
@@ -157,7 +164,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QVBoxLayout *boxLayout_infoTab = new QVBoxLayout;
     boxLayout_infoTab->addWidget ( this->_VandFWidget);//imamura
     boxLayout_infoTab->addWidget(_centerarrow);
-    boxLayout_infoTab->addWidget(this->_normalDisplayWidget);
+    //boxLayout_infoTab->addWidget(this->_normalDisplayWidget);
     boxLayout_infoTab->addStretch( 1 );
 
     //LightTab—p
@@ -210,8 +217,8 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->create_menus();
     this->create_toolbars();
     this->setWindowTitle ( tr ( "Viewer" ) );
-    this->setMinimumSize ( 1000, 600 );
-    this->resize ( 1000, 600 );
+    this->setMinimumSize ( 1000, 700 );
+    this->resize ( 1000, 700 );
 
     connect ( this, SIGNAL ( updated() ), this->_glwidget, SLOT ( updateGL() ) );
 

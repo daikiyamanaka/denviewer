@@ -9,7 +9,7 @@ NormalDisplayWidget::NormalDisplayWidget(const float nlength, QWidget *parent) :
     this->_spinbox1->setMaximum(10.0);
     this->_spinbox1->setSingleStep(0.1);
     this->_spinbox1->setValue(nlength);
-    QLabel *label1 = new QLabel(tr("Length:"));
+    QLabel *label1 = new QLabel(tr("Length"));
 
     connect(this->_spinbox1, SIGNAL(valueChanged(double)),this, SIGNAL(updated()));
 
@@ -21,26 +21,32 @@ NormalDisplayWidget::NormalDisplayWidget(const float nlength, QWidget *parent) :
     this->_checkbox1->setChecked(false);
 
     connect(this->_checkbox1, SIGNAL(clicked()), this, SIGNAL(updated()));
-    QLabel *label2 = new QLabel(tr("Rendering at center:"));
-    hBoxLayout2->addWidget(label2);
+    QLabel *label2 = new QLabel(tr("Both Side"));
     hBoxLayout2->addWidget(this->_checkbox1);
+    hBoxLayout2->addWidget(label2);
+
 
     QHBoxLayout *hBoxLayout3 = new QHBoxLayout;
     this->_checkbox2 = new QCheckBox;
     this->_checkbox2->setChecked(true);
-
     connect(this->_checkbox2, SIGNAL(clicked()), this, SIGNAL(updated()));
-    QLabel *label3 = new QLabel(tr("Rendering normal:"));
-    hBoxLayout3->addWidget(label3);
+    QLabel *label3 = new QLabel(tr("Show"));
     hBoxLayout3->addWidget(this->_checkbox2);
+    hBoxLayout3->addWidget(label3);
 
+
+/*
     QVBoxLayout *vBoxLayout1 = new QVBoxLayout;
-    vBoxLayout1->addLayout(hBoxLayout1);
+    vBoxLayout1->addLayout(hBoxLayout4);
     vBoxLayout1->addLayout(hBoxLayout2);
-    vBoxLayout1->addLayout(hBoxLayout3);
+    */
+    QGridLayout *renderModeGridLayout = new QGridLayout;
+    renderModeGridLayout->addLayout(hBoxLayout3,0,0,Qt::AlignLeft);
+    renderModeGridLayout->addLayout(hBoxLayout1,0,1,Qt::AlignRight);
+    renderModeGridLayout->addLayout(hBoxLayout2,1,0,Qt::AlignLeft);
 
-
-    this->setLayout(vBoxLayout1);
+    this->setLayout(renderModeGridLayout);
+    //this->setLayout(vBoxLayout1);
     return;
 }
 
