@@ -951,8 +951,10 @@ MainWindow::change_active_mesh_index(void)
 {
     int id = this->modelLayerWidget->getSelectedIndex();
     this->_model.setActiveMeshIndex(id);
-    this->view_fit();
+    //this->view_fit();
     this->change_pallet_color_to_Id_mesh(id);
+    this->_wireWidthWidget->set_wire_width(this->_model.getWireWidth());
+    this->_pointSizeWidget->set_point_size(this->_model.getPointSize());
     emit updated();
 }
 

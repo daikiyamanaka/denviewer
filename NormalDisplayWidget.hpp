@@ -22,7 +22,9 @@ signals:
     void updated();
     
 public slots:
-    //void set_normal_length( double l );
+    void set_normal_length( double l );
+    void set_render_at_center( bool t);
+    void set_render_normal( bool t);
     
 };
 

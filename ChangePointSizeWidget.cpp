@@ -21,6 +21,7 @@ ChangePointSizeWidget::ChangePointSizeWidget(const int pointsize, QWidget *paren
 void
 ChangePointSizeWidget::set_point_size( int value )
 {
+    this->spinBox1->setValue(value);
     emit updated();
     return;
 }

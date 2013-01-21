@@ -62,7 +62,10 @@ View::render ( void )
         ::glLoadIdentity();
         int viewport[4];
         ::glGetIntegerv ( GL_VIEWPORT, viewport );
-        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        //::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        double length = this->_model.getCamera().getDistanceToCenter();
+        double tanLength = length*std::tan(fov)*2.0;
+        ::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
         ::gluLookAt ( eye.x(), eye.y(), eye.z(),
                       center.x(), center.y(), center.z(),
                       up.x(), up.y(), up.z() );
@@ -145,7 +148,7 @@ View::render ( void )
                 ::glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
                 const Color3f fg = this->_model.getPreferences().at(i).getWireColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
-                int width = this->_model.getWireWidth();
+                int width = this->_model.getPreferences().at(i).getWireWidth();
                 ::glLineWidth(width);
                 ::glCallList(drawlist);
             }
@@ -158,8 +161,10 @@ View::render ( void )
                 const Color3f fg = this->_model.getPreferences().at(i).getVertexColor();
                 ::glColor3f ( fg.x(), fg.y(), fg.z() );
                 int radius = this->_model.getPreferences().at(i).getPointSize();///edit after
+                int wireWidth = this->_model.getPreferences().at(i).getWireWidth();
                 //::glLineWidth(radius);
                 ::glPointSize(radius);
+                ::glLineWidth(wireWidth);
                 //this->render_mesh();
                 ::glCallList(drawlist);
             }
@@ -246,7 +251,10 @@ View::resize ( const int width, const int height )
         ::glLoadIdentity();
         int viewport[4];
         ::glGetIntegerv ( GL_VIEWPORT, viewport );
-        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        //::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        double length = this->_model.getCamera().getDistanceToCenter();
+        double tanLength = length*std::tan(fov)*2.0;
+        ::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
         ::glMatrixMode ( GL_MODELVIEW );
         return;
 }

@@ -21,6 +21,7 @@ ChangeWireWidthWidget::ChangeWireWidthWidget(const int wireWidth, QWidget *paren
 void
 ChangeWireWidthWidget::set_wire_width( int value )
 {
+    this->spinBox1->setValue(value);
     emit updated();
     return;
 }

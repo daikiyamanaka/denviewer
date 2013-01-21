@@ -63,9 +63,26 @@ NormalDisplayWidget::RenderNormal( void )
 }
 
 
-//void
-//NormalDisplayWidget::set_normal_length(double l)
-//{
- //   emit updated();
-  //  return;
-//}
+void
+NormalDisplayWidget::set_normal_length(double l)
+{
+    this->_spinbox1->setValue(l);
+    emit updated();
+    return;
+}
+
+void
+NormalDisplayWidget::set_render_at_center(bool t)
+{
+    this->_checkbox1->setChecked(t);
+    emit updated();
+    return;
+}
+
+void
+NormalDisplayWidget::set_render_normal(bool t)
+{
+    this->_checkbox2->setChecked(t);
+    emit updated();
+    return;
+}
