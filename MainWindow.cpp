@@ -89,6 +89,10 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QColor light(r, g, b);
     this->_colorWidget = new ChangeColorWidget(face, background, wire, vertex, light);
     connect ( this->_colorWidget, SIGNAL(updated()), this, SLOT(update_color()));
+    QGroupBox *groupBox_color = new QGroupBox(tr("Colors"));
+    QVBoxLayout *boxLayout_color = new QVBoxLayout;
+    boxLayout_color->addWidget(this->_colorWidget);
+    groupBox_color->setLayout(boxLayout_color);
 
 
     //view angle
@@ -156,7 +160,8 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     boxLayout_viewTab->addWidget(this->_projectionModeWidget);
     boxLayout_viewTab->addWidget ( button1 );
     boxLayout_viewTab->addWidget ( button2 );
-    boxLayout_viewTab->addWidget ( this->_colorWidget);
+    //boxLayout_viewTab->addWidget ( this->_colorWidget);
+    boxLayout_viewTab->addWidget ( _centerarrow );
     boxLayout_viewTab->addStretch ( 1 );
 
     //cameraTab—p
@@ -167,8 +172,9 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     //MeshInfoTab—p
     QVBoxLayout *boxLayout_infoTab = new QVBoxLayout;
+    boxLayout_infoTab->addWidget(groupBox_color);
     boxLayout_infoTab->addWidget ( this->_VandFWidget);//imamura
-    boxLayout_infoTab->addWidget(_centerarrow);
+    //boxLayout_infoTab->addWidget(_centerarrow);
     //boxLayout_infoTab->addWidget(this->_normalDisplayWidget);
     boxLayout_infoTab->addStretch( 1 );
 
@@ -190,7 +196,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     QTabWidget* tabwidget_propaties = new QTabWidget;
     tabwidget_propaties->addTab ( widget_vewTab, tr ( "Views" ) );
     tabwidget_propaties->addTab(widget_cameraTab ,tr("Camera") );
-    tabwidget_propaties->addTab(widget_infoTab ,tr("MeshInfo") );
+    tabwidget_propaties->addTab(widget_infoTab ,tr("Mesh") );
     tabwidget_propaties->addTab(widget_lightTab, tr("Light"));
     tabwidget_propaties->setMinimumWidth ( 250 );
 
