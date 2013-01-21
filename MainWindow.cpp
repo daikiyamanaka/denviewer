@@ -32,6 +32,10 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->_normalDisplayWidget = new NormalDisplayWidget(nLength);
     connect(this->_normalDisplayWidget, SIGNAL(updated()), this, SLOT(update_normal_display()));
 
+    bool perspective = this->_view.getPerspective();
+    this->_projectionModeWidget = new ProjectionModeWidget(perspective);
+    connect(this->_projectionModeWidget, SIGNAL(updated()), this,SLOT(update_projection_mode()));
+
     QGridLayout *renderModeGridLayout = new QGridLayout;
 
     renderModeGridLayout->addWidget(this->_pointCheckBox,0,0,Qt::AlignLeft);
@@ -149,6 +153,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     boxLayout_viewTab->addWidget ( groupBox_renderingMode );
     boxLayout_viewTab->addWidget ( groupBox_shading );
     boxLayout_viewTab->addWidget(groupBox_normal);
+    boxLayout_viewTab->addWidget(this->_projectionModeWidget);
     boxLayout_viewTab->addWidget ( button1 );
     boxLayout_viewTab->addWidget ( button2 );
     boxLayout_viewTab->addWidget ( this->_colorWidget);
@@ -793,6 +798,14 @@ MainWindow::update_normal_display( void )
     this->_model.setRenderAtCenter(rac);
     this->_model.setViewNormal(rv);
     this->_view.updateDrawMeshList(this->_model.getActiveMeshIndex());
+
+    emit updated();
+}
+void
+MainWindow::update_projection_mode(void)
+{
+    bool perspective = this->_projectionModeWidget->projectionMode();
+    this->_view.setPerspective(perspective);
 
     emit updated();
 }

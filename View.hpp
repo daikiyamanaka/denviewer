@@ -19,6 +19,7 @@ private:
         bool _carrow;
 
         std::deque<RenderPair> _drawMeshList;
+        bool _perspective;
 
 public:
         View ( Model& model );
@@ -36,6 +37,8 @@ public:
         bool updateDrawMeshList( int k );
         bool deleteDrawMeshList( int k);
         void deleteAllDrawMeshList( void );
+        void setPerspective( bool p);
+        bool getPerspective(void);
 private:
         //void render_mesh ( void );
         void setLight ( const Light& light , const unsigned int number, const Eigen::Vector3f eye);

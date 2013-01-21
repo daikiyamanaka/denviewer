@@ -14,6 +14,7 @@
 
 View::View ( Model& model ) : _model ( model )
 {
+    this->_perspective = true;
         return;
 }
 
@@ -62,10 +63,13 @@ View::render ( void )
         ::glLoadIdentity();
         int viewport[4];
         ::glGetIntegerv ( GL_VIEWPORT, viewport );
-        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
-        double length = this->_model.getCamera().getDistanceToCenter();
-        double tanLength = length*std::tan(fov)*2.0;
-        //::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
+        if( this->_perspective ) ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        else{
+            double length = this->_model.getCamera().getDistanceToCenter();
+            double tanLength = length*std::tan(fov*3.1415926535/360.0);
+            double rate = viewport[3] * 1.0 / viewport[2];
+            ::glOrtho(-tanLength,tanLength,-tanLength*rate,tanLength*rate,zNear,zFar);
+        }
         ::gluLookAt ( eye.x(), eye.y(), eye.z(),
                       center.x(), center.y(), center.z(),
                       up.x(), up.y(), up.z() );
@@ -251,10 +255,13 @@ View::resize ( const int width, const int height )
         ::glLoadIdentity();
         int viewport[4];
         ::glGetIntegerv ( GL_VIEWPORT, viewport );
-        ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
-        double length = this->_model.getCamera().getDistanceToCenter();
-        double tanLength = length*std::tan(fov)*2.0;
-        //::glOrtho(-tanLength,tanLength,-tanLength,tanLength,zNear,zFar);
+        if( this->_perspective ) ::gluPerspective ( fov, viewport[2] * 1.0 / viewport[3],  zNear, zFar );
+        else{
+            double length = this->_model.getCamera().getDistanceToCenter();
+            double tanLength = length*std::tan(fov*3.1415926535/360.0);
+            double rate = viewport[3] * 1.0 / viewport[2];
+            ::glOrtho(-tanLength,tanLength,-tanLength*rate,tanLength*rate,zNear,zFar);
+        }
         ::glMatrixMode ( GL_MODELVIEW );
         return;
 }
@@ -563,4 +570,16 @@ View::deleteAllDrawMeshList( void )
     this->_drawMeshList.clear();
 
     return;
+}
+
+void
+View::setPerspective(bool p)
+{
+    this->_perspective = p;
+}
+
+bool
+View::getPerspective(void)
+{
+    return this->_perspective;
 }

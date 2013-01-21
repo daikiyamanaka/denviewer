@@ -23,6 +23,7 @@ QT_END_NAMESPACE
 #include "PreferencesDialog.hpp"
 #include "ModelLayerWidget.hpp"
 #include "NormalDisplayWidget.hpp"
+#include "projectionmodewidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -40,6 +41,7 @@ private:
         ShowVandFWidget* _VandFWidget;//imamura
 
         NormalDisplayWidget* _normalDisplayWidget;
+        ProjectionModeWidget* _projectionModeWidget;
 
         //ChangeWindowSizeWidget* _windowWidget;
         //int oldw, oldh;
@@ -83,6 +85,7 @@ private slots:
         void forward_camera( void );
         void add_now_camera_to_list( void );
         void update_normal_display( void );
+        void update_projection_mode( void );
 		//end
         void file_dropped(QString str);
         void get_ver_face(void);//imamura
