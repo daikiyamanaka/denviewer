@@ -17,7 +17,7 @@ int main ( int argc, char** argv )
         app.setWindowIcon ( QIcon ( ":/resources/meshview.ico" ) );
 #endif
 
-        MainWindow win ( model, view );
+        MainWindow win ( model, view , app);
 
         win.show();
         return app.exec();

@@ -50,7 +50,7 @@ private:
 
 
 public:
-        MainWindow ( Model& model, View& view ) ;
+        MainWindow ( Model& model, View& view, QApplication& app ) ;
 protected:
         //void contextMenuEvent ( QContextMenuEvent* event );
 signals:
@@ -87,7 +87,7 @@ private slots:
         void update_normal_display( void );
         void update_projection_mode( void );
 		//end
-        void file_dropped(QString str);
+        void file_dropped(QStringList strs);
         void get_ver_face(void);//imamura
         //
         void lightswitch0(bool i);

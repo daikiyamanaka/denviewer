@@ -3,7 +3,7 @@
 #include <QtGui>
 #include <iostream>
 
-MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( view )
+MainWindow::MainWindow ( Model& model, View& view, QApplication &app ) : _model ( model ), _view ( view )
 {
     QWidget* widget = new QWidget;
     widget->setContentsMargins ( 5,5,5,5 );
@@ -11,7 +11,7 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
     this->setCentralWidget ( widget );
     this->_glwidget = new GLWidget ( this->_model,  this->_view, widget );
     connect ( this->_glwidget, SIGNAL ( mouseDragged ( float, float ) ), this, SLOT ( mouse_dragged ( float, float ) ) );
-    connect ( this->_glwidget, SIGNAL ( fileDropped ( QString ) ), this, SLOT ( file_dropped(QString)));
+    connect ( this->_glwidget, SIGNAL ( fileDropped ( QStringList ) ), this, SLOT ( file_dropped(QStringList)));
     connect ( this->_glwidget, SIGNAL ( wheelSpined(float,float,float) ), this , SLOT(wheel_spined(float,float,float) ) );
 
     //Rendering Mode
@@ -235,6 +235,29 @@ MainWindow::MainWindow ( Model& model, View& view ) : _model ( model ), _view ( 
 
     //Preference Dialog
     _dialog = new PreferencesDialog(this, this->_model.getPreferences().at(0));
+
+    if( app.argc() != 1){
+
+        for( int i = 1 ; i < app.argc() ; i++ ){
+            std::string filename( app.argv()[i]);
+            if( !this->_model.openMesh ( filename ) ){
+                QString message ( tr ( "Open failed." ) );
+                statusBar()->showMessage ( message );
+            }else{
+                emit updated();
+                emit cameraInitialized();
+                this->modelLayerWidget->addList(filename);
+                this->get_ver_face();
+                //this->_view.createDisplayList();
+                this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+                this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+                this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+
+            }
+        }
+
+    }
+
     return;
 
 }
@@ -494,20 +517,37 @@ MainWindow::open ( void )
     }
 
     //QString filename = QFileDialog::getOpenFileName ( this, tr ( "Open file from" ), ".", tr ( "STL File (*.stl)" ) );
-    if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
-            QString message ( tr ( "Open failed." ) );
-            statusBar()->showMessage ( message );
-            return;
-    } else {
-        emit updated();
-        emit cameraInitialized();
-        this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
-        this->get_ver_face();
-        //this->_view.createDisplayList();
-        this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
-        this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
-        this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+    for(int i = 0 ; i < fileNames.size() ; i++){
+        if ( !this->_model.openMesh ( fileNames.at(i).toStdString() ) ) {
+                QString message ( tr ( "Open failed." ) );
+                statusBar()->showMessage ( message );
+                return;
+        } else {
+            emit updated();
+            emit cameraInitialized();
+            this->modelLayerWidget->addList(QFileInfo(fileNames.at(i)).fileName().toStdString());
+            this->get_ver_face();
+            //this->_view.createDisplayList();
+            this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+            this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+            this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+        }
+
     }
+//    if ( fileNames.size()==0 || !this->_model.openMesh ( fileNames.at(0).toStdString() ) ) {
+//            QString message ( tr ( "Open failed." ) );
+//            statusBar()->showMessage ( message );
+//            return;
+//    } else {
+//        emit updated();
+//        emit cameraInitialized();
+//        this->modelLayerWidget->addList(QFileInfo(fileNames.at(0)).fileName().toStdString());
+//        this->get_ver_face();
+//        //this->_view.createDisplayList();
+//        this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+//        this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+//        this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+//    }
     return;
 }
 
@@ -854,14 +894,15 @@ MainWindow::add_now_camera_to_list()
 }
 
 void
-MainWindow::file_dropped(QString str){
-    QString  message  = str +  QString( tr ( " reading...." ) );
-    statusBar()->showMessage ( message );
-        if ( !this->_model.openMesh (str.toStdString() ) ) {
+MainWindow::file_dropped(QStringList strs){
+    for(size_t i = 0 ; i < strs.size() ; i++){
+        QString  message  = strs.at(i) +  QString( tr ( " reading...." ) );
+        statusBar()->showMessage ( message );
+        if ( !this->_model.openMesh (strs.at(i).toStdString() ) ) {
                 QString message ( tr ( "Open failed." ) );
                 statusBar()->showMessage ( message );
         } else {
-        QString  message  = str +  QString( tr ( " reading  done." ) );
+            QString  message  = strs.at(i) +  QString( tr ( " reading  done." ) );
                 statusBar()->showMessage ( message );
                 //this->_view.createDisplayList();
                 this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
@@ -869,10 +910,32 @@ MainWindow::file_dropped(QString str){
                 emit updated();
                 emit cameraInitialized();
                 //this->modelLayerWidget->addList(str.toStdString());
-                this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
+                this->modelLayerWidget->addList(QFileInfo(strs.at(i)).fileName().toStdString());
                 this->get_ver_face();
                 this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
         }
+
+
+    }
+
+//    QString  message  = strs.at(0) +  QString( tr ( " reading...." ) );
+//    statusBar()->showMessage ( message );
+//        if ( !this->_model.openMesh (str.toStdString() ) ) {
+//                QString message ( tr ( "Open failed." ) );
+//                statusBar()->showMessage ( message );
+//        } else {
+//        QString  message  = str +  QString( tr ( " reading  done." ) );
+//                statusBar()->showMessage ( message );
+//                //this->_view.createDisplayList();
+//                this->_view.addDrawMeshList(this->_model.getMesh().size()-1);
+//                this->_model.setActiveMeshIndex( this->_model.getMesh().size()-1 );
+//                emit updated();
+//                emit cameraInitialized();
+//                //this->modelLayerWidget->addList(str.toStdString());
+//                this->modelLayerWidget->addList(QFileInfo(str).fileName().toStdString());
+//                this->get_ver_face();
+//                this->change_pallet_color_to_Id_mesh( this->_model.getMesh().size()-1 );
+//        }
 
         return;
 }

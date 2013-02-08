@@ -26,7 +26,7 @@ public:
 public slots:
 signals:
         void mouseDragged ( float x, float y );
-        void fileDropped ( QString file);
+        void fileDropped ( QStringList files);
         void wheelSpined ( float x , float y , float step );
         void resizedWindow(int width, int height);
 protected:

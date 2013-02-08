@@ -119,8 +119,12 @@ void
 GLWidget::dropEvent(QDropEvent *event)
 {
     QList<QUrl> fileList=event->mimeData()->urls();
-    QString filePath = QDir::toNativeSeparators(fileList[0].toLocalFile());
-    emit fileDropped(filePath);
+    //QString filePath = QDir::toNativeSeparators(fileList[0].toLocalFile());
+    QStringList filePaths;
+    for( size_t i = 0 ; i < fileList.size() ; i++ ){
+        filePaths.push_back(QDir::toNativeSeparators(fileList[i].toLocalFile()));
+    }
+    emit fileDropped(filePaths);
     event->acceptProposedAction();
     return;
 }
